@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+
+networkx
+numpy
+pandas
+
+ultralytics
+easyocr
+opencv-python-headless
+
+asyncpg
+geoalchemy2
+redis
+PyJWT
+passlib[bcrypt]
