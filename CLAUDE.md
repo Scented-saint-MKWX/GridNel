@@ -63,10 +63,17 @@ This must not look "vibe-coded" or like a generic AI-generated SaaS template. No
 
 - JWT lives in memory (React Context) only. Never `localStorage`, never `sessionStorage`, never a non-httpOnly cookie you set from JS.
 - Never put `HMAC_KEY`, `AES_KEY`, or `JWT_SECRET` anywhere in `frontend/` — not in code, not in `.env.local`, not in a comment "for testing." If a task seems to need one of these, stop and flag it instead of proceeding.
-- `middleware.ts` role-gates routes, but treat that as UX only. The API's 403 is the actual security boundary — never fetch or render privileged data based solely on a client-side role check.
+- `middleware.ts` is an intentional, commented passthrough — see "Auth gating implementation" below for why and where the real gating lives. Never fetch or render privileged data based solely on a client-side role check; the API's 403 is the actual security boundary.
 - URL-encode the plate-text search value and validate its format (zod) before it touches `/track/<text>` or `/track/<text>/bridged`.
 - No `dangerouslySetInnerHTML`.
 - No secret or internal API detail in a `NEXT_PUBLIC_*` variable — only the Mapbox token and the API base URL belong there.
+
+## Auth gating implementation & other resolved decisions
+
+See `DECISIONS.md` at the repo root for the full writeup of anything that's already been
+settled (auth route-gating with a memory-only JWT, `fog_sim.py` hashing before
+`auth/hashing.py` exists, and whatever gets added next). Check it before re-deciding
+something that feels ambiguous — it may already be resolved.
 
 ## Definition of done for any frontend task
 
