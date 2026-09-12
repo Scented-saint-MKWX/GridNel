@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from .schemas import DataBlock
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-FOG_API_KEY = os.getenv("FOG_API_KEY", "hackathon_secret_key")
+FOG_API_KEY = os.getenv("FOG_API_KEY")
 
 redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
