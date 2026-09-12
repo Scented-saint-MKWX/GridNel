@@ -1,4 +1,5 @@
 import { getToken } from "@/lib/auth";
+import { MOCK_MODE, mockDispatch } from "@/lib/mock/router";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -28,6 +29,14 @@ interface RequestOptions {
 }
 
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  // Dev-only mock branch, gated behind NEXT_PUBLIC_MOCK_MODE (never true in
+  // .env.local.example). Same code path as the real fetch below with one
+  // branch here — see lib/mock/router.ts. Delete this block, not a parallel
+  // hook, when the backend lands.
+  if (MOCK_MODE) {
+    return mockDispatch<T>({ method: options.method ?? "GET", path, body: options.body });
+  }
+
   const token = getToken();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
