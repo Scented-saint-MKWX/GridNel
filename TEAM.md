@@ -316,7 +316,9 @@ Five mechanisms: *HMAC · AES role-gating · transient images · TTL · audit.*
 
 ## 11. L1 non-goals (L2/L3 — do NOT build)
 
-HMM inference · OD matrix · bottleneck scoring · WebSocket push · PostGIS geometry · K8s · multi-city federation · key rotation · on-camera ACAP · runtime load-shedding. *Plain SHA-256 anywhere is formally banned* (rainbow-table reversible) — HMAC or nothing.
+HMM inference · bottleneck scoring · WebSocket push · PostGIS geometry · K8s · multi-city federation · key rotation · on-camera ACAP · runtime load-shedding. *Plain SHA-256 anywhere is formally banned* (rainbow-table reversible) — HMAC or nothing.
+
+**2026-09-13: OD (Origin-Destination) matrix confirmed in-scope, authorized by Wahid — supersedes its prior listing here as an L1 non-goal.** See DECISIONS.md #4 for the full history and CLAUDE.md for the frontend view it now ships as.
 
 If ahead after two rehearsals, pick from this list top-down.
 

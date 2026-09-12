@@ -3,6 +3,16 @@ import path from "path";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// CSP's connect-src must allow whatever NEXT_PUBLIC_API_URL actually points
+// at — hardcoding localhost breaks the moment this deploys anywhere real
+// (Vercel + a live API, or even mock mode against a non-local preview URL).
+// Falls back to the two local dev origins when the env var is unset, so
+// `next dev` against a local API keeps working unchanged.
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiConnectSrc = apiUrl
+  ? apiUrl
+  : "http://localhost:8000 http://127.0.0.1:8000";
+
 // script-src keeps 'unsafe-inline' — verified against a real production build
 // (not assumed): Next.js's App Router always inlines its RSC hydration payload
 // as <script>(self.__next_f=...)</script> tags on every page (7 on /login
@@ -21,7 +31,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
   "img-src 'self' data: blob: https://api.mapbox.com https://*.tiles.mapbox.com",
   "worker-src 'self' blob:",
-  "connect-src 'self' https://api.mapbox.com https://events.mapbox.com http://localhost:8000 http://127.0.0.1:8000",
+  `connect-src 'self' https://api.mapbox.com https://events.mapbox.com ${apiConnectSrc}`,
   "font-src 'self' data:",
   "object-src 'none'",
   "base-uri 'self'",
@@ -30,7 +40,15 @@ const csp = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  outputFileTracingRoot: path.join(__dirname),
+  // NOTE for Vercel: this only helps if Vercel's Root Directory setting is
+  // the monorepo root (so ../db is inside what gets uploaded/built). If
+  // Root Directory is set to frontend/ (Vercel's usual monorepo pattern),
+  // db/cameras.json is outside the deployment entirely and this path can't
+  // reach it — see DEPLOYMENT.md for the real constraint and options.
+  outputFileTracingRoot: path.join(__dirname, ".."),
+  outputFileTracingIncludes: {
+    "/api/cameras": ["../db/cameras.json"],
+  },
   async headers() {
     return [
       {

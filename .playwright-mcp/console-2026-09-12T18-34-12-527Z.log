@@ -1,0 +1,18 @@
+[    9777ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   28888ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   35702ms] [LOG] [Fast Refresh] done in 6814ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[   92169ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   93260ms] [LOG] [Fast Refresh] done in 1091ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[   93550ms] [ERROR] Error: An API access token is required to use Mapbox GL. See https://docs.mapbox.com/api/overview/#access-tokens-and-token-scopes
+    at t.eQ._makeAPIURL (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:33:21203)
+    at t.eQ.normalizeStyleURL (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:33:18590)
+    at qn.loadURL (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:40:394809)
+    at qn.load (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:40:393820)
+    at Map._updateStyle (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:40:676929)
+    at Map.setStyle (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:40:676598)
+    at new Map (webpack-internal:///(app-pages-browser)/./node_modules/mapbox-gl/dist/mapbox-gl.js:40:665411)
+    at Mapbox._initialize (webpack-internal:///(app-pages-browser)/./node_modules/react-map-gl/dist/esm/mapbox/mapbox.js:242:21)
+    at new Mapbox (webpack-internal:///(app-pages-browser)/./node_modules/react-map-gl/dist/esm/mapbox/mapbox.js:135:14)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/react-map-gl/dist/esm/components/map.js:50:30) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[   93905ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   94651ms] [LOG] [Fast Refresh] done in 745ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13

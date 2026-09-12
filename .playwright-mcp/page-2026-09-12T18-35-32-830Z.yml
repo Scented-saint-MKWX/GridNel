@@ -1,0 +1,46 @@
+- generic [ref=f90e1]:
+  - button "Open Next.js Dev Tools" [ref=f90e50] [cursor=pointer]
+  - alert [ref=f90e54]
+  - generic [ref=f90e55]:
+    - generic [ref=f90e56]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - banner [ref=f90e59]:
+      - generic [ref=f90e60]:
+        - generic [ref=f90e61]: SentinelGrid
+        - navigation [ref=f90e71]:
+          - link "Analytics" [ref=f90e72] [cursor=pointer]:
+            - /url: /analytics
+          - link "Tracking" [ref=f90e73] [cursor=pointer]:
+            - /url: /tracking
+      - generic [ref=f90e74]:
+        - generic [ref=f90e75]: tracker
+        - button "Log out" [ref=f90e83]
+    - generic [ref=f90e84]:
+      - text: Monitoring — no blacklist hits
+      - generic [ref=f90e91]: · polling every 10s
+    - main [ref=f90e92]:
+      - generic [ref=f90e93]:
+        - generic [ref=f90e94]:
+          - generic [ref=f90e95]:
+            - heading "Traffic Analytics" [level=1] [ref=f90e96]
+            - paragraph [ref=f90e97]: City-wide flow, congestion, and corridor speed, aggregated — never plaintext.
+          - combobox "Analytics view" [active] [ref=f90e98]:
+            - generic: Traffic Density
+        - generic [ref=f90e99]:
+          - generic [ref=f90e100]:
+            - text: Traffic Density
+            - generic [ref=f90e104]: — Vehicle counts per camera, last hour
+          - img [ref=f90e107]:
+            - generic [ref=f90e111]:
+              - generic [ref=f90e112]: CAM_01
+              - generic [ref=f90e114]: CAM_02
+              - generic [ref=f90e116]: CAM_03
+              - generic [ref=f90e118]: CAM_04
+              - generic [ref=f90e120]: CAM_05
+              - generic [ref=f90e122]: CAM_06
+            - generic [ref=f90e125]:
+              - generic [ref=f90e126]: "0"
+              - generic [ref=f90e128]: "15"
+              - generic [ref=f90e130]: "30"
+              - generic [ref=f90e132]: "45"
+              - generic [ref=f90e134]: "60"
+  - generic [aria-hidden] [ref=f90e151]: "0"

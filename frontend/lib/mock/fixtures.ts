@@ -1,5 +1,5 @@
 import type { AlertEvent, DebugHashResponse, Trajectory } from "@/types/tracking";
-import type { CorridorSpeed, DensityPoint, HeatmapPoint } from "@/types/analytics";
+import type { CorridorSpeed, DensityPoint, HeatmapPoint, OdFlowPoint } from "@/types/analytics";
 import type { JwtPayload, Role } from "@/types/auth";
 
 // Fixtures mirror the frozen contract shapes byte-for-byte (TEAM.md §4.4) —
@@ -136,5 +136,28 @@ export function mockCorridorSpeeds(): CorridorSpeed[] {
     from_node,
     to_node,
     avg_speed_kmh: 28 + i * 6,
+  }));
+}
+
+// OD (Origin-Destination) flows between the six seeded zone centroids —
+// confirmed in-scope 2026-09-13 (see types/analytics.ts, DECISIONS.md #4).
+// Centroid = first camera seen per zone, same convention lib/gis-prototype's
+// mockODFlows() already used, never invented coordinates (CLAUDE.md "No
+// hardcoded camera coordinates").
+export function mockOdFlows(): OdFlowPoint[] {
+  const zonePairs: [string, string, number][] = [
+    ["central", "north", 84],
+    ["central", "east", 47],
+    ["south", "central", 62],
+    ["west", "central", 29],
+  ];
+  const centroidByZone = new Map<string, [number, number]>();
+  for (const c of MOCK_CAMERAS) {
+    if (!centroidByZone.has(c.zone)) centroidByZone.set(c.zone, [c.lon, c.lat]);
+  }
+  return zonePairs.map(([originZone, destinationZone, vehicle_count]) => ({
+    origin: centroidByZone.get(originZone) ?? [77.209, 28.6139],
+    destination: centroidByZone.get(destinationZone) ?? [77.209, 28.6139],
+    vehicle_count,
   }));
 }

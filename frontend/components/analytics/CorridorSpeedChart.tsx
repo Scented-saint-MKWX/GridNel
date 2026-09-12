@@ -18,7 +18,7 @@ export function CorridorSpeedChart({ data }: { data: CorridorSpeed[] }) {
         />
         <YAxis stroke="rgba(255,255,255,0.35)" fontSize={12} tickLine={false} axisLine={false} />
         <Tooltip
-          cursor={{ fill: "rgba(245,158,11,0.06)" }}
+          cursor={{ fill: "rgba(217, 126, 44,0.06)" }}
           contentStyle={{
             background: "var(--surface-raised)",
             border: "1px solid rgba(255,255,255,0.1)",

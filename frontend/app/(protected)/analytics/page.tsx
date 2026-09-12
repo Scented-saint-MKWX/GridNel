@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Flame, Gauge } from "lucide-react";
+import { BarChart3, Flame, Gauge, GitBranch } from "lucide-react";
 import { AnalyticsViewSelector, type AnalyticsView } from "@/components/analytics/AnalyticsViewSelector";
 import { DensityChart } from "@/components/analytics/DensityChart";
 import { CorridorSpeedChart } from "@/components/analytics/CorridorSpeedChart";
+import { GisPreviewPanel } from "@/components/analytics/GisPreviewPanel";
 import { HeatmapLayer } from "@/components/map/HeatmapLayer";
+import { ODFlowLayer } from "@/components/map/ODFlowLayer";
 import { CityMap } from "@/components/map/CityMap";
 import { RadarSweep } from "@/components/layout/RadarSweep";
 import { Skeleton } from "@/components/layout/Skeleton";
-import { useDensity, useHeatmap, useCorridorSpeeds } from "@/hooks/useAnalytics";
+import { useDensity, useHeatmap, useCorridorSpeeds, useOdFlows } from "@/hooks/useAnalytics";
 import { useFlashingCamera } from "@/hooks/useFlashingCamera";
 
 // Both roles reach this page (TEAM.md §4.4). Density + corridor-speeds render
@@ -21,6 +23,7 @@ export default function AnalyticsPage() {
   const densityQuery = useDensity();
   const heatmapQuery = useHeatmap();
   const corridorQuery = useCorridorSpeeds();
+  const odFlowQuery = useOdFlows();
   const flashingCameraId = useFlashingCamera();
 
   return (
@@ -87,6 +90,39 @@ export default function AnalyticsPage() {
           )}
         </Panel>
       )}
+
+      {view === "od-flow" && (
+        <Panel
+          icon={<GitBranch className="size-4" />}
+          title="OD Flow"
+          subtitle="Origin→destination volume between zone centroids, last hour"
+        >
+          <div className="relative h-[420px] overflow-hidden rounded-xl">
+            <CityMap flashingCameraId={flashingCameraId}>
+              {odFlowQuery.data && odFlowQuery.data.length > 0 && (
+                <ODFlowLayer flows={odFlowQuery.data} />
+              )}
+            </CityMap>
+            {odFlowQuery.isLoading && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/60 backdrop-blur-sm">
+                <RadarSweep accent="analyst" label="Loading OD flows…" icon={<GitBranch className="size-4" />} />
+              </div>
+            )}
+            {!odFlowQuery.isLoading && (!odFlowQuery.data || odFlowQuery.data.length === 0) && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/60 backdrop-blur-sm">
+                <RadarSweep
+                  accent="analyst"
+                  label="No OD flow data yet"
+                  sublabel="Waiting on ingested sightings"
+                  icon={<GitBranch className="size-4" />}
+                />
+              </div>
+            )}
+          </div>
+        </Panel>
+      )}
+
+      {view === "gis-preview" && <GisPreviewPanel />}
     </div>
   );
 }

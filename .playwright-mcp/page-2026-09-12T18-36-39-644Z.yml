@@ -1,0 +1,23 @@
+- generic [ref=f90e1]:
+  - button "Open Next.js Dev Tools" [ref=f90e50] [cursor=pointer]
+  - alert [ref=f90e54]
+  - generic [aria-hidden] [ref=f90e151]: "0"
+  - generic [ref=f90e232]:
+    - generic [ref=f90e233]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - generic [ref=f90e236]:
+      - generic [ref=f90e237]:
+        - generic [ref=f90e238]:
+          - heading "SentinelGrid" [level=1] [ref=f90e247]
+          - paragraph [ref=f90e248]: Traffic operations console
+        - generic [ref=f90e249]:
+          - button "Tracker" [ref=f90e250]
+          - button "Analyst" [active] [ref=f90e258]
+        - generic [ref=f90e262]:
+          - generic [ref=f90e263]:
+            - generic [ref=f90e264]: Username
+            - textbox "Username" [ref=f90e265]
+          - generic [ref=f90e266]:
+            - generic [ref=f90e267]: Password
+            - textbox "Password" [ref=f90e268]
+          - button "Sign in" [ref=f90e269]
+      - generic [ref=f90e270]: Fog network online — 6 cameras reporting

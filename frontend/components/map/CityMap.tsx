@@ -45,35 +45,37 @@ export function CityMap({ children, onCameraClick, flashingCameraId }: CityMapPr
         mapStyle="mapbox://styles/mapbox/dark-v11"
         style={{ width: "100%", height: "100%" }}
       >
-        {(cameras ?? []).map((camera) => {
-          const isFlashing = camera.camera_id === flashingCameraId;
-          return (
-            <Marker
-              key={camera.camera_id}
-              longitude={camera.lon}
-              latitude={camera.lat}
-              onClick={() => onCameraClick?.(camera)}
-            >
-              <button
-                type="button"
-                className="group relative flex size-3 items-center justify-center rounded-full bg-analyst ring-2 ring-analyst/30"
-                aria-label={camera.camera_id}
+        {(cameras ?? [])
+          .filter((camera) => Number.isFinite(camera.lon) && Number.isFinite(camera.lat))
+          .map((camera) => {
+            const isFlashing = camera.camera_id === flashingCameraId;
+            return (
+              <Marker
+                key={camera.camera_id}
+                longitude={camera.lon}
+                latitude={camera.lat}
+                onClick={() => onCameraClick?.(camera)}
               >
-                {isFlashing && (
-                  <span className="absolute inset-0 rounded-full bg-alert animate-pulse-ring" />
-                )}
-                <span
-                  className={`relative size-3 rounded-full ${isFlashing ? "bg-alert" : "bg-analyst"}`}
-                />
-                <CameraIcon
-                  className={`absolute -top-5 size-3 transition-colors ${
-                    isFlashing ? "text-alert" : "text-analyst/70 group-hover:text-analyst"
-                  }`}
-                />
-              </button>
-            </Marker>
-          );
-        })}
+                <button
+                  type="button"
+                  className="group relative flex size-3 items-center justify-center rounded-full bg-analyst ring-2 ring-analyst/30"
+                  aria-label={camera.camera_id}
+                >
+                  {isFlashing && (
+                    <span className="absolute inset-0 rounded-full bg-alert animate-pulse-ring" />
+                  )}
+                  <span
+                    className={`relative size-3 rounded-full ${isFlashing ? "bg-alert" : "bg-analyst"}`}
+                  />
+                  <CameraIcon
+                    className={`absolute -top-5 size-3 transition-colors ${
+                      isFlashing ? "text-alert" : "text-analyst/70 group-hover:text-analyst"
+                    }`}
+                  />
+                </button>
+              </Marker>
+            );
+          })}
         {children}
       </Map>
 

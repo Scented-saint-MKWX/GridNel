@@ -6,6 +6,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { CityMap } from "@/components/map/CityMap";
 import { TrajectoryLayer } from "@/components/map/TrajectoryLayer";
 import { PlateSearch } from "@/components/map/PlateSearch";
+import { BlacklistPanel } from "@/components/map/BlacklistPanel";
 import { RadarSweep } from "@/components/layout/RadarSweep";
 import { useTrajectory } from "@/hooks/useTrajectory";
 import { useDebugHash } from "@/hooks/useDebugHash";
@@ -30,7 +31,7 @@ export default function TrackingPage() {
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)]">
-      <div className="relative z-10 flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-surface/60 p-4 shadow-[4px_0_40px_-12px_rgba(245,158,11,0.15)] backdrop-blur-xl">
+      <div className="relative z-10 flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-surface/60 p-4 shadow-[4px_0_40px_-12px_rgba(217,126,44,0.15)] backdrop-blur-xl">
         <div>
           <h1 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-tracker">
             <ScanSearch className="size-4" />
@@ -86,7 +87,7 @@ export default function TrackingPage() {
         )}
 
         {!plateText && (
-          <div className="flex flex-1 items-center justify-center py-8">
+          <div className="flex items-center justify-center py-8">
             <RadarSweep
               accent="tracker"
               label="No trajectory queried yet"
@@ -95,6 +96,8 @@ export default function TrackingPage() {
             />
           </div>
         )}
+
+        <BlacklistPanel />
       </div>
 
       <div className="relative flex-1">

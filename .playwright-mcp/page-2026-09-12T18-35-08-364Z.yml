@@ -1,0 +1,57 @@
+- generic:
+  - button "Open Next.js Dev Tools" [ref=f90e50] [cursor=pointer]
+  - alert
+  - generic [aria-hidden]:
+    - generic: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - banner:
+      - generic:
+        - generic: SentinelGrid
+        - navigation:
+          - link:
+            - /url: /analytics
+            - text: Analytics
+          - link:
+            - /url: /tracking
+            - text: Tracking
+      - generic:
+        - generic: tracker
+        - button
+    - generic:
+      - text: Monitoring — no blacklist hits
+      - generic: · polling every 10s
+    - main:
+      - generic:
+        - generic:
+          - generic:
+            - heading [level=1]: Traffic Analytics
+            - paragraph: City-wide flow, congestion, and corridor speed, aggregated — never plaintext.
+          - combobox [expanded]:
+            - generic: Traffic Density
+        - generic:
+          - generic:
+            - text: Traffic Density
+            - generic: — Vehicle counts per camera, last hour
+          - generic:
+            - generic:
+              - img:
+                - generic:
+                  - generic:
+                    - generic: CAM_01
+                    - generic: CAM_02
+                    - generic: CAM_03
+                    - generic: CAM_04
+                    - generic: CAM_05
+                    - generic: CAM_06
+                - generic:
+                  - generic:
+                    - generic: "0"
+                    - generic: "15"
+                    - generic: "30"
+                    - generic: "45"
+                    - generic: "60"
+  - generic [aria-hidden]: "0"
+  - listbox [ref=f90e152]:
+    - option "Traffic Density" [active] [selected] [ref=f90e153]
+    - option "Heatmap" [ref=f90e157]
+    - option "Corridor Speeds" [ref=f90e160]
+    - option "GIS Preview (prototype)" [ref=f90e163]

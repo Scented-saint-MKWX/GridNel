@@ -35,14 +35,28 @@ export function TrajectoryLayer({ trajectory }: TrajectoryLayerProps) {
   const [selected, setSelected] = useState<ObservedSegment | null>(null);
   const [drawProgress, setDrawProgress] = useState(0);
 
+  // Defends against a backend that returns a well-formed shape but bad
+  // numbers (missing/null lat/lon) — react-map-gl throws "Invalid LngLat
+  // object: (NaN, NaN)" and takes the whole map down if these ever reach a
+  // Marker/Popup/LineString uncoerced. Not an API contract change: this is
+  // pure frontend robustness against a still-unwired backend.
+  const isFiniteCoord = (lon: unknown, lat: unknown): boolean =>
+    typeof lon === "number" && typeof lat === "number" && Number.isFinite(lon) && Number.isFinite(lat);
+
   const observed = trajectory.segments.filter(
-    (s): s is ObservedSegment => s.type === "observed",
+    (s): s is ObservedSegment => s.type === "observed" && isFiniteCoord(s.lon, s.lat),
   );
   const observedCoords: [number, number][] = useMemo(
     () => observed.map((s) => [s.lon, s.lat]),
     [observed],
   );
-  const inferredSegments = trajectory.segments.filter((s) => s.type === "inferred");
+  const inferredSegments = trajectory.segments.filter(
+    (s): s is Extract<typeof s, { type: "inferred" }> =>
+      s.type === "inferred" &&
+      Array.isArray(s.path) &&
+      s.path.length > 0 &&
+      s.path.every((pt) => Array.isArray(pt) && isFiniteCoord(pt[0], pt[1])),
+  );
 
   useEffect(() => {
     setDrawProgress(0);
@@ -75,7 +89,7 @@ export function TrajectoryLayer({ trajectory }: TrajectoryLayerProps) {
           id="trajectory-observed-line"
           type="line"
           layout={{ "line-cap": "round", "line-join": "round" }}
-          paint={{ "line-color": "#f59e0b", "line-width": 3 }}
+          paint={{ "line-color": "#d97e2c", "line-width": 3 }}
         />
       </Source>
       {drawProgress >= 1 &&

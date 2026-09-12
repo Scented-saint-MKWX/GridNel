@@ -31,7 +31,7 @@ export function AlertConsole() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
-          className="sticky top-14 z-40 flex items-center justify-center gap-2 border-b border-alert/40 bg-alert/15 px-4 py-2 text-sm text-alert shadow-[0_4px_40px_-8px_rgba(239,68,68,0.45)] backdrop-blur-xl"
+          className="sticky top-0 z-30 flex items-center justify-center gap-2 border-b border-alert/40 bg-alert/15 px-4 py-2 text-sm text-alert shadow-[0_4px_40px_-8px_rgba(239,68,68,0.45)] backdrop-blur-xl"
         >
           <AlertTriangle className="size-4 shrink-0 animate-pulse" />
           <span className="data-mono">{latest!.type}</span>
@@ -53,7 +53,7 @@ export function AlertConsole() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="sticky top-14 z-30 flex items-center justify-center gap-2 border-b border-white/5 bg-surface/40 px-4 py-1.5 text-xs text-muted-foreground/70 backdrop-blur-xl"
+          className="sticky top-0 z-30 flex items-center justify-center gap-2 border-b border-white/5 bg-surface/40 px-4 py-1.5 text-xs text-muted-foreground/70 backdrop-blur-xl"
         >
           <span className="relative flex size-1.5">
             <motion.span

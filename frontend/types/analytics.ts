@@ -19,3 +19,16 @@ export interface CorridorSpeed {
   to_node: string;
   avg_speed_kmh: number;
 }
+
+// OD (Origin-Destination) analytics — confirmed in-scope 2026-09-13,
+// authorized by Wahid; supersedes the TEAM.md §11 L1 non-goal listing. See
+// DECISIONS.md #4 for the full history (previously an unconfirmed prototype
+// behind GisPreviewPanel; now a first-class analytics view). Shape matches
+// the master prompt's spec: zone-centroid flow volumes, not a frozen TEAM.md
+// §4.4 contract field (no real /analytics/od endpoint exists yet) — confirm
+// exact field names with P4 when it's wired.
+export interface OdFlowPoint {
+  origin: [number, number]; // [lon, lat] zone centroid
+  destination: [number, number]; // [lon, lat] zone centroid
+  vehicle_count: number;
+}

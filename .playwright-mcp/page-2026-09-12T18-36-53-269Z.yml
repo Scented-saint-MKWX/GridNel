@@ -1,0 +1,44 @@
+- generic [active] [ref=f90e1]:
+  - button "Open Next.js Dev Tools" [ref=f90e50] [cursor=pointer]
+  - alert [ref=f90e54]
+  - generic [aria-hidden] [ref=f90e151]: "0"
+  - generic [ref=f90e275]:
+    - generic [ref=f90e276]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - banner [ref=f90e279]:
+      - generic [ref=f90e280]:
+        - generic [ref=f90e281]: SentinelGrid
+        - navigation [ref=f90e291]:
+          - link "Analytics" [ref=f90e292] [cursor=pointer]:
+            - /url: /analytics
+      - generic [ref=f90e293]:
+        - generic [ref=f90e294]: analyst
+        - button "Log out" [ref=f90e298]
+    - generic [ref=f90e299]:
+      - text: Monitoring — no blacklist hits
+      - generic [ref=f90e306]: · polling every 10s
+    - main [ref=f90e307]:
+      - generic [ref=f90e308]:
+        - generic [ref=f90e309]:
+          - generic [ref=f90e310]:
+            - heading "Traffic Analytics" [level=1] [ref=f90e311]
+            - paragraph [ref=f90e312]: City-wide flow, congestion, and corridor speed, aggregated — never plaintext.
+          - combobox "Analytics view" [ref=f90e313]:
+            - generic: Traffic Density
+        - generic [ref=f90e314]:
+          - generic [ref=f90e315]:
+            - text: Traffic Density
+            - generic [ref=f90e319]: — Vehicle counts per camera, last hour
+          - img [ref=f90e322]:
+            - generic [ref=f90e326]:
+              - generic [ref=f90e327]: CAM_01
+              - generic [ref=f90e329]: CAM_02
+              - generic [ref=f90e331]: CAM_03
+              - generic [ref=f90e333]: CAM_04
+              - generic [ref=f90e335]: CAM_05
+              - generic [ref=f90e337]: CAM_06
+            - generic [ref=f90e340]:
+              - generic [ref=f90e341]: "0"
+              - generic [ref=f90e343]: "15"
+              - generic [ref=f90e345]: "30"
+              - generic [ref=f90e347]: "45"
+              - generic [ref=f90e349]: "60"

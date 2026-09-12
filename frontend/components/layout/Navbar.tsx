@@ -27,7 +27,7 @@ export function Navbar() {
 
   const accentGlow =
     payload?.role === "tracker"
-      ? "shadow-[0_1px_30px_-8px_rgba(245,158,11,0.35)]"
+      ? "shadow-[0_1px_30px_-8px_rgba(217,126,44,0.35)]"
       : "shadow-[0_1px_30px_-8px_rgba(56,189,248,0.3)]";
 
   return (

@@ -1,0 +1,19 @@
+[     594ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   23321ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3010/_next/static/chunks/app/(protected)/layout.js:0
+[   23321ms] [ERROR] Refused to execute script from 'http://localhost:3010/_next/static/chunks/app/(protected)/layout.js' because its MIME type ('text/plain') is not executable, and strict MIME type checking is enabled. @ http://localhost:3010/login:0
+[   23322ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3010/_next/static/chunks/app/(protected)/analytics/page.js:0
+[   23322ms] [ERROR] Refused to execute script from 'http://localhost:3010/_next/static/chunks/app/(protected)/analytics/page.js' because its MIME type ('text/plain') is not executable, and strict MIME type checking is enabled. @ http://localhost:3010/login:0
+[   23349ms] ChunkLoadError: Loading chunk app/(protected)/layout failed.
+(error: http://localhost:3010/_next/static/chunks/app/(protected)/layout.js)
+    at __webpack_require__.f.j (http://localhost:3010/_next/static/chunks/webpack.js?v=1789237947131:850:29)
+    at http://localhost:3010/_next/static/chunks/webpack.js?v=1789237947131:145:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (http://localhost:3010/_next/static/chunks/webpack.js?v=1789237947131:144:67)
+    at fn.e (http://localhost:3010/_next/static/chunks/webpack.js?v=1789237947131:381:50)
+    at loadChunk (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:113:34)
+    at preloadModule (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:82:31)
+    at resolveModule (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2139:20)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2839:11)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2834:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3037:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3303:13)

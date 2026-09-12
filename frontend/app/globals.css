@@ -11,17 +11,24 @@
  */
 :root {
   color-scheme: dark;
-  --background: oklch(0.145 0.006 260);
+  /* Direction A: base hue nudged from neutral 260 toward blue (253) with a
+     touch more chroma, so the app reads as blue-black rather than neutral
+     charcoal. Tracker hue nudged from straight amber (70) toward burnt-
+     orange/copper (58) with slightly reduced chroma — "warm ops accent," not
+     "warning light." Analyst cyan (220) stays untouched and stays the most
+     saturated accent on shared/analyst surfaces. See CLAUDE.md master-prompt
+     Fix 5. */
+  --background: oklch(0.145 0.009 253);
   --foreground: oklch(0.94 0.01 240);
-  --card: oklch(0.19 0.012 260);
+  --card: oklch(0.19 0.014 253);
   --card-foreground: oklch(0.94 0.01 240);
-  --popover: oklch(0.19 0.012 260);
+  --popover: oklch(0.19 0.014 253);
   --popover-foreground: oklch(0.94 0.01 240);
-  --primary: oklch(0.78 0.16 70);
-  --primary-foreground: oklch(0.15 0.02 70);
-  --secondary: oklch(0.27 0.02 260);
+  --primary: oklch(0.76 0.14 58);
+  --primary-foreground: oklch(0.15 0.02 58);
+  --secondary: oklch(0.27 0.022 253);
   --secondary-foreground: oklch(0.94 0.01 240);
-  --muted: oklch(0.24 0.015 260);
+  --muted: oklch(0.24 0.017 253);
   --muted-foreground: oklch(0.64 0.02 250);
   --accent: oklch(0.72 0.13 220);
   --accent-foreground: oklch(0.12 0.02 220);
@@ -30,28 +37,28 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.72 0.13 220 / 60%);
-  --chart-1: oklch(0.78 0.16 70);
+  --chart-1: oklch(0.76 0.14 58);
   --chart-2: oklch(0.72 0.13 220);
   --chart-3: oklch(0.65 0.22 25);
   --chart-4: oklch(0.72 0.15 300);
   --chart-5: oklch(0.75 0.1 160);
   --radius: 0.625rem;
-  --sidebar: oklch(0.16 0.008 260);
+  --sidebar: oklch(0.16 0.011 253);
   --sidebar-foreground: oklch(0.94 0.01 240);
-  --sidebar-primary: oklch(0.78 0.16 70);
-  --sidebar-primary-foreground: oklch(0.15 0.02 70);
-  --sidebar-accent: oklch(0.24 0.015 260);
+  --sidebar-primary: oklch(0.76 0.14 58);
+  --sidebar-primary-foreground: oklch(0.15 0.02 58);
+  --sidebar-accent: oklch(0.24 0.017 253);
   --sidebar-accent-foreground: oklch(0.94 0.01 240);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.72 0.13 220 / 60%);
 
   /* Role/product-semantic colors, not decoration — see CLAUDE.md design bar. */
-  --surface: #0a0e14;
-  --surface-raised: #10151d;
+  --surface: #090d13;
+  --surface-raised: #0f141d;
   --alert: #ef4444;
   --alert-glow: #f87171;
-  --tracker: #f59e0b;
-  --tracker-muted: #b45309;
+  --tracker: #d97e2c;
+  --tracker-muted: #9a5a1f;
   --analyst: #38bdf8;
   --analyst-muted: #0369a1;
   --healed: #a78bfa;
@@ -147,18 +154,18 @@
     overflow-x: hidden;
     background:
       radial-gradient(1200px 600px at 15% -10%, rgba(56, 189, 248, 0.06), transparent),
-      radial-gradient(1000px 500px at 110% 10%, rgba(245, 158, 11, 0.05), transparent),
+      radial-gradient(1000px 500px at 110% 10%, rgba(217, 126, 44, 0.05), transparent),
       var(--background);
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/[0.05] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)];
+    @apply bg-white/[0.05] backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_8px_32px_-8px_rgba(0,0,0,0.5)];
   }
 
   .glass-raised {
-    @apply bg-white/[0.1] backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)];
+    @apply bg-white/[0.1] backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_8px_32px_-8px_rgba(0,0,0,0.5)];
   }
 
   .data-mono {

@@ -48,7 +48,7 @@ Roles are `tracker` and `analyst`. Analyst responses never contain `plate_text_e
 ## Tech stack (do not substitute without asking)
 
 - Next.js (App Router) + TypeScript, strict mode on
-- Tailwind + shadcn/ui for primitives, Watermelon UI (`ui.watermelon.sh`, a shadcn-compatible registry) for dashboard blocks — install via `npx shadcn@latest add <registry-url>` rather than hand-building from a blank div. Check the registry for an existing block before writing a component from scratch.
+- Tailwind + shadcn/ui for primitives, Watermelon UI (`registry.watermelon.sh`, a shadcn-compatible registry) for dashboard blocks — install via `npx shadcn@latest add <registry-url>` rather than hand-building from a blank div. Check the registry for an existing block before writing a component from scratch.
 - Mapbox GL JS via `react-map-gl` for the map (token from `NEXT_PUBLIC_MAPBOX_TOKEN`)
 - Recharts (or Tremor) for density/corridor-speed charts
 - TanStack Query for all data fetching and the 10s `/alerts` polling — one shared hook per resource, not a poller per component
@@ -79,7 +79,7 @@ principles:
 - **`/login` needs presence**, not two buttons on a black screen — an ambient animated
   background, a live "system status" indicator, a properly composed glass card for the
   form.
-- **Actually browse `ui.watermelon.sh`'s Dashboards, Auth Templates, and Blocks
+- **Actually browse `registry.watermelon.sh`'s Dashboards, Auth Templates, and Blocks
   categories and pull real blocks as a starting point for major surfaces** (login
   screen, dashboard shell) rather than hand-building everything from bare shadcn
   primitives — that's the reason Watermelon is in the stack. Restyle its tokens to the
@@ -124,6 +124,12 @@ See `DECISIONS.md` at the repo root for the full writeup of anything that's alre
 settled (auth route-gating with a memory-only JWT, `fog_sim.py` hashing before
 `auth/hashing.py` exists, and whatever gets added next). Check it before re-deciding
 something that feels ambiguous — it may already be resolved.
+
+**2026-09-13: OD (Origin-Destination) confirmed in-scope, authorized by Wahid** — no
+longer an L1 non-goal (TEAM.md §11 updated). It ships as a real, first-class item in
+`AnalyticsViewSelector` (`od-flow`), which is a deliberate, flagged deviation from this
+file's "exact PS vocabulary" wording elsewhere (Traffic Density / Heatmap / Corridor
+Speeds) — a real tradeoff, not a bug. See DECISIONS.md #4 for the full history.
 
 ## Definition of done for any frontend task
 
