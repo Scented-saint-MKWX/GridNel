@@ -19,10 +19,10 @@ logging.basicConfig(
     format="%(asctime)s [fog_sim] %(levelname)s: %(message)s",
 )
 log = logging.getLogger("fog_sim")
+FOG_API_KEY=G6H3UnN6KZmTTB7bvRm5KyhEXaGq3weEhFiuymWIKsA
 
 # --- Config ---------------------------------------------------------------
 API_URL = os.environ.get("API_URL", "http://localhost:8000/ingest")
-FOG_API_KEY = os.environ.get("FOG_API_KEY", "hackathon_secret_key")
 CAMERAS_JSON_PATH = os.environ.get("CAMERAS_JSON_PATH", "db/cameras.json")
 EMIT_INTERVAL_SECONDS = float(os.environ.get("EMIT_INTERVAL_SECONDS", "2"))
 HTTP_TIMEOUT_SECONDS = float(os.environ.get("HTTP_TIMEOUT_SECONDS", "5"))
