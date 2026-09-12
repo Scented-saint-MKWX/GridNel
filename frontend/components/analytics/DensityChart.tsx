@@ -7,13 +7,26 @@ export function DensityChart({ data }: { data: DensityPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-        <XAxis dataKey="camera_id" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-        <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} />
-        <Tooltip
-          contentStyle={{ background: "#10151d", border: "1px solid rgba(255,255,255,0.1)" }}
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+        <XAxis
+          dataKey="camera_id"
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
         />
-        <Bar dataKey="count" fill="#38bdf8" radius={[4, 4, 0, 0]} />
+        <YAxis stroke="rgba(255,255,255,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+        <Tooltip
+          cursor={{ fill: "rgba(56,189,248,0.06)" }}
+          contentStyle={{
+            background: "var(--surface-raised)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+          labelStyle={{ color: "var(--foreground)" }}
+        />
+        <Bar dataKey="count" fill="var(--analyst)" radius={[4, 4, 0, 0]} maxBarSize={48} />
       </BarChart>
     </ResponsiveContainer>
   );
