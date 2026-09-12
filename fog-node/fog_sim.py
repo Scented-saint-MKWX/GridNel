@@ -1,9 +1,15 @@
-"""Mock fog node — mode A (instant mock, hour 0-3 unblock per TEAM.md).
+"""Mock fog node — mode A (instant mock) and mode B (real pipeline).
 
-Emits fabricated data blocks matching TEAM.md §4.1 exactly and POSTs them to
-/ingest. No OCR, no real camera crops — this exists purely to give P4 a live
-producer before P1's real pipeline exists. Mode B (real pipeline.py) is a
-later addition per TEAM.md §7 hour 16+; this file only implements mode A.
+Mode A emits fabricated data blocks matching TEAM.md §4.1 exactly and POSTs
+them to /ingest. No OCR, no real camera crops — exists purely to give P4 a
+live producer before P1's real pipeline exists (TEAM.md §7 hour 0-3).
+
+Mode B drives P1's real fog-node/pipeline.py (enhance -> OCR -> fusion) over
+a directory of image crops, per TEAM.md §7 hour 16+. Mirrors the auth.hashing
+fallback pattern in DECISIONS.md §2: if pipeline.py isn't landed yet or still
+raises NotImplementedError, mode B prints a loud warning and falls back to
+mode A's fabricated blocks rather than crashing — never blocks the demo on a
+teammate's file not being ready yet.
 
 Camera positions are read from db/cameras.json at runtime, never hardcoded
 here — see TEAM.md §4.3 and CLAUDE.md's hard rule on this.
@@ -54,6 +60,35 @@ except (ImportError, NotImplementedError):
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 FOG_API_KEY = os.environ.get("FOG_API_KEY")
+IMAGES_DIR = REPO_ROOT / "fog-node" / "images"
+
+# Default injection probabilities per TEAM.md §7 hour 16-26 sim injections /
+# FRONTEND_BLUEPRINT.md §6: p~0.05 blacklisted plate, p~0.10 one-char vendor
+# misread (exercises engine_preferred fusion display), p~0.05 low-confidence
+# drop. Override via CLI flags for demo tuning or rehearsal determinism.
+DEFAULT_BLACKLIST_P = 0.05
+DEFAULT_MISREAD_P = 0.10
+DEFAULT_DROP_P = 0.05
+
+# Mode B: drive P1's real pipeline.py (fog-node/pipeline.py, a sibling of this
+# file). "fog-node" has a hyphen so it isn't an importable package name;
+# pipeline.py is imported directly since this file's own directory is on
+# sys.path when run as a script.
+#
+# NOT CONFIRMED WITH P1: TEAM.md §8 states the done-shape as
+# "pipeline.py(image, vendor_guess) -> (plate, conf, alt_hashes)" but doesn't
+# name the callable. Assuming `run_pipeline` below as a placeholder guess,
+# not a contract we're allowed to invent per CLAUDE.md's "when stuck" rule —
+# flag to P1 and confirm the real name/signature before mode B is relied on
+# for the actual demo; until then this import will simply fail and mode B
+# falls back to mode A's fabricated blocks (loud warning, not a crash).
+_USING_REAL_PIPELINE = False
+try:
+    from pipeline import run_pipeline  # type: ignore[import]
+
+    _USING_REAL_PIPELINE = True
+except Exception:  # noqa: BLE001 - pipeline.py may not exist yet, or is a stub
+    pass
 
 SAMPLE_PLATES = [
     "MH12AB1284",  # seeded blacklisted plate per TEAM.md §8 (P3 spec)
@@ -124,32 +159,120 @@ def make_block(camera: dict, *, blacklist_p: float, misread_p: float, drop_p: fl
     }
 
 
-def run(interval: float, blacklist_p: float, misread_p: float, drop_p: float) -> None:
+def emit_block(block: dict, camera_id: str, headers: dict, *, record_mode: bool) -> None:
+    """POST to /ingest normally, or print the block as a JSON line on stdout
+    for scripts/replay.py's `record` subcommand to capture — see that file's
+    docstring for the recording format. record_mode never also POSTs: a
+    recording session and a live-ingest session are separate invocations."""
+    if record_mode:
+        print(json.dumps(block), flush=True)
+        return
+    try:
+        resp = requests.post(f"{API_URL}/ingest", json=block, headers=headers, timeout=5)
+        print(f"POST /ingest [{camera_id}] -> {resp.status_code}", file=sys.stderr)
+    except requests.RequestException as exc:
+        print(f"POST /ingest failed: {exc}", file=sys.stderr)
+
+
+def run_mode_a(
+    interval: float, blacklist_p: float, misread_p: float, drop_p: float, *, record_mode: bool = False
+) -> None:
     cameras = load_cameras()
     headers = {"Content-Type": "application/json"}
     if FOG_API_KEY:
         headers["X-Fog-Api-Key"] = FOG_API_KEY
 
-    print(f"fog_sim mode A: {len(cameras)} cameras, posting to {API_URL}/ingest")
+    print(f"fog_sim mode A: {len(cameras)} cameras, posting to {API_URL}/ingest", file=sys.stderr)
     while True:
         camera = random.choice(cameras)
         block = make_block(camera, blacklist_p=blacklist_p, misread_p=misread_p, drop_p=drop_p)
         if block is None:
             time.sleep(interval)
             continue
-        try:
-            resp = requests.post(f"{API_URL}/ingest", json=block, headers=headers, timeout=5)
-            print(f"POST /ingest [{camera['camera_id']}] -> {resp.status_code}")
-        except requests.RequestException as exc:
-            print(f"POST /ingest failed: {exc}")
+        emit_block(block, camera["camera_id"], headers, record_mode=record_mode)
+        time.sleep(interval)
+
+
+def run_mode_b(
+    interval: float, blacklist_p: float, misread_p: float, drop_p: float, *, record_mode: bool = False
+) -> None:
+    """Drive real crops through P1's pipeline.py. Falls back to mode A's
+    fabricated blocks (loud warning, not a crash) if pipeline.py isn't landed
+    yet, per DECISIONS.md §2's fallback pattern."""
+    if not _USING_REAL_PIPELINE:
+        print(
+            "WARNING: fog-node/pipeline.py not available (or import failed) — "
+            "mode B cannot run real crops through enhance->OCR->fusion. "
+            "Falling back to mode A's fabricated blocks. Flag to P1 if this "
+            "persists past TEAM.md's hour-16 mode-B target.",
+            file=sys.stderr,
+        )
+        run_mode_a(interval, blacklist_p, misread_p, drop_p, record_mode=record_mode)
+        return
+
+    if not IMAGES_DIR.exists() or not any(IMAGES_DIR.iterdir()):
+        raise SystemExit(
+            f"{IMAGES_DIR} does not exist or is empty. Mode B needs real crops "
+            "to drive through pipeline.py — see P1's validation dataset "
+            "(TEAM.md §8, gitignored dev-only folder)."
+        )
+
+    cameras = load_cameras()
+    headers = {"Content-Type": "application/json"}
+    if FOG_API_KEY:
+        headers["X-Fog-Api-Key"] = FOG_API_KEY
+    crop_paths = sorted(p for p in IMAGES_DIR.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png"))
+
+    print(
+        f"fog_sim mode B: {len(cameras)} cameras, {len(crop_paths)} crops, posting to {API_URL}/ingest",
+        file=sys.stderr,
+    )
+    while True:
+        camera = random.choice(cameras)
+        crop_path = random.choice(crop_paths)
+        vendor_guess = SAMPLE_PLATES[0] if random.random() < blacklist_p else random.choice(SAMPLE_PLATES[1:])
+
+        plate, conf, alt_hashes = run_pipeline(str(crop_path), vendor_guess)  # type: ignore[name-defined]
+        if random.random() < drop_p:
+            time.sleep(interval)
+            continue
+
+        block = {
+            "block_id": str(uuid.uuid4()),
+            "camera_id": camera["camera_id"],
+            "cam_event_id": f"evt_{uuid.uuid4().hex[:8]}",
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "plate_hash": hmac_plate(plate),
+            "plate_text_enc": encrypt_plate(plate),
+            "conf": conf,
+            "location": {"lat": camera["lat"], "lon": camera["lon"]},
+            "resolution": {
+                "fused_as": plate,
+                "outcome": "engine_preferred" if plate != vendor_guess else "agreement",
+                "vendor_guess": vendor_guess,
+                "alt_hashes": alt_hashes,
+            },
+            "quality": "full_pipeline",
+        }
+        emit_block(block, camera["camera_id"], headers, record_mode=record_mode)
         time.sleep(interval)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="SentinelGrid fog node mock (mode A)")
+    parser = argparse.ArgumentParser(description="SentinelGrid fog node mock")
+    parser.add_argument("--mode", choices=["a", "b"], default="a", help="a = fabricated blocks, b = real pipeline.py on fog-node/images/ crops")
     parser.add_argument("--interval", type=float, default=2.0, help="seconds between events")
-    parser.add_argument("--blacklist-p", type=float, default=0.0, help="probability of emitting the blacklisted plate")
-    parser.add_argument("--misread-p", type=float, default=0.0, help="probability of a one-char vendor misread")
-    parser.add_argument("--drop-p", type=float, default=0.0, help="probability of a low-confidence drop")
+    parser.add_argument("--blacklist-p", type=float, default=DEFAULT_BLACKLIST_P, help="probability of emitting the blacklisted plate")
+    parser.add_argument("--misread-p", type=float, default=DEFAULT_MISREAD_P, help="probability of a one-char vendor misread")
+    parser.add_argument("--drop-p", type=float, default=DEFAULT_DROP_P, help="probability of a low-confidence drop")
+    parser.add_argument(
+        "--record",
+        action="store_true",
+        help="print each block as a JSON line on stdout instead of POSTing — "
+        "pipe into `scripts/replay.py record` to capture a run for the demo",
+    )
     args = parser.parse_args()
-    run(args.interval, args.blacklist_p, args.misread_p, args.drop_p)
+    if args.mode == "a":
+        run_mode_a(args.interval, args.blacklist_p, args.misread_p, args.drop_p, record_mode=args.record)
+    else:
+        run_mode_b(args.interval, args.blacklist_p, args.misread_p, args.drop_p, record_mode=args.record)
