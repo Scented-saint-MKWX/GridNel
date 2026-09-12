@@ -55,3 +55,44 @@ today"); if fog_sim can't run, P4 has nothing to build ingest/dedup/flusher agai
 be real before **hour 12** — P3's seeder and any actual blacklist/tracking demo depend
 on every producer (fog_sim, api, seeder) hashing with the exact same function and key.
 Flagged to P5 directly; don't assume it lands in time without checking.
+
+---
+
+## 3. CSP hardening: nonce-based vs. targeted tightening (resolved 2026-09-12, corrected same day after production-build testing)
+
+**Problem:** `/security-review` flagged a permissive CSP (`unsafe-inline`/`unsafe-eval`
+in `script-src`) — low confidence (2/10, no currently-reachable XSS sink) but a real
+hardening gap.
+
+**Correction — read this before touching this file's original claim:** the first pass
+at this decision assumed `script-src 'self'` with no `unsafe-inline` was achievable
+because "Next.js's own code loads via external `<script src>` files." **This was
+tested against a real production build and is false.** Next.js App Router inlines its
+RSC hydration payload as `<script>(self.__next_f=...)</script>` tags on every page
+(7 of them on `/login` alone) — framework-level, present in every Next 15 App Router
+production build, not something our components introduced. There is no "just omit
+unsafe-inline" for App Router; only a full nonce implementation (or Next's
+experimental SRI feature) removes it.
+
+**Actual resolution:**
+- `script-src` keeps `'unsafe-inline'` — required for the framework to hydrate at all.
+  Not a gap we chose; structurally required by App Router without a full nonce
+  implementation. Documented with a code comment in `next.config.ts` so nobody
+  "fixes" this again without knowing why.
+- `'unsafe-eval'` is still dropped in production — unaffected by the above, real,
+  zero-cost, still lands.
+- `style-src` keeps `'unsafe-inline'` for the reasons already given below (inline
+  `style=""` attributes aren't covered by nonces regardless of script-src).
+- Since there's no currently-reachable XSS sink (per the original review), allowing
+  `unsafe-inline` in `script-src` doesn't add exploitable risk on top of what already
+  exists — CSP's script restriction only matters once there's an injection point to
+  exploit, and there isn't one right now.
+
+**Nonce-based CSP is now clearly the *only* way to ever remove `script-src
+'unsafe-inline'` in App Router** — not just "more hardening," structurally required.
+Still rejected for this hackathon timeline: it means renaming `middleware.ts` to
+`proxy.ts` (reopening §1's resolved passthrough decision) and forcing every page to
+dynamic rendering (losing static prerendering just verified above). Logged as the real
+backlog item it now clearly is — worth real consideration post-hackathon or if the
+team ever hardens this for a non-demo deployment, not something to attempt mid-build
+for a currently non-exploitable gap.
