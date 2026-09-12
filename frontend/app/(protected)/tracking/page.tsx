@@ -27,7 +27,7 @@ export default function TrackingPage() {
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)]">
-      <div className="relative z-10 flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-surface/60 p-4 backdrop-blur-xl">
+      <div className="relative z-10 flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-surface/60 p-4 shadow-[4px_0_40px_-12px_rgba(245,158,11,0.15)] backdrop-blur-xl">
         <div>
           <h1 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-tracker">
             <ScanSearch className="size-4" />

@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ShieldCheck, ScanSearch, LoaderCircle } from "lucide-react";
+import { motion } from "motion/react";
+import { ShieldCheck, ScanSearch, LoaderCircle, Radar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { AmbientBackground } from "@/components/layout/AmbientBackground";
+import { SystemStatus } from "@/components/layout/SystemStatus";
 import { apiFetch } from "@/lib/api";
 import type { Role } from "@/types/auth";
 
@@ -51,10 +54,25 @@ export default function LoginPage() {
     }
   }
 
+  const glowClass =
+    selectedRole === "tracker"
+      ? "border-tracker/30 shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_8px_30px_-4px_rgba(245,158,11,0.4),0_30px_80px_-20px_rgba(0,0,0,0.8)]"
+      : "border-analyst/30 shadow-[0_0_0_1px_rgba(56,189,248,0.15),0_8px_30px_-4px_rgba(56,189,248,0.4),0_30px_80px_-20px_rgba(0,0,0,0.8)]";
+
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="glass-raised w-full max-w-md rounded-2xl p-8">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-6 px-4">
+      <AmbientBackground variant="login" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`glass-raised w-full max-w-md rounded-2xl border p-8 transition-all duration-500 ${glowClass}`}
+      >
         <div className="mb-8 text-center">
+          <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+            <Radar className="size-5 text-analyst" />
+          </div>
           <h1 className="text-xl font-semibold tracking-tight text-foreground">SentinelGrid</h1>
           <p className="mt-1 text-sm text-muted-foreground">Traffic operations console</p>
         </div>
@@ -67,12 +85,12 @@ export default function LoginPage() {
                 key={role}
                 type="button"
                 onClick={() => setSelectedRole(role)}
-                className={`flex flex-col items-center gap-2 rounded-xl border px-4 py-3 text-sm transition-colors ${
+                className={`flex flex-col items-center gap-2 rounded-xl border px-4 py-3 text-sm transition-all ${
                   active
                     ? role === "tracker"
-                      ? "border-tracker/60 bg-tracker/10 text-tracker"
-                      : "border-analyst/60 bg-analyst/10 text-analyst"
-                    : "border-white/10 bg-white/[0.02] text-muted-foreground hover:bg-white/[0.05]"
+                      ? "border-tracker/60 bg-tracker/10 text-tracker shadow-[0_0_20px_-4px_rgba(245,158,11,0.4)]"
+                      : "border-analyst/60 bg-analyst/10 text-analyst shadow-[0_0_20px_-4px_rgba(56,189,248,0.4)]"
+                    : "border-white/10 bg-white/[0.02] text-muted-foreground hover:bg-white/[0.05] hover:-translate-y-0.5"
                 }`}
               >
                 <Icon className="size-4" />
@@ -108,7 +126,9 @@ export default function LoginPage() {
             Sign in
           </Button>
         </form>
-      </div>
+      </motion.div>
+
+      <SystemStatus />
     </div>
   );
 }

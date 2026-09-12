@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { AlertConsole } from "@/components/alerts/AlertConsole";
+import { AmbientBackground } from "@/components/layout/AmbientBackground";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { isExpired } from "@/lib/auth";
 
@@ -31,14 +32,16 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   if (!checked) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="relative flex min-h-screen items-center justify-center">
+        <AmbientBackground />
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-analyst" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen">
+      <AmbientBackground />
       <Navbar />
       <AlertConsole />
       <main>{children}</main>

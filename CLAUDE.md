@@ -55,9 +55,50 @@ Roles are `tracker` and `analyst`. Analyst responses never contain `plate_text_e
 - react-hook-form + zod for the plate-search input
 - lucide-react for icons
 
-## Design bar — non-negotiable
+## Design bar — non-negotiable, both directions
 
-This must not look "vibe-coded" or like a generic AI-generated SaaS template. No default shadcn gray-on-white with a purple gradient hero, no identical rounded-2xl cards everywhere, no filler icons, no lorem ipsum. Build a dark-first "traffic-ops command center" look: real glassmorphism (`backdrop-blur-xl`, `bg-white/[0.04]`–`bg-white/[0.08]`, hairline `border-white/10`), purposeful role-tied accent colors (alerts, tracker, analyst each get their own), a monospace face reserved for data values (plate numbers, hashes, timestamps) paired with a clean sans for UI chrome, and a map that gets real screen space instead of being squeezed into a card. Before calling any UI task done, actually look at it rendered and ask whether it looks like a template or a purpose-built product.
+This must not look "vibe-coded" or like a generic AI-generated SaaS template — **and it
+must not read as flat/plain either.** "Dark" is not the same as "finished." No default
+shadcn gray-on-white with a purple gradient hero, no identical rounded-2xl cards
+everywhere, no filler icons, no lorem ipsum. Concrete, checkable requirements, not just
+principles:
+
+- **Background needs real depth, not a flat fill.** Near-black base plus an ambient
+  treatment — a soft radial gradient mesh (cyan/amber-tinted, very low opacity)
+  anchored near a focal point (behind the map, behind the login card), and/or a faint
+  grain/noise texture overlay. A single flat `bg-neutral-950` everywhere reads as
+  unfinished, not minimal.
+- **Glass panels must visibly float, not blend in.** `backdrop-blur-xl`,
+  `bg-white/[0.04]`–`bg-white/[0.08]`, a hairline border — plus a soft outer glow tied
+  to context (a faint cyan glow under a tracker-surface panel, amber under an active
+  alert) so panels read as raised, lit surfaces, not a slightly-lighter rectangle on
+  black.
+- **Every screen needs a real accent moment**, not monochrome gray-on-black. Role
+  colors (amber tracker / cyan analyst / red-amber alerts) should show up in glows,
+  active states, chart accents, button treatments — not just a small badge somewhere.
+- **`/login` needs presence**, not two buttons on a black screen — an ambient animated
+  background, a live "system status" indicator, a properly composed glass card for the
+  form.
+- **Actually browse `ui.watermelon.sh`'s Dashboards, Auth Templates, and Blocks
+  categories and pull real blocks as a starting point for major surfaces** (login
+  screen, dashboard shell) rather than hand-building everything from bare shadcn
+  primitives — that's the reason Watermelon is in the stack. Restyle its tokens to the
+  role-accent system; don't reinvent structure it already provides.
+- **Motion must be visible, not theoretical:** hover elevation on glass panels, a live
+  pulsing status dot, animated number transitions, the trajectory line drawing in —
+  not just "technically has a transition class somewhere."
+
+**Self-audit before calling any screen done — answer these against a real screenshot,
+not in the abstract:**
+1. Real ambient background treatment, beyond a flat solid fill?
+2. Visible depth (shadow/glow) separating panels from background?
+3. A role/accent color visibly present, not barely-there?
+4. At least one moment of real motion?
+5. Conversely — anything here that's decoration with no purpose, or a generic
+   template default? Cut it.
+
+If the honest answer to 1–4 is "not really," it's not minimal, it's unfinished — fix it
+before moving to new pages.
 
 ## Hard security rules — non-negotiable
 
