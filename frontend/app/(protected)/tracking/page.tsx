@@ -9,6 +9,7 @@ import { PlateSearch } from "@/components/map/PlateSearch";
 import { RadarSweep } from "@/components/layout/RadarSweep";
 import { useTrajectory } from "@/hooks/useTrajectory";
 import { useDebugHash } from "@/hooks/useDebugHash";
+import { useFlashingCamera } from "@/hooks/useFlashingCamera";
 import { ApiError } from "@/lib/api";
 
 // Privileged surface. app/(protected)/layout.tsx already redirects a
@@ -21,6 +22,7 @@ export default function TrackingPage() {
 
   const trajectoryQuery = useTrajectory(plateText);
   const debugHashQuery = useDebugHash(plateText);
+  const flashingCameraId = useFlashingCamera();
 
   if (payload?.role !== "tracker") {
     return null;
@@ -96,7 +98,7 @@ export default function TrackingPage() {
       </div>
 
       <div className="relative flex-1">
-        <CityMap>
+        <CityMap flashingCameraId={flashingCameraId}>
           {trajectoryQuery.data && <TrajectoryLayer trajectory={trajectoryQuery.data} />}
         </CityMap>
       </div>

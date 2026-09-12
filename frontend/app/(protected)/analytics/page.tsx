@@ -10,6 +10,7 @@ import { CityMap } from "@/components/map/CityMap";
 import { RadarSweep } from "@/components/layout/RadarSweep";
 import { Skeleton } from "@/components/layout/Skeleton";
 import { useDensity, useHeatmap, useCorridorSpeeds } from "@/hooks/useAnalytics";
+import { useFlashingCamera } from "@/hooks/useFlashingCamera";
 
 // Both roles reach this page (TEAM.md §4.4). Density + corridor-speeds render
 // as Recharts bar charts inside a glass panel; heatmap is a real Mapbox layer,
@@ -20,6 +21,7 @@ export default function AnalyticsPage() {
   const densityQuery = useDensity();
   const heatmapQuery = useHeatmap();
   const corridorQuery = useCorridorSpeeds();
+  const flashingCameraId = useFlashingCamera();
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
@@ -56,7 +58,7 @@ export default function AnalyticsPage() {
           subtitle="Sighting density across the city, last hour"
         >
           <div className="relative h-[420px] overflow-hidden rounded-xl">
-            <CityMap>
+            <CityMap flashingCameraId={flashingCameraId}>
               {heatmapQuery.data && heatmapQuery.data.length > 0 && (
                 <HeatmapLayer points={heatmapQuery.data} />
               )}
