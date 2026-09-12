@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+node_modules/
+.next/
+out/
+coverage/
+.DS_Store
+fog-node/images/*
+!fog-node/images/.gitkeep
