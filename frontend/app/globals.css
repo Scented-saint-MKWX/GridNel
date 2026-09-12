@@ -130,10 +130,12 @@
 
   html {
     @apply font-sans;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
     background:
       radial-gradient(1200px 600px at 15% -10%, rgba(56, 189, 248, 0.06), transparent),
       radial-gradient(1000px 500px at 110% 10%, rgba(245, 158, 11, 0.05), transparent),

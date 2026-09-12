@@ -5,6 +5,7 @@ import Map, { Marker } from "react-map-gl";
 import { Camera as CameraIcon, MapPinOff } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { Camera } from "@/lib/cameras";
+import { RadarSweep } from "@/components/layout/RadarSweep";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
@@ -77,11 +78,12 @@ export function CityMap({ children, onCameraClick, flashingCameraId }: CityMapPr
       </Map>
 
       {cameras !== null && cameras.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="glass flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
-            <MapPinOff className="size-4" />
-            No cameras loaded yet — db/cameras.json is empty
-          </div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/70 backdrop-blur-sm">
+          <RadarSweep
+            label="Awaiting camera feed"
+            sublabel="db/cameras.json is empty"
+            icon={<MapPinOff className="size-4" />}
+          />
         </div>
       )}
     </div>

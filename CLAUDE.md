@@ -100,6 +100,15 @@ not in the abstract:**
 If the honest answer to 1–4 is "not really," it's not minimal, it's unfinished — fix it
 before moving to new pages.
 
+**Empty/loading states get their own deliberate design, always** — with the real
+backend not wired yet, most screens spend most of their time in a no-data state, and a
+blank area there reads as unfinished regardless of how good the populated state looks.
+Skeleton shimmer for anything about to have real content; for genuinely-no-data states
+(no cameras, no alerts yet), use a thematic placeholder — a radar-sweep motif (a slow
+rotating conic-gradient sweep, faint, behind "awaiting camera feed" text) fits this
+product's domain directly and is not decoration-for-its-own-sake in a surveillance UI.
+Never a literally empty rectangle.
+
 ## Hard security rules — non-negotiable
 
 - JWT lives in memory (React Context) only. Never `localStorage`, never `sessionStorage`, never a non-httpOnly cookie you set from JS.

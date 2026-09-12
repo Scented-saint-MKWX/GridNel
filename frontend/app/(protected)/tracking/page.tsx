@@ -6,6 +6,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { CityMap } from "@/components/map/CityMap";
 import { TrajectoryLayer } from "@/components/map/TrajectoryLayer";
 import { PlateSearch } from "@/components/map/PlateSearch";
+import { RadarSweep } from "@/components/layout/RadarSweep";
 import { useTrajectory } from "@/hooks/useTrajectory";
 import { useDebugHash } from "@/hooks/useDebugHash";
 import { ApiError } from "@/lib/api";
@@ -79,6 +80,17 @@ export default function TrackingPage() {
                 inferred
               </span>
             </div>
+          </div>
+        )}
+
+        {!plateText && (
+          <div className="flex flex-1 items-center justify-center py-8">
+            <RadarSweep
+              accent="tracker"
+              label="No trajectory queried yet"
+              sublabel="Search a plate above to reconstruct its route"
+              icon={<ScanSearch className="size-4" />}
+            />
           </div>
         )}
       </div>
