@@ -1,5 +1,6 @@
 import type { AlertEvent, DebugHashResponse, Trajectory } from "@/types/tracking";
-import type { CorridorSpeed, DensityPoint, HeatmapPoint, OdFlowPoint } from "@/types/analytics";
+import type { AnalyticsSummary, HeatmapPoint, OdFlow, Route, Segment } from "@/types/analytics";
+import type { ApiCamera } from "@/types/cameras";
 import type { JwtPayload, Role } from "@/types/auth";
 
 // Fixtures mirror the frozen contract shapes byte-for-byte (TEAM.md §4.4) —
@@ -105,59 +106,98 @@ export function mockAlerts(since: string): AlertEvent[] {
   ];
 }
 
-export function mockDensity(): DensityPoint[] {
-  return MOCK_CAMERAS.map((c, i) => ({
-    camera_id: c.camera_id,
-    hour: "2026-09-12T03:00:00+05:30",
-    count: 12 + i * 7 + (i % 2 === 0 ? 5 : 0),
-  }));
+// Real contract from Nawfal (P4), 2026-09-13 — see TEAM.md §4/DECISIONS.md
+// #6. Supersedes the old mockDensity/mockCorridorSpeeds/{lat,lon,weight}
+// mockHeatmap/zone-centroid mockOdFlows below (removed, not kept as
+// dead code — anyone building against those old shapes needs to know now).
+
+export function mockCamerasResponse(): { cameras: ApiCamera[] } {
+  return {
+    cameras: MOCK_CAMERAS.map((c) => ({
+      camera_id: c.camera_id,
+      latitude: c.lat,
+      longitude: c.lon,
+      road_id: c.road_node_id,
+    })),
+  };
+}
+
+export function mockAnalyticsSummary(): AnalyticsSummary {
+  return {
+    vehicles_analyzed: 342,
+    transitions_analyzed: 518,
+    average_speed_kmh: 41.6,
+    median_speed_kmh: 38.2,
+    average_travel_time_sec: 214,
+    congested_segments: 3,
+    total_segments: 8,
+  };
 }
 
 export function mockHeatmap(): HeatmapPoint[] {
-  return MOCK_CAMERAS.flatMap((c) => [
-    { lat: c.lat, lon: c.lon, weight: Math.round(20 + Math.random() * 60) },
-    {
-      lat: c.lat + (Math.random() - 0.5) * 0.01,
-      lon: c.lon + (Math.random() - 0.5) * 0.01,
-      weight: Math.round(10 + Math.random() * 30),
-    },
-  ]);
-}
-
-export function mockCorridorSpeeds(): CorridorSpeed[] {
-  const edges: [string, string][] = [
-    ["N1", "N2"],
-    ["N2", "N3"],
-    ["N3", "N4"],
-    ["N4", "N5"],
-    ["N5", "N6"],
-  ];
-  return edges.map(([from_node, to_node], i) => ({
-    from_node,
-    to_node,
-    avg_speed_kmh: 28 + i * 6,
+  return MOCK_CAMERAS.map((c, i) => ({
+    camera_id: c.camera_id,
+    latitude: c.lat,
+    longitude: c.lon,
+    vehicle_count: 20 + i * 11 + (i % 2 === 0 ? 8 : 0),
+    average_speed_kmh: 30 + i * 4,
   }));
 }
 
-// OD (Origin-Destination) flows between the six seeded zone centroids —
-// confirmed in-scope 2026-09-13 (see types/analytics.ts, DECISIONS.md #4).
-// Centroid = first camera seen per zone, same convention lib/gis-prototype's
-// mockODFlows() already used, never invented coordinates (CLAUDE.md "No
-// hardcoded camera coordinates").
-export function mockOdFlows(): OdFlowPoint[] {
-  const zonePairs: [string, string, number][] = [
-    ["central", "north", 84],
-    ["central", "east", 47],
-    ["south", "central", 62],
-    ["west", "central", 29],
+// Segments are camera-pair keyed (from_camera/to_camera), not road-node
+// edges — six adjacent camera pairs along the seeded chain.
+export function mockSegments(): Segment[] {
+  const pairs: [string, string, string, string, number, number, number, Segment["congestion"]][] =
+    [
+      ["CAM_01", "CAM_02", "N1", "N2", 18, 34, 210, "LOW"],
+      ["CAM_02", "CAM_03", "N2", "N3", 52, 22, 340, "HIGH"],
+      ["CAM_03", "CAM_04", "N3", "N4", 34, 41, 180, "MEDIUM"],
+      ["CAM_04", "CAM_05", "N4", "N5", 81, 19, 410, "HIGH"],
+      ["CAM_05", "CAM_06", "N5", "N6", 27, 47, 150, "LOW"],
+      ["CAM_01", "CAM_06", "N1", "N6", 63, 27, 300, "MEDIUM"],
+    ];
+  return pairs.map(
+    ([from_camera, to_camera, from_road, to_road, vehicle_count, average_speed_kmh, average_travel_time_sec, congestion]) => ({
+      from_camera,
+      to_camera,
+      from_road,
+      to_road,
+      vehicle_count,
+      average_speed_kmh,
+      average_travel_time_sec,
+      congestion,
+    }),
+  );
+}
+
+export function mockOdFlows(): OdFlow[] {
+  const roadIds = MOCK_CAMERAS.map((c) => c.road_node_id);
+  const flows: [string, string, number][] = [
+    [roadIds[0]!, roadIds[2]!, 84],
+    [roadIds[0]!, roadIds[3]!, 47],
+    [roadIds[4]!, roadIds[0]!, 62],
+    [roadIds[5]!, roadIds[0]!, 29],
   ];
-  const centroidByZone = new Map<string, [number, number]>();
-  for (const c of MOCK_CAMERAS) {
-    if (!centroidByZone.has(c.zone)) centroidByZone.set(c.zone, [c.lon, c.lat]);
-  }
-  return zonePairs.map(([originZone, destinationZone, vehicle_count]) => ({
-    origin: centroidByZone.get(originZone) ?? [77.209, 28.6139],
-    destination: centroidByZone.get(destinationZone) ?? [77.209, 28.6139],
+  return flows.map(([origin, destination, vehicle_count]) => ({
+    origin,
+    destination,
     vehicle_count,
   }));
+}
+
+export function mockRoutes(): Route[] {
+  const routes: { roads: string[]; vehicle_count: number }[] = [
+    { roads: ["N1", "N2", "N3"], vehicle_count: 96 },
+    { roads: ["N4", "N5", "N6"], vehicle_count: 71 },
+    { roads: ["N1", "N6"], vehicle_count: 63 },
+  ];
+  return routes
+    .sort((a, b) => b.vehicle_count - a.vehicle_count)
+    .map((r, i) => ({
+      route_id: `route_${i + 1}`,
+      road_sequence: r.roads,
+      vehicle_count: r.vehicle_count,
+      average_speed_kmh: 32 + i * 5,
+      average_travel_time_sec: 260 - i * 30,
+    }));
 }

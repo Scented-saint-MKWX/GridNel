@@ -46,14 +46,14 @@ export function CityMap({ children, onCameraClick, flashingCameraId }: CityMapPr
         style={{ width: "100%", height: "100%" }}
       >
         {(cameras ?? [])
-          .filter((camera) => Number.isFinite(camera.lon) && Number.isFinite(camera.lat))
+          .filter((camera) => Number.isFinite(camera.longitude) && Number.isFinite(camera.latitude))
           .map((camera) => {
             const isFlashing = camera.camera_id === flashingCameraId;
             return (
               <Marker
                 key={camera.camera_id}
-                longitude={camera.lon}
-                latitude={camera.lat}
+                longitude={camera.longitude}
+                latitude={camera.latitude}
                 onClick={() => onCameraClick?.(camera)}
               >
                 <button

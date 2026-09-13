@@ -1,34 +1,47 @@
 "use client";
 
 import { Source, Layer } from "react-map-gl";
-import type { RoadSegment } from "@/types/gis-prototype";
-import { CONGESTION_COLORS } from "@/lib/gis-prototype/adapter";
+import type { Segment } from "@/types/analytics";
+import type { ApiCamera } from "@/types/cameras";
+import { CONGESTION_COLORS } from "@/lib/colors";
 
 interface SegmentsLayerProps {
-  segments: RoadSegment[];
+  segments: Segment[];
+  cameras: ApiCamera[];
 }
 
-// GIS prototype (DECISIONS.md #4) — colors road segments by congestion using
-// a Mapbox data-driven line-color expression (a real GIS technique, not
-// per-feature manual styling), per the master prompt's explicit requirement.
-// green (low) -> yellow (moderate) -> orange (heavy) -> red (severe), the
-// TomTom/Mapbox Traffic/ArcGIS industry convention already logged there.
-export function SegmentsLayer({ segments }: SegmentsLayerProps) {
+// Real GET /analytics/segments (Nawfal, 2026-09-13, TEAM.md §4) — promoted
+// out of prototype status (was the mock-only GisPreviewPanel segments view,
+// DECISIONS.md #4/#6). Segments are keyed by from_camera/to_camera, so this
+// resolves coordinates directly off /cameras rather than through
+// lib/roads.ts's road_id averaging (that's only needed for OD/Routes, which
+// are keyed by road_id).
+export function SegmentsLayer({ segments, cameras }: SegmentsLayerProps) {
+  const cameraById = new Map(cameras.map((c) => [c.camera_id, c]));
+
+  const features = segments.flatMap((s) => {
+    const from = cameraById.get(s.from_camera);
+    const to = cameraById.get(s.to_camera);
+    if (!from || !to) return [];
+    return [
+      {
+        type: "Feature" as const,
+        properties: { congestion: s.congestion, vehicle_count: s.vehicle_count },
+        geometry: {
+          type: "LineString" as const,
+          coordinates: [
+            [from.longitude, from.latitude],
+            [to.longitude, to.latitude],
+          ],
+        },
+      },
+    ];
+  });
+
   return (
-    <Source
-      id="gis-proto-segments"
-      type="geojson"
-      data={{
-        type: "FeatureCollection",
-        features: segments.map((s) => ({
-          type: "Feature",
-          properties: { congestion: s.congestion, vehicle_count: s.vehicle_count },
-          geometry: { type: "LineString", coordinates: [s.from, s.to] },
-        })),
-      }}
-    >
+    <Source id="analytics-segments" type="geojson" data={{ type: "FeatureCollection", features }}>
       <Layer
-        id="gis-proto-segments-line"
+        id="analytics-segments-line"
         type="line"
         layout={{ "line-cap": "round", "line-join": "round" }}
         paint={{
@@ -36,15 +49,13 @@ export function SegmentsLayer({ segments }: SegmentsLayerProps) {
           "line-color": [
             "match",
             ["get", "congestion"],
-            "low",
-            CONGESTION_COLORS.low,
-            "moderate",
-            CONGESTION_COLORS.moderate,
-            "heavy",
-            CONGESTION_COLORS.heavy,
-            "severe",
-            CONGESTION_COLORS.severe,
-            CONGESTION_COLORS.low,
+            "LOW",
+            CONGESTION_COLORS.LOW,
+            "MEDIUM",
+            CONGESTION_COLORS.MEDIUM,
+            "HIGH",
+            CONGESTION_COLORS.HIGH,
+            CONGESTION_COLORS.LOW,
           ],
           "line-opacity": 0.85,
         }}

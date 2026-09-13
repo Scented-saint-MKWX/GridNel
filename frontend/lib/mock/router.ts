@@ -1,11 +1,13 @@
 import {
   mockAlerts,
-  mockCorridorSpeeds,
+  mockAnalyticsSummary,
+  mockCamerasResponse,
   mockDebugHash,
-  mockDensity,
   mockHeatmap,
   mockLogin,
   mockOdFlows,
+  mockRoutes,
+  mockSegments,
   mockTrajectory,
 } from "@/lib/mock/fixtures";
 import type { Role } from "@/types/auth";
@@ -62,17 +64,23 @@ export async function mockDispatch<T>({ method, path, body }: MockRequest): Prom
     return mockAlerts(since) as T;
   }
 
-  if (method === "GET" && path.startsWith("/analytics/density")) {
-    return mockDensity() as T;
+  if (method === "GET" && path === "/cameras") {
+    return mockCamerasResponse() as T;
+  }
+  if (method === "GET" && path.startsWith("/analytics/summary")) {
+    return mockAnalyticsSummary() as T;
+  }
+  if (method === "GET" && path.startsWith("/analytics/segments")) {
+    return { segments: mockSegments() } as T;
   }
   if (method === "GET" && path.startsWith("/analytics/heatmap")) {
-    return mockHeatmap() as T;
-  }
-  if (method === "GET" && path.startsWith("/analytics/corridor-speeds")) {
-    return mockCorridorSpeeds() as T;
+    return { points: mockHeatmap() } as T;
   }
   if (method === "GET" && path.startsWith("/analytics/od")) {
-    return mockOdFlows() as T;
+    return { flows: mockOdFlows() } as T;
+  }
+  if (method === "GET" && path.startsWith("/analytics/routes")) {
+    return { routes: mockRoutes() } as T;
   }
 
   if (method === "POST" && path === "/blacklist") {

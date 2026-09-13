@@ -1,22 +1,26 @@
 "use client";
 
 import { Source, Layer } from "react-map-gl";
-import type { OdFlowPoint } from "@/types/analytics";
+import type { OdFlow } from "@/types/analytics";
+import { resolveRoadCoordinate } from "@/lib/roads";
 
 interface ODFlowLayerProps {
-  flows: OdFlowPoint[];
+  flows: OdFlow[];
+  roadCoordinateIndex: Map<string, [number, number]>;
 }
 
-// Origin/destination flow lines between zone centroids, line width +
-// opacity encoding vehicle_count. OD confirmed in-scope 2026-09-13,
-// authorized by Wahid — supersedes the TEAM.md §11 L1 non-goal listing; see
-// DECISIONS.md #4 for the full history. Promoted from the GisPreviewPanel
-// prototype into a first-class AnalyticsViewSelector view (restyled to the
-// analyst accent, was violet). Straight lines, not curved great-circle
-// arcs — a real feature, but width/opacity encoding is intentionally simple
-// pending a real /analytics/od endpoint.
-export function ODFlowLayer({ flows }: ODFlowLayerProps) {
-  const maxVolume = Math.max(...flows.map((f) => f.vehicle_count), 1);
+// Real GET /analytics/od (Nawfal, 2026-09-13, TEAM.md §4) — first-class since
+// 2026-09-13 (DECISIONS.md #4), now backed by a real endpoint instead of a
+// mock-only fixture. origin/destination are road_ids, resolved to
+// coordinates via lib/roads.ts's per-road centroid (DECISIONS.md #6).
+export function ODFlowLayer({ flows, roadCoordinateIndex }: ODFlowLayerProps) {
+  const resolved = flows.flatMap((f) => {
+    const origin = resolveRoadCoordinate(roadCoordinateIndex, f.origin);
+    const destination = resolveRoadCoordinate(roadCoordinateIndex, f.destination);
+    if (!origin || !destination) return [];
+    return [{ ...f, origin, destination }];
+  });
+  const maxVolume = Math.max(...resolved.map((f) => f.vehicle_count), 1);
 
   return (
     <Source
@@ -24,7 +28,7 @@ export function ODFlowLayer({ flows }: ODFlowLayerProps) {
       type="geojson"
       data={{
         type: "FeatureCollection",
-        features: flows.map((f) => ({
+        features: resolved.map((f) => ({
           type: "Feature",
           properties: { vehicle_count: f.vehicle_count },
           geometry: { type: "LineString", coordinates: [f.origin, f.destination] },

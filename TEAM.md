@@ -124,11 +124,42 @@ GET  /track/<plate_text>          tracker only; server hashes plaintext; chronol
 GET  /track/<plate_text>/bridged  tracker only; + A*-inferred gap segments
 POST /blacklist                   tracker only {plate_text, reason}
 DELETE /blacklist/<plate_hash>    tracker only
-GET  /analytics/density?hours=1   analyst; per-camera counts
-GET  /analytics/heatmap?hours=1   analyst; [{lat, lon, weight}]
-GET  /analytics/corridor-speeds   analyst; per-edge avg implied speed
+GET  /analytics/density?hours=1   analyst; per-camera counts               [SUPERSEDED — see 4.4.1]
+GET  /analytics/heatmap?hours=1   analyst; [{lat, lon, weight}]            [SUPERSEDED — see 4.4.1]
+GET  /analytics/corridor-speeds   analyst; per-edge avg implied speed      [SUPERSEDED — see 4.4.1]
 GET  /debug/hash/<text>           tracker only; demo helper so frontend can link search text → hash
 ```
+
+### 4.4.1 Analytics/cameras contract — Nawfal's real handoff, 2026-09-13 (SUPERSEDES the three struck-through lines above)
+
+`/analytics/density`, the old `[{lat,lon,weight}]` `/analytics/heatmap` shape, and
+`/analytics/corridor-speeds` are **gone** — replaced by the six endpoints below.
+Anyone still building against the old shapes must stop; see DECISIONS.md #6 for the
+full writeup and field-by-field shapes.
+
+```
+GET /cameras                 -> {cameras:[{camera_id,latitude,longitude,road_id}]}
+GET /analytics/summary       -> {vehicles_analyzed, transitions_analyzed,
+                                 average_speed_kmh, median_speed_kmh,
+                                 average_travel_time_sec, congested_segments,
+                                 total_segments}
+GET /analytics/segments      -> {segments:[{from_camera,to_camera,from_road,
+                                 to_road,vehicle_count,average_speed_kmh,
+                                 average_travel_time_sec,congestion:"HIGH"|
+                                 "MEDIUM"|"LOW"}]}
+GET /analytics/heatmap       -> {points:[{camera_id,latitude,longitude,
+                                 vehicle_count,average_speed_kmh}]}
+GET /analytics/od            -> {flows:[{origin,destination,vehicle_count}]}
+                                 origin/destination are ROAD_IDs, not coordinates
+GET /analytics/routes        -> {routes:[{route_id,road_sequence:[road_id...],
+                                 vehicle_count,average_speed_kmh,
+                                 average_travel_time_sec}]}
+```
+
+Frontend (P2) has wired all six as of 2026-09-13 — `/analytics/segments` and
+`/analytics/routes`-backed "Segments"/"Busiest Routes" views and `/analytics/od`-backed
+"OD Flow" are now real, first-class `AnalyticsViewSelector` views (no longer prototype/
+mock-only). See CLAUDE.md and DECISIONS.md #6.
 
 Trajectory response:
 ```json

@@ -1,9 +1,15 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import type { DensityPoint } from "@/types/analytics";
+import type { HeatmapPoint } from "@/types/analytics";
 
-export function DensityChart({ data }: { data: DensityPoint[] }) {
+// Re-sourced from /analytics/heatmap's per-camera vehicle_count (Nawfal,
+// 2026-09-13, TEAM.md §4) — there's no more standalone per-camera density
+// endpoint (see DECISIONS.md #6), so this reuses the heatmap points'
+// counts as the secondary per-camera breakdown under the new
+// /analytics/summary KPI row on the "Traffic Density" view. Same component,
+// just re-sourced — not rebuilt.
+export function DensityChart({ data }: { data: HeatmapPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data}>
@@ -26,7 +32,7 @@ export function DensityChart({ data }: { data: DensityPoint[] }) {
           }}
           labelStyle={{ color: "var(--foreground)" }}
         />
-        <Bar dataKey="count" fill="var(--analyst)" radius={[4, 4, 0, 0]} maxBarSize={48} />
+        <Bar dataKey="vehicle_count" fill="var(--analyst)" radius={[4, 4, 0, 0]} maxBarSize={48} />
       </BarChart>
     </ResponsiveContainer>
   );

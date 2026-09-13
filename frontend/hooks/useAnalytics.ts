@@ -1,33 +1,45 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import type { CorridorSpeed, DensityPoint, HeatmapPoint, OdFlowPoint } from "@/types/analytics";
+import type { AnalyticsSummary, HeatmapPoint, OdFlow, Route, Segment } from "@/types/analytics";
 
-export function useDensity(hours: number = 1) {
+// Real contract from Nawfal (P4), 2026-09-13 — see TEAM.md §4 and
+// DECISIONS.md #6. Supersedes useDensity/useCorridorSpeeds, which queried the
+// now-gone /analytics/density and /analytics/corridor-speeds endpoints.
+
+export function useAnalyticsSummary() {
   return useQuery({
-    queryKey: ["analytics", "density", hours],
-    queryFn: () => apiFetch<DensityPoint[]>(`/analytics/density?hours=${hours}`),
+    queryKey: ["analytics", "summary"],
+    queryFn: () => apiFetch<AnalyticsSummary>("/analytics/summary"),
+  });
+}
+
+export function useSegments() {
+  return useQuery({
+    queryKey: ["analytics", "segments"],
+    queryFn: () => apiFetch<{ segments: Segment[] }>("/analytics/segments").then((r) => r.segments),
   });
 }
 
 export function useHeatmap(hours: number = 1) {
   return useQuery({
     queryKey: ["analytics", "heatmap", hours],
-    queryFn: () => apiFetch<HeatmapPoint[]>(`/analytics/heatmap?hours=${hours}`),
+    queryFn: () =>
+      apiFetch<{ points: HeatmapPoint[] }>(`/analytics/heatmap?hours=${hours}`).then(
+        (r) => r.points,
+      ),
   });
 }
 
-export function useCorridorSpeeds() {
-  return useQuery({
-    queryKey: ["analytics", "corridor-speeds"],
-    queryFn: () => apiFetch<CorridorSpeed[]>("/analytics/corridor-speeds"),
-  });
-}
-
-// OD confirmed in-scope 2026-09-13 (DECISIONS.md #4) — no real /analytics/od
-// endpoint in TEAM.md §4.4 yet, mock-only until P4 wires it.
 export function useOdFlows() {
   return useQuery({
     queryKey: ["analytics", "od"],
-    queryFn: () => apiFetch<OdFlowPoint[]>("/analytics/od"),
+    queryFn: () => apiFetch<{ flows: OdFlow[] }>("/analytics/od").then((r) => r.flows),
+  });
+}
+
+export function useRoutes() {
+  return useQuery({
+    queryKey: ["analytics", "routes"],
+    queryFn: () => apiFetch<{ routes: Route[] }>("/analytics/routes").then((r) => r.routes),
   });
 }

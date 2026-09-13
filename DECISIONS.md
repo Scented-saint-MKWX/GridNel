@@ -218,3 +218,85 @@ file/element, explains why the previous AmbientBackground theory was never the a
 cause, and carries the numbers above. If it reappears a fourth time, it is not this bug
 — take a fresh screenshot and re-diagnose from zero rather than assuming this fix
 regressed.
+
+---
+
+## 6. Nawfal's real analytics/cameras contract lands, supersedes part of TEAM.md §4.4 (resolved 2026-09-13)
+
+**What changed:** P4 (Nawfal) delivered a real, non-prototype API contract for six
+endpoints — `GET /cameras`, `GET /analytics/summary`, `GET /analytics/segments`,
+`GET /analytics/heatmap`, `GET /analytics/od`, `GET /analytics/routes`. This
+**replaces** (not adds to) `/analytics/density`, the old `[{lat,lon,weight}]`
+`/analytics/heatmap` shape, and `/analytics/corridor-speeds` from TEAM.md §4.4 —
+those three are gone. TEAM.md §4.4/§4.4.1 updated in the same session, struck through
+rather than silently removed, per this file's own rule against silent contract drift.
+
+Full shapes, copied verbatim from the handoff:
+
+```
+GET /cameras                 -> {cameras:[{camera_id,latitude,longitude,road_id}]}
+GET /analytics/summary       -> {vehicles_analyzed, transitions_analyzed,
+                                 average_speed_kmh, median_speed_kmh,
+                                 average_travel_time_sec, congested_segments,
+                                 total_segments}
+GET /analytics/segments      -> {segments:[{from_camera,to_camera,from_road,
+                                 to_road,vehicle_count,average_speed_kmh,
+                                 average_travel_time_sec,congestion:"HIGH"|
+                                 "MEDIUM"|"LOW"}]}
+GET /analytics/heatmap       -> {points:[{camera_id,latitude,longitude,
+                                 vehicle_count,average_speed_kmh}]}
+GET /analytics/od            -> {flows:[{origin,destination,vehicle_count}]}
+                                 origin/destination are ROAD_IDs, not coordinates
+GET /analytics/routes        -> {routes:[{route_id,road_sequence:[road_id...],
+                                 vehicle_count,average_speed_kmh,
+                                 average_travel_time_sec}]}
+```
+
+**Real technical decision — road_id → coordinate resolution (`lib/roads.ts`):**
+`/analytics/od`'s `origin`/`destination` and `/analytics/routes`' `road_sequence` are
+`road_id` strings, not coordinates, and multiple cameras can share a `road_id`.
+Chose to **average the lat/lon of every camera sharing a road_id** into one centroid
+per road (`buildRoadCoordinateIndex()`), rather than taking the first matching camera.
+Reasoning: averaging is stable regardless of `/cameras`' return order; a road_id's
+"position" is inherently a same-road cluster, not one arbitrarily-chosen canonical
+point. This is a judgment call, not a contract fact — flag to Nawfal/P4 if the real
+backend later has an opinion on this (e.g. a road midpoint or geometry it already
+computes server-side).
+
+**GIS prototypes promoted to first-class, all three (not just Segments/OD):**
+`GisPreviewPanel`, `lib/gis-prototype/*`, `types/gis-prototype.ts`, and
+`PrototypeBanner` are deleted — every remaining analytics view now has a real,
+contracted endpoint backing it, so the "unconfirmed prototype" treatment no longer
+applies to anything. Segments and OD were explicitly named in the handoff; Routes
+was promoted alongside them (Wahid's call, since `/analytics/routes` is equally real
+and leaving Routes alone as the sole remaining "prototype" would have been
+inconsistent — see the session's `AskUserQuestion` decision log). `SegmentsLayer` now
+resolves coordinates directly off `/cameras` (camera-pair keyed, no road_id
+averaging needed); `RoutesLayer`/`ODFlowLayer` use `lib/roads.ts`'s road_id
+averaging.
+
+**Congestion/role/status color tokens centralized:** `app/globals.css` now defines
+`--congestion-high/medium/low`, `--role-tracker/analyst`, `--status-live/warning`
+once; `lib/colors.ts` mirrors the congestion/status hexes for Mapbox paint
+expressions and inline styles (which can't resolve CSS `var()`). `CONGESTION_COLORS`
+no longer lives in the now-deleted `lib/gis-prototype/adapter.ts` — every component
+that colors by congestion (`SegmentsLayer`, `AnalyticsViewSelector`'s legend) reads
+from `lib/colors.ts` now. This was mostly already in decent shape before this
+session — role/alert colors already referenced `--tracker`/`--analyst`/`--alert`
+CSS tokens in `RoleBadge`, `AlertConsole`, `BlacklistPanel` — the actual gap was
+congestion coloring living in the soon-to-be-deleted prototype adapter file.
+
+**Vocabulary divergence from TEAM.md's original "exact PS vocabulary" instruction —
+now a visible, three-sessions-deep line item, not something that quietly happened:**
+`AnalyticsViewSelector` now ships six views — Traffic Density (repurposed as a
+`/analytics/summary` KPI row + per-camera chart, no longer per-camera-only),
+Heatmap, Corridor Speeds (redriven from `/analytics/segments`, richer than the old
+per-edge node speed), OD Flow, Segments, and Busiest Routes — none of which are the
+literal three-item "Traffic Density / Heatmap / Corridor Speeds" wording TEAM.md §8
+and CLAUDE.md originally specified. Each individual deviation was flagged in its own
+session (OD in DECISIONS.md #4; Density/Corridor Speeds' re-sourcing and
+Segments/Routes' promotion in this entry) — this paragraph exists specifically so
+the *cumulative* drift is visible in one place before demo day, per the master
+prompt's explicit instruction not to let it quietly happen. **Not a blocker, but
+worth a team gut-check before the judges see it** — the PS vocabulary requirement
+may matter more to judges than the richer feature set does.

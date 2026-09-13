@@ -1,48 +1,55 @@
 "use client";
 
 import { Source, Layer } from "react-map-gl";
-import type { RouteSummary } from "@/types/gis-prototype";
+import type { Route } from "@/types/analytics";
+import { resolveRoadCoordinate } from "@/lib/roads";
 
 interface RoutesLayerProps {
-  routes: RouteSummary[];
+  routes: Route[];
+  roadCoordinateIndex: Map<string, [number, number]>;
 }
 
 const RANK_COLORS = ["#d97e2c", "#38bdf8", "#a78bfa", "#94a3b8"];
 
-// GIS prototype (DECISIONS.md #4) — visually distinguishes the busiest routes
-// by vehicle count. Rank 1 (busiest) renders thickest/brightest; width scales
-// with volume via a data-driven expression, same technique as SegmentsLayer.
-export function RoutesLayer({ routes }: RoutesLayerProps) {
-  const maxCount = Math.max(...routes.map((r) => r.vehicle_count), 1);
+// Real GET /analytics/routes (Nawfal, 2026-09-13, TEAM.md §4) — promoted out
+// of prototype status. road_sequence is road_ids, resolved to coordinates via
+// lib/roads.ts's averaged-per-road centroid (see DECISIONS.md #6 for the
+// assumption). Ranked by vehicle_count, same rank-color/width treatment as
+// the prior prototype.
+export function RoutesLayer({ routes, roadCoordinateIndex }: RoutesLayerProps) {
+  const ranked = [...routes].sort((a, b) => b.vehicle_count - a.vehicle_count);
+  const maxCount = Math.max(...ranked.map((r) => r.vehicle_count), 1);
+
+  const withPaths = ranked.map((r, i) => ({
+    ...r,
+    rank: i + 1,
+    path: r.road_sequence
+      .map((roadId) => resolveRoadCoordinate(roadCoordinateIndex, roadId))
+      .filter((p): p is [number, number] => p !== null),
+  }));
 
   return (
     <>
       <Source
-        id="gis-proto-routes"
+        id="analytics-routes"
         type="geojson"
         data={{
           type: "FeatureCollection",
-          features: routes.map((r) => ({
-            type: "Feature",
-            properties: { route_id: r.route_id, rank: r.rank, vehicle_count: r.vehicle_count },
-            geometry: { type: "LineString", coordinates: r.path },
-          })),
+          features: withPaths
+            .filter((r) => r.path.length >= 2)
+            .map((r) => ({
+              type: "Feature" as const,
+              properties: { route_id: r.route_id, rank: r.rank, vehicle_count: r.vehicle_count },
+              geometry: { type: "LineString" as const, coordinates: r.path },
+            })),
         }}
       >
         <Layer
-          id="gis-proto-routes-line"
+          id="analytics-routes-line"
           type="line"
           layout={{ "line-cap": "round", "line-join": "round" }}
           paint={{
-            "line-width": [
-              "interpolate",
-              ["linear"],
-              ["get", "vehicle_count"],
-              0,
-              2,
-              maxCount,
-              9,
-            ],
+            "line-width": ["interpolate", ["linear"], ["get", "vehicle_count"], 0, 2, maxCount, 9],
             "line-color": [
               "match",
               ["get", "rank"],
@@ -60,11 +67,11 @@ export function RoutesLayer({ routes }: RoutesLayerProps) {
       </Source>
 
       <Source
-        id="gis-proto-routes-labels"
+        id="analytics-routes-labels"
         type="geojson"
         data={{
           type: "FeatureCollection",
-          features: routes.flatMap((r) => {
+          features: withPaths.flatMap((r) => {
             const mid = r.path[Math.floor(r.path.length / 2)];
             if (!mid) return [];
             return [
@@ -78,7 +85,7 @@ export function RoutesLayer({ routes }: RoutesLayerProps) {
         }}
       >
         <Layer
-          id="gis-proto-routes-label-layer"
+          id="analytics-routes-label-layer"
           type="symbol"
           layout={{ "text-field": ["get", "label"], "text-size": 11, "text-offset": [0, -1] }}
           paint={{
