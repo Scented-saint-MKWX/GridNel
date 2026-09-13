@@ -12,6 +12,7 @@ import type { ApiCamera } from "@/types/cameras";
 export function buildRoadCoordinateIndex(cameras: ApiCamera[]): Map<string, [number, number]> {
   const sums = new Map<string, { lon: number; lat: number; n: number }>();
   for (const c of cameras) {
+    if (!Number.isFinite(c.longitude) || !Number.isFinite(c.latitude)) continue;
     const entry = sums.get(c.road_id) ?? { lon: 0, lat: 0, n: 0 };
     entry.lon += c.longitude;
     entry.lat += c.latitude;
@@ -29,5 +30,7 @@ export function resolveRoadCoordinate(
   index: Map<string, [number, number]>,
   roadId: string,
 ): [number, number] | null {
-  return index.get(roadId) ?? null;
+  const coord = index.get(roadId);
+  if (!coord || !Number.isFinite(coord[0]) || !Number.isFinite(coord[1])) return null;
+  return coord;
 }
