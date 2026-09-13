@@ -2,10 +2,12 @@
 
 import { motion } from "motion/react";
 
-// Shared ambient depth treatment — near-black base + a slow-drifting
-// cyan/amber gradient mesh + grain. Used behind /login and the protected
-// shell so neither reads as a flat bg-neutral-950 fill. See CLAUDE.md
-// "Design bar" §1 (background depth) and §5 (motion must be visible).
+// Shared ambient depth treatment — near-black base + several independently
+// drifting cyan/amber/violet blobs at different speeds, sizes and opacities,
+// plus grain. Used behind /login and the protected shell so neither reads as
+// a flat bg-neutral-950 fill or a single static glow. See CLAUDE.md "Design
+// bar" §1 (background depth) and §5 (motion must be visible) — a single blob
+// doesn't read as alive, several moving at different rates does.
 export function AmbientBackground({ variant = "default" }: { variant?: "default" | "login" }) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-surface">
@@ -18,6 +20,16 @@ export function AmbientBackground({ variant = "default" }: { variant?: "default"
         className="absolute -right-1/4 bottom-[-20%] size-[65vmax] rounded-full bg-tracker/[0.13] blur-[110px]"
         animate={{ x: [0, -30, 0], y: [0, -25, 0] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute right-[5%] top-[5%] size-[38vmax] rounded-full bg-healed/[0.08] blur-[100px]"
+        animate={{ x: [0, -20, 10, 0], y: [0, 25, 10, 0] }}
+        transition={{ duration: 34, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute -bottom-1/4 left-[10%] size-[45vmax] rounded-full bg-analyst/[0.07] blur-[90px]"
+        animate={{ x: [0, 35, -15, 0], y: [0, -20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       {variant === "login" && (
         <motion.div

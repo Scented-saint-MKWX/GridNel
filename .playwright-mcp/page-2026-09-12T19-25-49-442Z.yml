@@ -1,0 +1,62 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e50] [cursor=pointer]
+  - alert [ref=e54]
+  - generic [ref=e55]:
+    - generic [ref=e56]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - banner [ref=e59]:
+      - generic [ref=e60]:
+        - generic [ref=e61]: SentinelGrid
+        - navigation [ref=e71]:
+          - link "Analytics" [ref=e72] [cursor=pointer]:
+            - /url: /analytics
+          - link "Tracking" [ref=e73] [cursor=pointer]:
+            - /url: /tracking
+      - generic [ref=e74]:
+        - generic [ref=e75]: tracker
+        - button "Log out" [ref=e83]
+    - generic [ref=e111]:
+      - text: Monitoring — no blacklist hits
+      - generic [ref=e118]: · polling every 10s
+    - main [ref=e91]:
+      - generic [ref=e175]:
+        - generic [ref=e176]:
+          - generic [ref=e177]:
+            - heading "Vehicle Tracking" [level=1] [ref=e178]
+            - paragraph [ref=e186]: Search a plate to reconstruct its route, including A*-bridged blind spots.
+          - generic [ref=e188]:
+            - textbox "MH12AB1284" [active] [ref=e189]
+            - button "Search plate" [ref=e190]
+          - generic [ref=e231]:
+            - generic [ref=e232]: /debug/hash lookup
+            - generic [ref=e233]: unhashed::MH12AB1284
+          - generic [ref=e234]:
+            - generic [ref=e235]: MH12AB1284 — 4 segments
+            - generic [ref=e236]:
+              - generic [ref=e237]: observed
+              - generic [ref=e239]: inferred
+          - generic [ref=e208]:
+            - heading "Blacklist" [level=2] [ref=e209]
+            - generic [ref=e213]:
+              - generic [ref=e214]:
+                - generic [ref=e215]: Plate
+                - textbox "Plate" [ref=e216]:
+                  - /placeholder: MH12AB1284
+              - generic [ref=e217]:
+                - generic [ref=e218]: Reason
+                - textbox "Reason" [ref=e219]:
+                  - /placeholder: Stolen vehicle report
+              - button "Add to blacklist" [ref=e220]
+            - generic [ref=e222]:
+              - generic [ref=e223]:
+                - generic [ref=e224]: Remove by plate hash
+                - textbox "Remove by plate hash" [ref=e225]:
+                  - /placeholder: a9f3c1...
+              - button "Remove" [ref=e226]
+        - generic [ref=e228]:
+          - region "Map" [ref=e230]
+          - generic:
+            - generic:
+              - generic:
+                - paragraph: Awaiting camera feed
+                - paragraph: db/cameras.json is empty
+  - generic [aria-hidden] [ref=e165]: "0"

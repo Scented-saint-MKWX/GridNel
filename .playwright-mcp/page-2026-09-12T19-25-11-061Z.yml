@@ -1,0 +1,59 @@
+- generic [ref=e1]:
+  - generic [ref=e49] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e50]
+    - generic [ref=e166]:
+      - button "Open issues overlay" [ref=e167]:
+        - generic [ref=e168]:
+          - generic [aria-hidden] [ref=e169]: "0"
+          - generic [ref=e170]: "1"
+        - generic [ref=e171]: Issue
+      - button "Collapse issues badge" [ref=e172]
+  - alert [ref=e54]
+  - generic [ref=e55]:
+    - generic [ref=e56]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - banner [ref=e59]:
+      - generic [ref=e60]:
+        - generic [ref=e61]: SentinelGrid
+        - navigation [ref=e71]:
+          - link "Analytics" [ref=e72] [cursor=pointer]:
+            - /url: /analytics
+          - link "Tracking" [active] [ref=e73] [cursor=pointer]:
+            - /url: /tracking
+      - generic [ref=e74]:
+        - generic [ref=e75]: tracker
+        - button "Log out" [ref=e83]
+    - generic [ref=e111]:
+      - text: Monitoring — no blacklist hits
+      - generic [ref=e118]: · polling every 10s
+    - main [ref=e91]:
+      - generic [ref=e175]:
+        - generic [ref=e176]:
+          - generic [ref=e177]:
+            - heading "Vehicle Tracking" [level=1] [ref=e178]
+            - paragraph [ref=e186]: Search a plate to reconstruct its route, including A*-bridged blind spots.
+          - generic [ref=e188]:
+            - textbox "MH12AB1284" [ref=e189]
+            - button "Search plate" [ref=e190]
+          - generic [ref=e205]:
+            - paragraph [ref=e206]: No trajectory queried yet
+            - paragraph [ref=e207]: Search a plate above to reconstruct its route
+          - generic [ref=e208]:
+            - heading "Blacklist" [level=2] [ref=e209]
+            - generic [ref=e213]:
+              - generic [ref=e214]:
+                - generic [ref=e215]: Plate
+                - textbox "Plate" [ref=e216]:
+                  - /placeholder: MH12AB1284
+              - generic [ref=e217]:
+                - generic [ref=e218]: Reason
+                - textbox "Reason" [ref=e219]:
+                  - /placeholder: Stolen vehicle report
+              - button "Add to blacklist" [ref=e220]
+            - generic [ref=e222]:
+              - generic [ref=e223]:
+                - generic [ref=e224]: Remove by plate hash
+                - textbox "Remove by plate hash" [ref=e225]:
+                  - /placeholder: a9f3c1...
+              - button "Remove" [ref=e226]
+        - region "Map" [ref=e230]
+  - generic [aria-hidden] [ref=e165]: "0"

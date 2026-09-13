@@ -1,0 +1,24 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e50] [cursor=pointer]
+  - alert [ref=e54]
+  - generic [aria-hidden] [ref=e165]: "0"
+  - generic [ref=e241]:
+    - generic [ref=e242]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+    - generic [ref=e245]:
+      - generic [ref=e246]:
+        - generic [ref=e247]:
+          - heading "SentinelGrid" [level=1] [ref=e256]
+          - paragraph [ref=e257]: Traffic operations console
+        - generic [ref=e258]:
+          - button "Tracker" [ref=e259]
+          - button "Analyst" [ref=e267]
+        - generic [ref=e271]:
+          - generic [ref=e272]:
+            - generic [ref=e273]: Username
+            - textbox "Username" [ref=e274]: tracker_hacker
+          - generic [ref=e275]:
+            - generic [ref=e276]: Password
+            - textbox "Password" [ref=e277]: wrongpassword
+          - paragraph [ref=e284]: Invalid credentials.
+          - button "Sign in" [ref=e278]
+      - generic [ref=e279]: Fog network online — 6 cameras reporting

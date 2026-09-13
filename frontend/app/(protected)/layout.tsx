@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { AlertConsole } from "@/components/alerts/AlertConsole";
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
+import { MockBanner } from "@/components/layout/MockBanner";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { isExpired } from "@/lib/auth";
 
@@ -42,6 +43,13 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   return (
     <div className="relative min-h-screen">
       <AmbientBackground />
+      {/* MockBanner, Navbar, and AlertConsole are consecutive `sticky top-0`
+          siblings in normal flow — each one's sticky offset resolves against
+          where the previous one currently sits, so nothing here hardcodes a
+          pixel offset that breaks if the banner's height changes (e.g. its
+          text wrapping to two lines at a narrow viewport). See CLAUDE.md
+          master-prompt Fix 2. */}
+      <MockBanner />
       <Navbar />
       <AlertConsole />
       <main>{children}</main>

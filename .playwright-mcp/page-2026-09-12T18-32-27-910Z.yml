@@ -1,0 +1,19 @@
+- generic [ref=f89e2]:
+  - generic [ref=f89e3]: MOCK DATA — NEXT_PUBLIC_MOCK_MODE is on, nothing here is live
+  - generic [ref=f89e6]:
+    - generic [ref=f89e7]:
+      - generic [ref=f89e8]:
+        - heading "SentinelGrid" [level=1] [ref=f89e17]
+        - paragraph [ref=f89e18]: Traffic operations console
+      - generic [ref=f89e19]:
+        - button "Tracker" [ref=f89e20]
+        - button "Analyst" [ref=f89e28]
+      - generic [ref=f89e32]:
+        - generic [ref=f89e33]:
+          - generic [ref=f89e34]: Username
+          - textbox "Username" [ref=f89e35]
+        - generic [ref=f89e36]:
+          - generic [ref=f89e37]: Password
+          - textbox "Password" [ref=f89e38]
+        - button "Sign in" [ref=f89e39]
+    - generic [ref=f89e40]: Fog network online — 6 cameras reporting

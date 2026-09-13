@@ -5,6 +5,7 @@ import Map, { Marker } from "react-map-gl";
 import { Camera as CameraIcon, MapPinOff } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { Camera } from "@/lib/cameras";
+import { RadarSweep } from "@/components/layout/RadarSweep";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
@@ -44,44 +45,47 @@ export function CityMap({ children, onCameraClick, flashingCameraId }: CityMapPr
         mapStyle="mapbox://styles/mapbox/dark-v11"
         style={{ width: "100%", height: "100%" }}
       >
-        {(cameras ?? []).map((camera) => {
-          const isFlashing = camera.camera_id === flashingCameraId;
-          return (
-            <Marker
-              key={camera.camera_id}
-              longitude={camera.lon}
-              latitude={camera.lat}
-              onClick={() => onCameraClick?.(camera)}
-            >
-              <button
-                type="button"
-                className="group relative flex size-3 items-center justify-center rounded-full bg-analyst ring-2 ring-analyst/30"
-                aria-label={camera.camera_id}
+        {(cameras ?? [])
+          .filter((camera) => Number.isFinite(camera.longitude) && Number.isFinite(camera.latitude))
+          .map((camera) => {
+            const isFlashing = camera.camera_id === flashingCameraId;
+            return (
+              <Marker
+                key={camera.camera_id}
+                longitude={camera.longitude}
+                latitude={camera.latitude}
+                onClick={() => onCameraClick?.(camera)}
               >
-                {isFlashing && (
-                  <span className="absolute inset-0 rounded-full bg-alert animate-pulse-ring" />
-                )}
-                <span
-                  className={`relative size-3 rounded-full ${isFlashing ? "bg-alert" : "bg-analyst"}`}
-                />
-                <CameraIcon
-                  className={`absolute -top-5 size-3 transition-colors ${
-                    isFlashing ? "text-alert" : "text-analyst/70 group-hover:text-analyst"
-                  }`}
-                />
-              </button>
-            </Marker>
-          );
-        })}
+                <button
+                  type="button"
+                  className="group relative flex size-3 items-center justify-center rounded-full bg-analyst ring-2 ring-analyst/30"
+                  aria-label={camera.camera_id}
+                >
+                  {isFlashing && (
+                    <span className="absolute inset-0 rounded-full bg-alert animate-pulse-ring" />
+                  )}
+                  <span
+                    className={`relative size-3 rounded-full ${isFlashing ? "bg-alert" : "bg-analyst"}`}
+                  />
+                  <CameraIcon
+                    className={`absolute -top-5 size-3 transition-colors ${
+                      isFlashing ? "text-alert" : "text-analyst/70 group-hover:text-analyst"
+                    }`}
+                  />
+                </button>
+              </Marker>
+            );
+          })}
         {children}
       </Map>
 
       {cameras !== null && cameras.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="glass flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
-            <MapPinOff className="size-4" />
-            No cameras loaded yet — db/cameras.json is empty
-          </div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/70 backdrop-blur-sm">
+          <RadarSweep
+            label="Awaiting camera feed"
+            sublabel="db/cameras.json is empty"
+            icon={<MapPinOff className="size-4" />}
+          />
         </div>
       )}
     </div>
