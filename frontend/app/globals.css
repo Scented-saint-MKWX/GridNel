@@ -76,6 +76,22 @@
   --role-analyst: var(--analyst);
   --status-live: #22c55e;
   --status-warning: #eab308;
+
+  /* Routes (Busiest Routes view) — violet/blue rank scale, distinct from the
+     congestion palette and from OD's teal/cyan below, so a viewer can tell
+     "which analytics view am I looking at" purely from hue. Rank 1 (busiest)
+     is the most saturated/brightest stop; the scale fades toward the base
+     surface color as rank drops, reinforcing "less important" rather than
+     just "different color". See master prompt v12 Phase 3.2. */
+  --route-rank-1: #8b5cf6;
+  --route-rank-mid: #6d5bd0;
+  --route-rank-low: #4c4a7a;
+
+  /* OD Flow — teal/cyan volume scale, distinct from Routes' violet and from
+     the analyst cyan accent used elsewhere (role color, not a data-volume
+     encoding) so the two don't collide when a viewer switches tabs. */
+  --flow-high: #2dd4bf;
+  --flow-low: #155e63;
 }
 
 @theme inline {
@@ -116,6 +132,12 @@
   --color-role-analyst: var(--role-analyst);
   --color-status-live: var(--status-live);
   --color-status-warning: var(--status-warning);
+
+  --color-route-rank-1: var(--route-rank-1);
+  --color-route-rank-mid: var(--route-rank-mid);
+  --color-route-rank-low: var(--route-rank-low);
+  --color-flow-high: var(--flow-high);
+  --color-flow-low: var(--flow-low);
 
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;

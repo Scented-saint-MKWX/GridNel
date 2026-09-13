@@ -8,9 +8,22 @@ import { motion } from "motion/react";
 // a flat bg-neutral-950 fill or a single static glow. See CLAUDE.md "Design
 // bar" §1 (background depth) and §5 (motion must be visible) — a single blob
 // doesn't read as alive, several moving at different rates does.
+// `absolute inset-0` on the nearest positioned ancestor (the page's own
+// root `relative` wrapper), not `fixed inset-0` on the viewport. `fixed`
+// sizes strictly to the browser's visual viewport and never grows with
+// content — if a page's actual content is ever taller than what the
+// browser's viewport-height units (vh/dvh) report (confirmed this session
+// against a real Chrome window: a desktop infobar does not shrink dvh the
+// way it does on mobile, so a `min-h-dvh` login card still centered
+// against the full screen height and rendered partly below what was
+// actually visible), the page becomes scrollable while this fixed
+// background stays pinned to the viewport — scrolling then slides real
+// content down and out from under it, reading as content "disappearing
+// into a grey region". `absolute inset-0` instead sizes to and scrolls
+// with the actual content box, so it can never fall short of it.
 export function AmbientBackground({ variant = "default" }: { variant?: "default" | "login" }) {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-surface">
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-surface">
       <motion.div
         className="absolute -left-1/4 top-[-20%] size-[70vmax] rounded-full bg-analyst/[0.16] blur-[110px]"
         animate={{ x: [0, 40, 0], y: [0, 30, 0] }}

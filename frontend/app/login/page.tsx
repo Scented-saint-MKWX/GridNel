@@ -15,6 +15,7 @@ import { AmbientBackground } from "@/components/layout/AmbientBackground";
 import { SystemStatus } from "@/components/layout/SystemStatus";
 import { MockBanner } from "@/components/layout/MockBanner";
 import { apiFetch } from "@/lib/api";
+import { decodeJwt } from "@/lib/auth";
 import type { Role } from "@/types/auth";
 
 const loginSchema = z.object({
@@ -47,9 +48,20 @@ export default function LoginPage() {
         body: values,
       });
       login(res.token);
-      // Never auto-route to /tracking, even for a tracker login — see
-      // FRONTEND_BLUEPRINT.md §5, /login section.
-      router.push("/analytics");
+      // FRONTEND_BLUEPRINT.md's /login section originally said "route to
+      // /analytics by default, safe for both roles" — that premise is
+      // false against the real backend's actual role gating (TEAM.md §4 /
+      // api/analytics.py: every /analytics/* route is require_role
+      // "analyst" only, nothing there is tracker-reachable). Routing a
+      // tracker login there produced a wall of real 403s and a page that
+      // reads as broken (every panel stuck in its empty/error state) —
+      // reproduced and fixed this session, not a hypothetical. Route by
+      // the JWT's actual decoded role instead of a hardcoded destination;
+      // this still intentionally never auto-routes an analyst to
+      // /tracking (a privileged surface), matching the blueprint's other
+      // half of that rule, which was correct.
+      const decoded = decodeJwt(res.token);
+      router.push(decoded?.role === "tracker" ? "/tracking" : "/analytics");
     } catch {
       setError("Invalid credentials.");
     }
@@ -60,11 +72,18 @@ export default function LoginPage() {
       ? "border-tracker/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_0_0_1px_rgba(217,126,44,0.15),0_8px_30px_-4px_rgba(217,126,44,0.4),0_30px_80px_-20px_rgba(0,0,0,0.8)]"
       : "border-analyst/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_0_0_1px_rgba(56,189,248,0.15),0_8px_30px_-4px_rgba(56,189,248,0.4),0_30px_80px_-20px_rgba(0,0,0,0.8)]";
 
+  // min-h-dvh, real page scroll allowed: AmbientBackground is now
+  // `absolute inset-0` on this wrapper (not `fixed inset-0` on the
+  // viewport, see AmbientBackground.tsx for why) so it grows with real
+  // content instead of capping at viewport height — if the card genuinely
+  // doesn't fit a short/obstructed viewport, the whole page scrolls
+  // normally and the background scrolls right along with it, so there's
+  // no fixed/non-scrolling layer for content to disappear behind.
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="relative flex min-h-dvh flex-col">
       <MockBanner />
       <AmbientBackground variant="login" />
-      <div className="relative flex flex-1 flex-col items-center justify-center px-4">
+      <div className="relative flex flex-1 flex-col items-center justify-center px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

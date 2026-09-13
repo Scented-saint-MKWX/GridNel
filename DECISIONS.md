@@ -474,3 +474,87 @@ the emergency backend.
 network access happens only in the offline seed-generation script
 (`scripts/generate_seed.py`), never at request time — the running app has zero runtime
 dependency on OSM/Overpass availability.
+
+---
+
+## 9. Master prompt v12 — Routes/OD visual hierarchy, plus a real role-gating race found and fixed (2026-09-13)
+
+**Scope done as asked:** `RoutesLayer.tsx`/`ODFlowLayer.tsx` capped to top-N by
+`vehicle_count` (12/15), continuous width+opacity+hue encoding replacing flat lines
+plus floating `#N` badges, real triangle-polygon OD arrowheads (not a text glyph —
+see below), Catmull-Rom-smoothed fallback paths (`lib/roads.ts smoothPath()`) for the
+~half of routes/OD flows still missing real `geometry` (DECISIONS.md #8). Segments'
+congestion coloring is now a continuous gradient (`CONGESTION_GRADIENT_STOPS`,
+`lib/colors.ts`) instead of a flat 3-color match. New `--route-rank-*`/`--flow-*`
+tokens added to `globals.css` alongside the existing congestion/role tokens, per
+Phase 3's "one shared token set" instruction.
+
+**Secondary finding, not fixed (flagged per the master prompt, needs a team decision,
+not this session's call):** the current seed data is degenerate for this feature —
+`/analytics/routes` returns 49/49 routes at `vehicle_count: 1`, `/analytics/od` 45/45
+flows at `vehicle_count: 1`, and `/analytics/segments` is 1456/1456 `HIGH` congestion
+with `vehicle_count: 0` everywhere. The continuous-gradient/continuous-width work above
+is real and correct, but has near-zero visible effect until there's real variance in
+the underlying data — `/analytics/summary` shows `transitions_analyzed: 0` despite 114
+vehicles analyzed, meaning nothing has actually transited a camera pair yet in this
+seed's current state. Not fixed this session — `fog_sim.py` congestion/volume
+assignment is P2's own file per CLAUDE.md, but changing its randomization behavior
+without asking felt like the same kind of unilateral call DECISIONS.md #4/#8 flag
+explicitly, and it's plausible this is just "hasn't been driven long enough yet" rather
+than a real bug in `fog_sim`.
+
+**Real bug found and fixed, not part of the original ask:** a role-gating race in
+`(protected)/layout.tsx`. Navigating between `/tracking` and `/analytics` (e.g. clicking
+the nav link, or `/login`'s post-auth redirect) let the *previous* page's `checked`
+state render the *new* page's children for one commit before the redirect effect ran —
+firing every analytics-view TanStack Query hook and hitting real `403`s from
+`api/analytics.py`'s `require_role("analyst")` guard when a tracker reached
+`/analytics`. Symptom looked exactly like a CSS bug (a blank/grey "no summary data yet"
+panel) but was a real request-race, not styling. Fixed by computing the gate decision
+synchronously during render (`computeGate()`) instead of via `useState` flipped inside
+`useEffect` — see the file's own comment for the full mechanism. `app/login/page.tsx`
+had a second, related bug: it always `router.push("/analytics")` regardless of the
+JWT's actual role (stale premise from `FRONTEND_BLUEPRINT.md`'s "/analytics is safe for
+both roles" — false against the real backend's actual per-endpoint role gate). Now
+routes by the decoded role. Added the reverse redirect direction to
+`(protected)/layout.tsx` (tracker on `/analytics` → `/tracking`) alongside the existing
+analyst-on-/tracking one — CLAUDE.md's own "definition of done" already required the
+other direction; this was the missing half.
+
+**A `min-w-0`/`flex-1 truncate` bug fixed in the new Routes ranked-list panel**
+(`analytics/page.tsx`) — `truncate` on a flex child does nothing without `min-width: 0`
+on that child (flex items default to `min-width: auto`), so a long `road_sequence`
+string could push the row, and potentially the page, wider than intended. Fixed.
+
+**Analytics content widened from `max-w-6xl` (1152px) to `max-w-[1800px]`** — explicit
+user request mid-session ("cover the entire screen with proper ui") after the role-
+gating race fix made the correctly-loaded page visible for the first time in that
+session, exposing the pre-existing narrow-content-on-wide-screen layout that had
+previously been masked by the race.
+
+**A real `AmbientBackground` bug found and fixed:** it was `fixed inset-0` (sized to
+the viewport, never scrolls). `min-h-screen`/`min-h-dvh` containers whose real content
+is taller than the viewport become page-scrollable; scrolling then slides real content
+down and out from under a `fixed` background, reading as content "disappearing into a
+grey region" — reproduced this session. Changed to `absolute inset-0` on the page's own
+`relative` root instead, so it sizes to and scrolls with the actual content box and can
+never fall short of it. Also swapped `min-h-screen`/`h-screen` (`100vh`, computed
+against the browser's outer window) for `min-h-dvh`/`h-dvh` (tracks the true visible
+viewport) on `/login` and `(protected)/layout.tsx`.
+
+**Extended, ultimately inconclusive-by-design-not-by-luck debugging thread, logged so
+a future session doesn't re-chase it:** the user reported a "grey region"/"shifted
+right"/"cut off, can't scroll" symptom on `/login` across several rounds, each time
+after a claimed fix. Real, reproducible contributing bugs were found and fixed (the
+race above; the `fixed`-background scroll mismatch above). But the symptom persisted
+in the user's actual browser after both fixes, while every numeric check this session
+(server-served HTML confirmed correct, `Cache-Control: no-store` ruling out caching,
+`innerHeight`/`clientHeight` both 1080, and critically `getBoundingClientRect()` on the
+login card itself showing `top: 306, height: 467, bottom: 774` — centered with ~306px
+of slack on both sides) said the page was rendering correctly. **Root cause: a Chrome
+extension in the user's regular profile, not this app** — confirmed by the user seeing
+correct layout in an Incognito window (extensions off by default) at identical zoom/
+scaling/monitor settings. Not a code bug; no code change addresses it. Logged so a
+future session sees this and asks about Incognito/extensions early instead of
+re-deriving the same dead ends (display scaling, multi-monitor, browser zoom — all
+individually ruled out this session before Incognito isolated it).

@@ -23,8 +23,33 @@ import {
 import { useCameras } from "@/hooks/useCameras";
 import { useFlashingCamera } from "@/hooks/useFlashingCamera";
 import { buildRoadCoordinateIndex } from "@/lib/roads";
-import { CONGESTION_COLORS } from "@/lib/colors";
+import { CONGESTION_COLORS, ROUTE_RANK_COLORS, FLOW_VOLUME_COLORS } from "@/lib/colors";
 import type { CongestionLevel } from "@/types/analytics";
+
+const ROUTES_TOP_N = 12;
+const OD_TOP_N = 15;
+
+function rankColor(rank: number, total: number): string {
+  const t = total <= 1 ? 0 : (rank - 1) / (total - 1);
+  if (t < 0.5) {
+    return mixHex(ROUTE_RANK_COLORS.low, ROUTE_RANK_COLORS.mid, t / 0.5);
+  }
+  return mixHex(ROUTE_RANK_COLORS.mid, ROUTE_RANK_COLORS.top, (t - 0.5) / 0.5);
+}
+
+function mixHex(a: string, b: string, t: number): string {
+  const pa = hexToRgb(a);
+  const pb = hexToRgb(b);
+  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t);
+  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t);
+  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t);
+  return `rgb(${r}, ${g}, ${bl})`;
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
 
 // Both roles reach this page (TEAM.md §4). Density is now a KPI summary view
 // (/analytics/summary) with a secondary per-camera chart; Corridor Speeds,
@@ -48,7 +73,7 @@ export default function AnalyticsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-6">
+    <div className="mx-auto max-w-[1800px] space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-lg font-semibold tracking-tight text-analyst">Traffic Analytics</h1>
@@ -137,9 +162,28 @@ export default function AnalyticsPage() {
             icon={<GitBranch className="size-4" />}
           >
             {odFlowQuery.data && odFlowQuery.data.length > 0 && (
-              <ODFlowLayer flows={odFlowQuery.data} roadCoordinateIndex={roadCoordinateIndex} />
+              <ODFlowLayer
+                flows={odFlowQuery.data}
+                roadCoordinateIndex={roadCoordinateIndex}
+                topN={OD_TOP_N}
+              />
             )}
           </MapPanelBody>
+          {odFlowQuery.data && odFlowQuery.data.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="h-0.5 w-4 rounded" style={{ backgroundColor: FLOW_VOLUME_COLORS.low }} />
+                low volume
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-1 w-4 rounded" style={{ backgroundColor: FLOW_VOLUME_COLORS.high }} />
+                high volume
+              </span>
+              <span>
+                top {Math.min(OD_TOP_N, odFlowQuery.data.length)} of {odFlowQuery.data.length} flows shown
+              </span>
+            </div>
+          )}
         </Panel>
       )}
 
@@ -189,20 +233,36 @@ export default function AnalyticsPage() {
             icon={<RouteIcon className="size-4" />}
           >
             {routesQuery.data && (
-              <RoutesLayer routes={routesQuery.data} roadCoordinateIndex={roadCoordinateIndex} />
+              <RoutesLayer
+                routes={routesQuery.data}
+                roadCoordinateIndex={roadCoordinateIndex}
+                topN={ROUTES_TOP_N}
+              />
             )}
           </MapPanelBody>
           {routesQuery.data && routesQuery.data.length > 0 && (
-            <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-              {[...routesQuery.data]
-                .sort((a, b) => b.vehicle_count - a.vehicle_count)
-                .map((r, i) => (
-                  <div key={r.route_id} className="flex items-center gap-2">
-                    <span className="data-mono text-foreground">#{i + 1}</span>
-                    <span>{r.road_sequence.join(" → ")}</span>
-                    <span className="data-mono">{r.vehicle_count} vehicles</span>
+            <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
+              {(() => {
+                const ranked = [...routesQuery.data]
+                  .sort((a, b) => b.vehicle_count - a.vehicle_count)
+                  .slice(0, ROUTES_TOP_N);
+                return ranked.map((r, i) => (
+                  <div key={r.route_id} className="flex min-w-0 items-center gap-2">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: rankColor(i + 1, ranked.length) }}
+                    />
+                    <span className="data-mono w-6 shrink-0 text-foreground">#{i + 1}</span>
+                    <span className="min-w-0 flex-1 truncate">{r.road_sequence.join(" → ")}</span>
+                    <span className="data-mono shrink-0">{r.vehicle_count} vehicles</span>
                   </div>
-                ))}
+                ));
+              })()}
+              {routesQuery.data.length > ROUTES_TOP_N && (
+                <div className="pt-1 text-muted-foreground/70">
+                  top {ROUTES_TOP_N} of {routesQuery.data.length} routes shown
+                </div>
+              )}
             </div>
           )}
         </Panel>
