@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS blacklist (
     added_ts    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+
+
 CREATE TABLE IF NOT EXISTS alert_events (
     id          BIGSERIAL PRIMARY KEY,
     type        TEXT NOT NULL,

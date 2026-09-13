@@ -10,7 +10,8 @@ FOG_API_KEY = os.getenv("FOG_API_KEY", "hackathon_secret_key")
 redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
 def authenticate_fog(api_key: str):
-    if not hmac.compare_digest(api_key, FOG_API_KEY):
+    # Ensure api_key is a string before passing to compare_digest
+    if not hmac.compare_digest(api_key or "", FOG_API_KEY):
         raise HTTPException(status_code=401, detail="Invalid fog API key")
 
 def is_duplicate(block: DataBlock):
@@ -22,25 +23,26 @@ def ingest_block(block: DataBlock, api_key: str):
     authenticate_fog(api_key)
     
     if is_duplicate(block):
-        return {"status": "discarded", "reason": "duplicate", "block_id": block.block_id}
+        return {"status": "discarded", "reason": "duplicate", "block_id": str(block.block_id)}
 
     # Store in Redis Stream (Plaintext version)
     redis_client.xadd(
         "sightings:stream",
         {
-            "block_id": block.block_id,
+            "block_id": str(block.block_id),
             "camera_id": block.camera_id,
             "cam_event_id": block.cam_event_id,
-            "ts": block.ts.isoformat(), # Fixed for Redis
-            "plate_text": block.plate_text, # Plaintext
+            "ts": str(block.ts),  # Safer cast if Pydantic already parsed it to string
+            "plate_text": block.plate_text, 
             "conf": str(block.conf),
             "lat": str(block.location.lat),
             "lon": str(block.location.lon),
             "fused_as": block.resolution.fused_as,
             "outcome": block.resolution.outcome,
             "vendor_guess": block.resolution.vendor_guess or "",
-            "alt_texts": ",".join(block.resolution.alt_hashes),
+            # Fixed: Changed from alt_hashes to alt_texts for the Plaintext MVP
+            "alt_texts": ",".join(block.resolution.alt_texts or []),
             "quality": block.quality
         }
     )
-    return {"status": "queued", "block_id": block.block_id}
+    return {"status": "queued", "block_id": str(block.block_id)}
