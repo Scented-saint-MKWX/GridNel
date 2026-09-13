@@ -20,6 +20,24 @@ async function test() {
     console.log(`Initial Mode: ${initialMode} (Expected 'analytics')`);
     if (initialMode !== 'analytics') throw new Error("Default mode should be analytics!");
 
+    const opsPath = path.join("/work", "operations_dashboard.png");
+    await page.screenshot({ path: opsPath, fullPage: false });
+    console.log(`Operations dashboard screenshot saved to: ${opsPath}`);
+
+    // Capture Blacklist Dropdown in new theme
+    await page.evaluate(() => {
+        toggleBlacklistDropdown();
+    });
+    await new Promise(r => setTimeout(r, 600));
+    const blPath = path.join("/work", "blacklist_dropdown.png");
+    await page.screenshot({ path: blPath, fullPage: false });
+    console.log(`Blacklist dropdown screenshot saved to: ${blPath}`);
+
+    await page.evaluate(() => {
+        closeBlacklistDropdown();
+    });
+    await new Promise(r => setTimeout(r, 300));
+
     // Test 1: Clicking Vehicle Tracking without auth triggers Auth Modal
     console.log("2. Clicking Vehicle Tracking while unauthenticated...");
     await page.evaluate(() => {
@@ -38,17 +56,19 @@ async function test() {
     await page.screenshot({ path: modalPath, fullPage: false });
     console.log(`Auth modal screenshot saved to: ${modalPath}`);
 
-    // Test 2: Quick-Fill demo credentials and submit
-    console.log("3. Quick-filling credentials and authenticating...");
-    await page.evaluate(() => {
-        quickFillDemoCredentials();
+    // Test 2: Verify NO autofill button exists, and manually type officer credentials
+    console.log("3. Verifying absence of autofill button and typing credentials manually...");
+    const hasAutofillBtn = await page.evaluate(() => {
+        return !!document.querySelector("button[onclick*='quickFill']");
     });
+    console.log(`Autofill button present: ${hasAutofillBtn} (Expected false)`);
+    if (hasAutofillBtn) throw new Error("Autofill button should not be present in production UI!");
+
+    await page.type("#auth-username", "officer.sharma@sentinel.gov");
+    await page.type("#auth-password", "Sentinel#Tactical99");
     await new Promise(r => setTimeout(r, 500));
 
-    await page.evaluate(async () => {
-        const fakeEvent = { preventDefault: () => {} };
-        await handleAuthSubmit(fakeEvent);
-    });
+    await page.click("#btn-auth-submit");
     await new Promise(r => setTimeout(r, 2000));
 
     const isAuthNow = await page.evaluate(() => {
