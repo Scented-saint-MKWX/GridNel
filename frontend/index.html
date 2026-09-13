@@ -25,20 +25,20 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <style>
-        #map { height: 100%; min-height: 520px; background: #0e1117; }
+        #map { height: 100%; min-height: 520px; background: #ffffff; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #11141a; }
-        ::-webkit-scrollbar-thumb { background: #232834; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: #32394a; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Tactical Dark Map Filter for OpenStreetMap (Clean, Zero External API Keys) */
+        /* Optional Tactical Dark Map Filter for OpenStreetMap */
         .osm-dark .leaflet-tile {
             filter: brightness(0.68) invert(1) contrast(2.2) hue-rotate(205deg) saturate(0.20) !important;
         }
         
-        /* Functional Waypoint Markers (Restrained, Crisp, No Neon Halos) */
+        /* Functional Waypoint Markers: Orange for sequence, Magenta for latest sighting */
         .waypoint-badge {
-            background: #2563eb;
+            background: #ea580c;
             color: #ffffff;
             border-radius: 9999px;
             font-size: 11px;
@@ -47,11 +47,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.6);
-            border: 1.5px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(234, 88, 12, 0.35);
+            border: 2px solid #ffffff;
         }
         .waypoint-badge-latest {
-            background: #dc2626;
+            background: #c026d3;
             color: #ffffff;
             border-radius: 9999px;
             font-size: 11px;
@@ -60,71 +60,73 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.7);
-            border: 1.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(192, 38, 211, 0.45);
+            border: 2px solid #ffffff;
         }
     </style>
 </head>
-<body class="bg-[#11141a] text-slate-200 h-screen flex flex-col overflow-hidden font-sans antialiased text-xs">
+<body class="bg-[#f8fafc] text-slate-800 h-screen flex flex-col overflow-hidden font-sans antialiased text-xs">
 
     <!-- Top Command Header -->
-    <header class="bg-[#181b22] border-b border-[#292e3a] px-4 py-2 flex flex-wrap justify-between items-center gap-3 shrink-0 z-30">
+    <header class="bg-white border-b border-slate-200 px-4 py-2 flex flex-wrap justify-between items-center gap-3 shrink-0 z-30 shadow-xs">
         
         <!-- System Identity -->
         <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded bg-[#1f2430] border border-[#2d3444] flex items-center justify-center">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div class="w-7 h-7 rounded bg-orange-50 border border-orange-200 flex items-center justify-center shadow-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-600"></span>
             </div>
             <div>
                 <div class="flex items-center gap-2">
-                    <h1 class="text-xs font-bold tracking-wider text-slate-100 uppercase font-mono">SentinelGrid <span class="text-slate-500 font-normal">//</span> Operations</h1>
-                    <span class="text-[9px] font-mono bg-[#232834] text-slate-400 border border-[#32394a] px-1 py-0.2 rounded">NET-306</span>
+                    <h1 class="text-xs font-bold tracking-wider text-slate-900 uppercase font-mono">
+                        SentinelGrid <span class="text-fuchsia-500 font-normal">//</span> <span class="text-orange-600">Operations</span>
+                    </h1>
+                    <span class="text-[9px] font-mono bg-orange-50 text-orange-700 border border-orange-200 px-1 py-0.2 rounded font-bold">NET-306</span>
                 </div>
-                <p class="text-[10px] text-slate-400 font-mono tracking-tight">ANPR Surveillance & Corridor Traffic Engine · 306 Nodes · 2,008 Vehicles</p>
+                <p class="text-[10px] text-slate-500 font-mono tracking-tight">ANPR Surveillance & Corridor Traffic Engine · 306 Nodes · 2,008 Vehicles</p>
             </div>
         </div>
 
         <!-- Mode Toggle Switcher -->
-        <div class="flex items-center bg-[#11141a] p-0.5 rounded border border-[#292e3a]">
+        <div class="flex items-center bg-slate-100 p-0.5 rounded border border-slate-200">
             <button id="btn-mode-analytics" onclick="setMode('analytics')" 
-                class="px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-blue-600 text-white">
-                <svg class="w-3.5 h-3.5 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                class="px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-orange-600 text-white shadow-xs">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 Traffic Analytics
             </button>
             <button id="btn-mode-tracking" onclick="attemptEnterTrackingMode()" 
-                class="px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200">
+                class="px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
                 <span id="tracking-mode-lock-icon" class="text-[11px]">🔒</span>
                 Vehicle Tracking
-                <span id="tracking-auth-pill" class="text-[9px] bg-[#292418] text-amber-400 border border-[#443820] px-1 rounded font-mono font-medium">RESTRICTED</span>
+                <span id="tracking-auth-pill" class="text-[9px] bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 px-1 rounded font-mono font-medium">RESTRICTED</span>
             </button>
         </div>
 
         <!-- Blacklist Targets Dropdown Trigger -->
-        <button onclick="toggleBlacklistDropdown(event)" class="bg-[#1f1618] hover:bg-[#281b1e] border border-[#3e2427] text-red-300 px-2.5 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 cursor-pointer">
-            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+        <button onclick="toggleBlacklistDropdown(event)" class="bg-fuchsia-50 hover:bg-fuchsia-100 border border-fuchsia-200 text-fuchsia-700 px-2.5 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-fuchsia-600 animate-pulse"></span>
             <span>Blacklist Targets (<span id="header-alert-count">5</span>)</span>
-            <svg class="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <svg class="w-3 h-3 text-fuchsia-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
 
         <!-- Tracking Search Form (Visible in Tracking Mode) -->
         <div id="tracking-search-bar" class="hidden flex items-center gap-1.5">
             <form id="search-form" class="flex gap-1.5">
                 <input type="text" id="plate-input" placeholder="Plate (e.g. MH12AB1284)" 
-                    class="bg-[#11141a] border border-[#2d3444] rounded px-2.5 py-1 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono uppercase tracking-wider text-xs w-52">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded font-medium text-xs transition flex items-center gap-1">
+                    class="bg-white border border-slate-300 rounded px-2.5 py-1 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 font-mono uppercase tracking-wider text-xs w-52">
+                <button type="submit" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1 rounded font-medium text-xs transition flex items-center gap-1 shadow-xs">
                     Track
                 </button>
             </form>
         </div>
 
         <!-- Analytics Time Interval Selector (Visible in Analytics Mode) -->
-        <div id="analytics-interval-bar" class="flex items-center gap-1 bg-[#11141a] p-0.5 rounded border border-[#292e3a] text-xs">
-            <span class="text-slate-500 text-[10px] px-1.5 font-mono uppercase">Window:</span>
-            <button onclick="setIntervalFilter('all')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium bg-blue-600 text-white" data-val="all">24h</button>
-            <button onclick="setIntervalFilter('1h')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-slate-200" data-val="1h">1h</button>
-            <button onclick="setIntervalFilter('6h')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-slate-200" data-val="6h">6h</button>
-            <button onclick="setIntervalFilter('morning_peak')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-slate-200" data-val="morning_peak">Peak AM</button>
-            <button onclick="setIntervalFilter('evening_peak')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-slate-200" data-val="evening_peak">Peak PM</button>
+        <div id="analytics-interval-bar" class="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-xs">
+            <span class="text-slate-500 text-[10px] px-1.5 font-mono uppercase font-semibold">Window:</span>
+            <button onclick="setIntervalFilter('all')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium bg-orange-600 text-white shadow-xs" data-val="all">24h</button>
+            <button onclick="setIntervalFilter('1h')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-900" data-val="1h">1h</button>
+            <button onclick="setIntervalFilter('6h')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-900" data-val="6h">6h</button>
+            <button onclick="setIntervalFilter('morning_peak')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-900" data-val="morning_peak">Peak AM</button>
+            <button onclick="setIntervalFilter('evening_peak')" class="interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-900" data-val="evening_peak">Peak PM</button>
         </div>
 
         <!-- Operator Clearance Status / Auth Button -->
@@ -134,64 +136,64 @@
     </header>
 
     <!-- Operational Metrics Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 px-4 py-2 shrink-0 bg-[#14171f] border-b border-[#242936]">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 px-4 py-2 shrink-0 bg-white border-b border-slate-200">
         
-        <div class="bg-[#181b22] border border-[#282e3c] rounded p-2 flex items-center justify-between">
+        <div class="bg-slate-50 border border-slate-200 rounded p-2 flex items-center justify-between shadow-2xs">
             <div>
-                <p class="text-slate-400 text-[10px] font-mono uppercase tracking-wider">Total Sightings</p>
-                <p id="stat-sightings" class="text-base font-bold font-mono text-slate-100 mt-0.5">0</p>
+                <p class="text-slate-500 text-[10px] font-mono uppercase tracking-wider font-semibold">Total Sightings</p>
+                <p id="stat-sightings" class="text-base font-bold font-mono text-slate-900 mt-0.5">0</p>
             </div>
-            <span class="text-slate-500 font-mono text-[11px]">SGT-LOG</span>
+            <span class="text-slate-400 font-mono text-[11px]">SGT-LOG</span>
         </div>
 
-        <div class="bg-[#181b22] border border-[#282e3c] rounded p-2 flex items-center justify-between">
+        <div class="bg-slate-50 border border-slate-200 rounded p-2 flex items-center justify-between shadow-2xs">
             <div>
-                <p class="text-slate-400 text-[10px] font-mono uppercase tracking-wider">Active Cameras</p>
-                <p id="stat-cameras" class="text-base font-bold font-mono text-emerald-400 mt-0.5">306</p>
+                <p class="text-slate-500 text-[10px] font-mono uppercase tracking-wider font-semibold">Active Cameras</p>
+                <p id="stat-cameras" class="text-base font-bold font-mono text-orange-600 mt-0.5">306</p>
             </div>
-            <span class="text-emerald-500/80 font-mono text-[10px]">ONLINE</span>
+            <span class="text-orange-600 font-mono text-[10px] font-bold">ONLINE</span>
         </div>
 
-        <div class="bg-[#181b22] border border-[#282e3c] rounded p-2 flex items-center justify-between">
+        <div class="bg-slate-50 border border-slate-200 rounded p-2 flex items-center justify-between shadow-2xs">
             <div>
-                <p class="text-slate-400 text-[10px] font-mono uppercase tracking-wider">Monitored Fleet</p>
-                <p id="stat-vehicles" class="text-base font-bold font-mono text-slate-200 mt-0.5">2,008</p>
+                <p class="text-slate-500 text-[10px] font-mono uppercase tracking-wider font-semibold">Monitored Fleet</p>
+                <p id="stat-vehicles" class="text-base font-bold font-mono text-slate-800 mt-0.5">2,008</p>
             </div>
-            <span class="text-slate-500 font-mono text-[11px]">VEH-IDX</span>
+            <span class="text-slate-400 font-mono text-[11px]">VEH-IDX</span>
         </div>
 
         <!-- Interactive Blacklist Alerts Card with Dropdown -->
         <div class="relative">
             <div id="stat-alerts-card" onclick="toggleBlacklistDropdown(event)" 
-                 class="bg-[#181b22] hover:bg-[#1e222b] border border-[#282e3c] hover:border-red-500/40 rounded p-2 flex items-center justify-between cursor-pointer transition select-none">
+                 class="bg-fuchsia-50/50 hover:bg-fuchsia-50 border border-fuchsia-200 hover:border-fuchsia-300 rounded p-2 flex items-center justify-between cursor-pointer transition select-none shadow-2xs">
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <p class="text-slate-400 text-[10px] font-mono uppercase tracking-wider">Blacklist Hits</p>
-                        <span class="text-[9px] bg-red-950 text-red-400 border border-red-800/60 px-1 py-0.2 rounded font-mono font-bold">VIEW ▼</span>
+                        <p class="text-fuchsia-900 text-[10px] font-mono uppercase tracking-wider font-semibold">Blacklist Hits</p>
+                        <span class="text-[9px] bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200 px-1 py-0.2 rounded font-mono font-bold">VIEW ▼</span>
                     </div>
-                    <p id="stat-alerts" class="text-base font-bold font-mono text-red-400 mt-0.5">0</p>
+                    <p id="stat-alerts" class="text-base font-bold font-mono text-fuchsia-600 mt-0.5">0</p>
                 </div>
-                <span class="text-red-400 font-mono text-[10px]">PRIORITY</span>
+                <span class="text-fuchsia-600 font-mono text-[10px] font-bold">PRIORITY</span>
             </div>
 
             <!-- Blacklist Targets Dropdown / Popover -->
-            <div id="blacklist-dropdown" class="hidden absolute top-full right-0 md:w-96 mt-1.5 z-[9999] bg-[#181b22] border border-[#3b4354] rounded shadow-lg p-3 space-y-2.5">
-                <div class="flex items-center justify-between border-b border-[#292e3a] pb-2">
+            <div id="blacklist-dropdown" class="hidden absolute top-full right-0 md:w-96 mt-1.5 z-[9999] bg-white border border-slate-200 rounded shadow-xl p-3 space-y-2.5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                     <div class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                        <h3 class="text-xs font-bold text-slate-200 uppercase font-mono tracking-wider">Blacklist Target Registry</h3>
+                        <span class="w-2 h-2 rounded-full bg-fuchsia-600"></span>
+                        <h3 class="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">Blacklist Target Registry</h3>
                     </div>
-                    <span id="target-count-badge" class="text-[10px] font-mono bg-red-950 text-red-400 border border-red-800 px-1.5 py-0.2 rounded">5 Targets</span>
+                    <span id="target-count-badge" class="text-[10px] font-mono bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 px-1.5 py-0.2 rounded font-semibold">5 Targets</span>
                 </div>
-                <p class="text-[11px] text-slate-400">Select target below. Trajectory reconstruction requires Law Enforcement clearance.</p>
+                <p class="text-[11px] text-slate-500">Select target below. Trajectory reconstruction requires Law Enforcement clearance.</p>
                 
                 <div id="blacklist-target-list" class="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
-                    <div class="text-center text-slate-500 text-xs py-4">Loading targets...</div>
+                    <div class="text-center text-slate-400 text-xs py-4">Loading targets...</div>
                 </div>
 
-                <div class="pt-2 border-t border-[#292e3a] flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400 font-mono">
                     <span>ANPR DIRECT FEED</span>
-                    <button onclick="closeBlacklistDropdown()" class="text-slate-400 hover:text-slate-200 font-sans cursor-pointer">Close</button>
+                    <button onclick="closeBlacklistDropdown()" class="text-slate-600 hover:text-slate-900 font-sans cursor-pointer font-medium">Close</button>
                 </div>
             </div>
         </div>
@@ -201,91 +203,91 @@
     <div class="flex-grow flex gap-2.5 p-2.5 overflow-hidden">
         
         <!-- Left Sidebar: Trajectory Timeline / Macro Analytics Inspector -->
-        <div class="w-full md:w-96 lg:w-[420px] bg-[#181b22] rounded border border-[#282e3c] flex flex-col overflow-hidden shrink-0">
+        <div class="w-full md:w-96 lg:w-[420px] bg-white rounded border border-slate-200 flex flex-col overflow-hidden shrink-0 shadow-2xs">
             
             <!-- TRACKING MODE SIDEBAR CONTENT -->
             <div id="sidebar-tracking" class="hidden flex flex-col h-full">
-                <div class="bg-[#14171e] p-3 border-b border-[#282e3c] flex justify-between items-center">
+                <div class="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h2 class="font-bold text-slate-200 text-xs uppercase font-mono tracking-wider">Vehicle Trajectory</h2>
-                            <span class="text-[9px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-1 rounded">TIER-1 CLEARANCE</span>
+                            <h2 class="font-bold text-slate-800 text-xs uppercase font-mono tracking-wider">Vehicle Trajectory</h2>
+                            <span class="text-[9px] font-mono bg-orange-50 text-orange-700 border border-orange-200 px-1 rounded font-semibold">TIER-1 CLEARANCE</span>
                         </div>
-                        <p id="search-status" class="text-xs text-slate-400 mt-0.5">Enter a license plate or pick from targets...</p>
+                        <p id="search-status" class="text-xs text-slate-500 mt-0.5">Enter a license plate or pick from targets...</p>
                     </div>
-                    <div id="tracking-plate-badge" class="hidden font-mono text-xs bg-[#11141a] text-blue-400 border border-[#282e3c] px-2 py-0.5 rounded font-bold">
+                    <div id="tracking-plate-badge" class="hidden font-mono text-xs bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 px-2 py-0.5 rounded font-bold">
                         --
                     </div>
                 </div>
 
                 <!-- Route Stats Card -->
-                <div id="route-stats" class="hidden bg-[#14171e] p-2.5 border-b border-[#282e3c] grid grid-cols-3 gap-2 text-center text-xs">
+                <div id="route-stats" class="hidden bg-slate-50/80 p-2.5 border-b border-slate-200 grid grid-cols-3 gap-2 text-center text-xs">
                     <div>
-                        <p class="text-slate-400 text-[10px] uppercase font-mono">Camera Hops</p>
-                        <p id="stat-hops" class="font-mono font-bold text-slate-100 mt-0.5">-</p>
+                        <p class="text-slate-500 text-[10px] uppercase font-mono font-semibold">Camera Hops</p>
+                        <p id="stat-hops" class="font-mono font-bold text-slate-900 mt-0.5">-</p>
                     </div>
                     <div>
-                        <p class="text-slate-400 text-[10px] uppercase font-mono">Road Distance</p>
-                        <p id="stat-distance" class="font-mono font-bold text-blue-400 mt-0.5">-</p>
+                        <p class="text-slate-500 text-[10px] uppercase font-mono font-semibold">Road Distance</p>
+                        <p id="stat-distance" class="font-mono font-bold text-fuchsia-600 mt-0.5">-</p>
                     </div>
                     <div>
-                        <p class="text-slate-400 text-[10px] uppercase font-mono">Travel Duration</p>
-                        <p id="stat-duration" class="font-mono font-bold text-emerald-400 mt-0.5">-</p>
+                        <p class="text-slate-500 text-[10px] uppercase font-mono font-semibold">Travel Duration</p>
+                        <p id="stat-duration" class="font-mono font-bold text-orange-600 mt-0.5">-</p>
                     </div>
                 </div>
 
                 <!-- Timeline Container -->
                 <div id="timeline-container" class="flex-grow overflow-y-auto p-3 space-y-3">
-                    <div class="text-center text-slate-500 text-xs py-12 font-mono">
-                        Select a vehicle plate above (e.g. <span class="text-slate-300 font-bold cursor-pointer hover:underline" onclick="attemptTrackPlate('MH12AB1284')">MH12AB1284</span>) to reconstruct road trajectory.
+                    <div class="text-center text-slate-400 text-xs py-12 font-mono">
+                        Select a vehicle plate above (e.g. <span class="text-orange-600 font-bold cursor-pointer hover:underline" onclick="attemptTrackPlate('MH12AB1284')">MH12AB1284</span>) to reconstruct road trajectory.
                     </div>
                 </div>
             </div>
 
             <!-- ANALYTICS MODE SIDEBAR CONTENT -->
             <div id="sidebar-analytics" class="flex flex-col h-full overflow-hidden">
-                <div class="bg-[#14171e] p-3 border-b border-[#282e3c]">
+                <div class="bg-slate-50 p-3 border-b border-slate-200">
                     <div class="flex items-center justify-between">
-                        <h2 class="font-bold text-slate-200 text-xs uppercase font-mono tracking-wider">Macro Traffic Analytics</h2>
-                        <span class="text-[9px] font-mono bg-[#232834] text-slate-400 border border-[#32394a] px-1 rounded">PUBLIC</span>
+                        <h2 class="font-bold text-slate-800 text-xs uppercase font-mono tracking-wider">Macro Traffic Analytics</h2>
+                        <span class="text-[9px] font-mono bg-slate-100 text-slate-600 border border-slate-200 px-1 rounded font-semibold">PUBLIC</span>
                     </div>
-                    <p class="text-xs text-slate-400 mt-0.5">Click any camera node on map to inspect throughput.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Click any camera node on map to inspect throughput.</p>
                 </div>
 
                 <div class="flex-grow overflow-y-auto p-3 space-y-3">
                     <!-- Camera Selector & Inspector -->
-                    <div class="bg-[#14171e] border border-[#282e3c] rounded p-3">
-                        <label class="text-[10px] uppercase font-mono font-bold text-slate-400 tracking-wider block mb-1">
+                    <div class="bg-slate-50/80 border border-slate-200 rounded p-3">
+                        <label class="text-[10px] uppercase font-mono font-bold text-slate-500 tracking-wider block mb-1">
                             Inspect Camera Node:
                         </label>
-                        <select id="camera-select" onchange="inspectCamera(this.value)" class="w-full bg-[#11141a] border border-[#2d3444] rounded px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono">
+                        <select id="camera-select" onchange="inspectCamera(this.value)" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-orange-500 font-mono">
                             <option value="">Select Camera Node (306 Available)...</option>
                         </select>
 
                         <!-- Camera Detail Card -->
-                        <div id="camera-detail-card" class="mt-2.5 pt-2.5 border-t border-[#282e3c] hidden">
+                        <div id="camera-detail-card" class="mt-2.5 pt-2.5 border-t border-slate-200 hidden">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h3 id="cam-card-id" class="font-bold font-mono text-xs text-slate-100">CAM_001</h3>
-                                    <p id="cam-card-zone" class="text-[10px] text-slate-400 font-mono">Zone: Z1_Central</p>
+                                    <h3 id="cam-card-id" class="font-bold font-mono text-xs text-slate-900">CAM_001</h3>
+                                    <p id="cam-card-zone" class="text-[10px] text-slate-500 font-mono">Zone: Z1_Central</p>
                                 </div>
-                                <span id="cam-card-badge" class="px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-emerald-950 text-emerald-400 border border-emerald-800">
+                                <span id="cam-card-badge" class="px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
                                     FLOWING
                                 </span>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2 mt-2 text-center">
-                                <div class="bg-[#11141a] p-1.5 rounded border border-[#282e3c]">
-                                    <p class="text-[9px] text-slate-400 uppercase font-mono">Total Sighted</p>
-                                    <p id="cam-card-total" class="font-mono font-bold text-sm text-slate-100 mt-0.5">0</p>
+                                <div class="bg-white p-1.5 rounded border border-slate-200 shadow-2xs">
+                                    <p class="text-[9px] text-slate-400 uppercase font-mono font-semibold">Total Sighted</p>
+                                    <p id="cam-card-total" class="font-mono font-bold text-sm text-slate-900 mt-0.5">0</p>
                                 </div>
-                                <div class="bg-[#11141a] p-1.5 rounded border border-[#282e3c]">
-                                    <p class="text-[9px] text-slate-400 uppercase font-mono">Unique Plates</p>
-                                    <p id="cam-card-unique" class="font-mono font-bold text-sm text-blue-400 mt-0.5">0</p>
+                                <div class="bg-white p-1.5 rounded border border-slate-200 shadow-2xs">
+                                    <p class="text-[9px] text-slate-400 uppercase font-mono font-semibold">Unique Plates</p>
+                                    <p id="cam-card-unique" class="font-mono font-bold text-sm text-orange-600 mt-0.5">0</p>
                                 </div>
                             </div>
 
-                            <p class="text-[10px] uppercase font-mono font-bold text-slate-400 tracking-wider mt-2.5 mb-1">Recent Vehicles Sighted:</p>
+                            <p class="text-[10px] uppercase font-mono font-bold text-slate-500 tracking-wider mt-2.5 mb-1">Recent Vehicles Sighted:</p>
                             <div id="cam-recent-plates" class="space-y-1 max-h-36 overflow-y-auto font-mono">
                                 <!-- Plate items injected here -->
                             </div>
@@ -293,8 +295,8 @@
                     </div>
 
                     <!-- Zone Traffic Density Breakdown -->
-                    <div class="bg-[#14171e] border border-[#282e3c] rounded p-3">
-                        <h3 class="text-[10px] uppercase font-mono font-bold text-slate-400 tracking-wider mb-2">
+                    <div class="bg-slate-50/80 border border-slate-200 rounded p-3">
+                        <h3 class="text-[10px] uppercase font-mono font-bold text-slate-500 tracking-wider mb-2">
                             Corridor Traffic Distribution:
                         </h3>
                         <div id="zone-density-bars" class="space-y-2.5">
@@ -306,52 +308,52 @@
         </div>
 
         <!-- Right Main: GIS Map Canvas -->
-        <div class="flex-grow bg-[#181b22] rounded border border-[#282e3c] overflow-hidden relative flex flex-col">
-            <div id="map" class="w-full h-full z-0 osm-dark"></div>
+        <div class="flex-grow bg-white rounded border border-slate-200 overflow-hidden relative flex flex-col shadow-2xs">
+            <div id="map" class="w-full h-full z-0"></div>
 
             <!-- Map Control Overlays -->
-            <div class="absolute top-3 right-3 z-[400] bg-[#181b22] border border-[#282e3c] px-2 py-1 rounded flex items-center gap-2 text-xs">
-                <span id="active-mode-badge" class="font-mono text-[10px] text-slate-300 uppercase">
+            <div class="absolute top-3 right-3 z-[400] bg-white/95 border border-slate-200 px-2.5 py-1 rounded flex items-center gap-2 text-xs shadow-sm">
+                <span id="active-mode-badge" class="font-mono text-[10px] text-slate-700 uppercase font-semibold">
                     Mode: Traffic Analytics
                 </span>
-                <span class="text-slate-600">|</span>
-                <button id="toggle-layer" onclick="toggleMapStyle()" class="text-slate-400 hover:text-slate-200 transition font-mono text-[11px]">
-                    Style: Dark
+                <span class="text-slate-300">|</span>
+                <button id="toggle-layer" onclick="toggleMapStyle()" class="text-slate-500 hover:text-slate-800 transition font-mono text-[11px] font-medium">
+                    Style: Street
                 </button>
             </div>
 
             <!-- Map Overlay Legend -->
-            <div class="absolute bottom-3 left-3 z-[400] bg-[#181b22] border border-[#282e3c] p-2.5 rounded text-xs space-y-1.5 text-slate-300 pointer-events-auto">
-                <p id="legend-title" class="font-bold text-slate-200 text-[10px] uppercase font-mono tracking-wider mb-1">Traffic Density Heatmap</p>
+            <div class="absolute bottom-3 left-3 z-[400] bg-white/95 border border-slate-200 p-2.5 rounded text-xs space-y-1.5 text-slate-700 shadow-md pointer-events-auto">
+                <p id="legend-title" class="font-bold text-slate-800 text-[10px] uppercase font-mono tracking-wider mb-1">Traffic Density Heatmap</p>
                 <div id="legend-tracking-items" class="hidden font-mono text-[11px] space-y-1">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-slate-500 border border-slate-300"></span>
+                        <span class="w-2 h-2 rounded-full bg-slate-400 border border-slate-600"></span>
                         <span>ANPR Camera Node</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 border border-white"></span>
+                        <span class="w-2 h-2 rounded-full bg-orange-500 border border-white"></span>
                         <span>Sequence Waypoint</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+                        <span class="w-2 h-2 rounded-full bg-fuchsia-600 border border-white"></span>
                         <span>Latest Sighting</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-3.5 h-1 bg-blue-500 rounded-sm"></span>
-                        <span class="text-blue-400 font-semibold">Snapped Road Trajectory</span>
+                        <span class="w-3.5 h-1 bg-fuchsia-600 rounded-sm"></span>
+                        <span class="text-fuchsia-600 font-semibold">Snapped Road Trajectory</span>
                     </div>
                 </div>
                 <div id="legend-analytics-items" class="font-mono text-[11px] space-y-1">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-fuchsia-600"></span>
                         <span>Critical Congestion</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-orange-600"></span>
                         <span>High Volume</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-orange-400"></span>
                         <span>Moderate Traffic</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -364,49 +366,49 @@
     </div>
 
     <!-- Security Personnel Clearance Authentication Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-[#0a0c10]/80 backdrop-blur-sm">
-        <div class="bg-[#181b22] border border-[#384050] rounded shadow-xl max-w-md w-full p-5 space-y-3.5 relative">
+    <div id="auth-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+        <div class="bg-white border border-slate-200 rounded-lg shadow-2xl max-w-md w-full p-5 space-y-3.5 relative">
             
             <!-- Security Header -->
-            <div class="flex items-center justify-between border-b border-[#292e3a] pb-2.5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    <h3 class="text-xs font-bold text-slate-100 uppercase font-mono tracking-wider">Restricted Surveillance Access</h3>
+                    <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                    <h3 class="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">Restricted Surveillance Access</h3>
                 </div>
-                <span class="text-[9px] font-mono text-slate-400 border border-[#2d3444] px-1 py-0.2 rounded">PROTOCOL 104-B</span>
+                <span class="text-[9px] font-mono text-orange-700 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded font-bold">PROTOCOL 104-B</span>
             </div>
 
             <!-- Privacy Notice -->
-            <div class="bg-[#14171e] border border-[#282e3c] rounded p-2.5 text-xs text-slate-300 space-y-1">
-                <p class="font-semibold text-slate-200">Law Enforcement Clearance Required:</p>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+            <div class="bg-orange-50/60 border border-orange-200 rounded p-2.5 text-xs text-slate-700 space-y-1">
+                <p class="font-semibold text-slate-900">Law Enforcement Clearance Required:</p>
+                <p class="text-[11px] text-slate-600 leading-relaxed">
                     Under Municipal Privacy Regulations, individual vehicle tracking and camera transit logs are restricted. Enter authorized personnel credentials to inspect vehicle trajectories.
                 </p>
             </div>
 
             <!-- Error Banner -->
-            <div id="auth-error-banner" class="hidden bg-[#241315] border border-red-800 rounded p-2 text-xs text-red-300 font-medium">
+            <div id="auth-error-banner" class="hidden bg-red-50 border border-red-200 rounded p-2 text-xs text-red-700 font-medium">
                 <!-- Error text injected here -->
             </div>
 
             <!-- Login Form (Clean, Manual Typing, No Autofill) -->
             <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-2.5">
                 <div>
-                    <label class="block text-[10px] font-mono uppercase text-slate-400 tracking-wider mb-1">Operator ID / Email</label>
+                    <label class="block text-[10px] font-mono uppercase text-slate-600 tracking-wider mb-1 font-semibold">Operator ID / Email</label>
                     <input type="text" id="auth-username" required placeholder="e.g. officer.sharma@sentinel.gov" 
-                           class="w-full bg-[#11141a] border border-[#2d3444] rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono">
+                           class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 font-mono">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-mono uppercase text-slate-400 tracking-wider mb-1">Clearance Password</label>
+                    <label class="block text-[10px] font-mono uppercase text-slate-600 tracking-wider mb-1 font-semibold">Clearance Password</label>
                     <input type="password" id="auth-password" required placeholder="••••••••••••" 
-                           class="w-full bg-[#11141a] border border-[#2d3444] rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono">
+                           class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 font-mono">
                 </div>
 
                 <div class="pt-2 flex gap-2">
-                    <button type="button" onclick="closeAuthModal()" class="w-1/2 px-3 py-1.5 rounded text-xs font-medium bg-[#1f2430] hover:bg-[#282e3d] text-slate-300 border border-[#2d3444] transition">
+                    <button type="button" onclick="closeAuthModal()" class="w-1/2 px-3 py-1.5 rounded text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" id="btn-auth-submit" class="w-1/2 px-3 py-1.5 rounded text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition flex items-center justify-center gap-1">
+                    <button type="submit" id="btn-auth-submit" class="w-1/2 px-3 py-1.5 rounded text-xs font-semibold bg-gradient-to-r from-orange-600 to-fuchsia-600 hover:from-orange-500 hover:to-fuchsia-500 text-white transition flex items-center justify-center gap-1 shadow-xs cursor-pointer">
                         Authenticate
                     </button>
                 </div>
@@ -432,13 +434,13 @@
         const map = L.map('map', { zoomControl: false }).setView([28.6139, 77.2090], 12);
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        // OpenStreetMap Tile Layer
+        // OpenStreetMap Tile Layer (Clean White Street Tiles by Default)
         const osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors | SentinelGrid Tactical',
             maxZoom: 19
         }).addTo(map);
 
-        let isDarkStyle = true;
+        let isDarkStyle = false;
         function toggleMapStyle() {
             const mapContainer = document.getElementById('map');
             const btn = document.getElementById('toggle-layer');
@@ -474,17 +476,17 @@
             if (isAuthorized()) {
                 if (lockIcon) lockIcon.innerText = "🔓";
                 if (authPill) {
-                    authPill.className = "text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-1 rounded font-mono font-medium";
+                    authPill.className = "text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1 rounded font-mono font-medium";
                     authPill.innerText = "CLEARANCE ACTIVE";
                 }
                 container.innerHTML = `
-                    <div class="flex items-center gap-2 bg-[#11141a] border border-[#2d3444] rounded px-2.5 py-1 text-xs font-mono">
+                    <div class="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded px-2.5 py-1 text-xs font-mono shadow-2xs">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                         <div class="text-left">
-                            <span class="font-bold text-slate-200 text-[11px]">${authSession.operator?.name || 'Officer'}</span>
-                            <span class="text-[10px] text-slate-400 ml-1 font-mono">(${authSession.operator?.badge_id || 'TIER-1'})</span>
+                            <span class="font-bold text-slate-800 text-[11px]">${authSession.operator?.name || 'Officer'}</span>
+                            <span class="text-[10px] text-orange-700 ml-1 font-mono font-semibold">(${authSession.operator?.badge_id || 'TIER-1'})</span>
                         </div>
-                        <button onclick="logoutOperator()" title="Lock Tracking & Sign Out" class="ml-1 text-slate-400 hover:text-red-400 transition font-bold px-1 text-xs">
+                        <button onclick="logoutOperator()" title="Lock Tracking & Sign Out" class="ml-1 text-slate-400 hover:text-red-500 transition font-bold px-1 text-xs cursor-pointer">
                             ✕
                         </button>
                     </div>
@@ -492,11 +494,11 @@
             } else {
                 if (lockIcon) lockIcon.innerText = "🔒";
                 if (authPill) {
-                    authPill.className = "text-[9px] bg-[#292418] text-amber-400 border border-[#443820] px-1 rounded font-mono font-medium";
+                    authPill.className = "text-[9px] bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 px-1 rounded font-mono font-medium";
                     authPill.innerText = "RESTRICTED";
                 }
                 container.innerHTML = `
-                    <button onclick="openAuthModal()" class="bg-[#1f2430] hover:bg-[#282e3d] border border-[#2d3444] text-slate-300 px-2.5 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 cursor-pointer">
+                    <button onclick="openAuthModal()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-2.5 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
                         <span>🔒</span>
                         <span>Officer Sign In</span>
                     </button>
@@ -613,14 +615,14 @@
             const legendAnalytics = document.getElementById("legend-analytics-items");
 
             if (mode === 'tracking') {
-                btnTrack.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-blue-600 text-white";
-                btnAnalytics.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                btnTrack.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-fuchsia-600 text-white shadow-xs";
+                btnAnalytics.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
                 sidebarTrack.classList.remove("hidden");
                 sidebarAnalytics.classList.add("hidden");
                 searchBar.classList.remove("hidden");
                 intervalBar.classList.add("hidden");
                 modeBadge.innerText = "Mode: Vehicle Tracking (Authorized)";
-                modeBadge.className = "font-mono text-[10px] text-blue-400 uppercase font-semibold";
+                modeBadge.className = "font-mono text-[10px] text-fuchsia-600 uppercase font-semibold";
                 legendTitle.innerText = "Snapped Road Trajectory";
                 legendTrack.classList.remove("hidden");
                 legendAnalytics.classList.add("hidden");
@@ -636,14 +638,14 @@
                 resetCameraPinStyles();
 
             } else {
-                btnTrack.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
-                btnAnalytics.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-blue-600 text-white";
+                btnTrack.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+                btnAnalytics.className = "px-3 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 bg-orange-600 text-white shadow-xs";
                 sidebarTrack.classList.add("hidden");
                 sidebarAnalytics.classList.remove("hidden");
                 searchBar.classList.add("hidden");
                 intervalBar.classList.remove("hidden");
                 modeBadge.innerText = "Mode: Traffic Analytics";
-                modeBadge.className = "font-mono text-[10px] text-slate-300 uppercase";
+                modeBadge.className = "font-mono text-[10px] text-slate-700 uppercase font-semibold";
                 legendTitle.innerText = "Traffic Density Heatmap";
                 legendTrack.classList.add("hidden");
                 legendAnalytics.classList.remove("hidden");
@@ -671,7 +673,7 @@
                 const statusEl = document.getElementById("search-status");
                 if (statusEl) {
                     statusEl.innerText = "Enter a license plate above...";
-                    statusEl.className = "text-xs text-slate-400 mt-0.5";
+                    statusEl.className = "text-xs text-slate-500 mt-0.5";
                 }
 
                 // Load and render heatmap & density
@@ -687,9 +689,7 @@
         function toggleBlacklistDropdown(e) {
             if (e) e.stopPropagation();
             const dd = document.getElementById("blacklist-dropdown");
-            if (!dd) return;
-            const isHidden = dd.classList.contains("hidden");
-            if (isHidden) {
+            if (dd.classList.contains("hidden")) {
                 dd.classList.remove("hidden");
                 loadBlacklistTargets();
             } else {
@@ -722,28 +722,28 @@
                 if (!listContainer) return;
                 
                 if (blacklistTargets.length === 0) {
-                    listContainer.innerHTML = `<div class="text-center text-slate-500 text-xs py-4 font-mono">No active blacklist targets.</div>`;
+                    listContainer.innerHTML = `<div class="text-center text-slate-400 text-xs py-4 font-mono">No active blacklist targets.</div>`;
                     return;
                 }
 
                 listContainer.innerHTML = "";
                 blacklistTargets.forEach(t => {
                     const item = document.createElement("div");
-                    item.className = "bg-[#14171e] hover:bg-[#1a1e27] border border-[#282e3c] hover:border-red-500/40 p-2.5 rounded transition cursor-pointer group";
+                    item.className = "bg-slate-50 hover:bg-fuchsia-50/40 border border-slate-200 hover:border-fuchsia-300 p-2.5 rounded transition cursor-pointer group shadow-2xs";
                     item.onclick = () => selectBlacklistTarget(t.plate_text);
 
                     const timeStr = t.last_seen_ts ? new Date(t.last_seen_ts).toLocaleTimeString() : 'Recent';
                     item.innerHTML = `
                         <div class="flex justify-between items-center">
-                            <span class="font-mono font-bold text-xs text-red-400 group-hover:text-red-300 tracking-wider">${t.plate_text}</span>
-                            <span class="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-red-950 text-red-400 border border-red-800">
+                            <span class="font-mono font-bold text-xs text-fuchsia-700 group-hover:text-fuchsia-800 tracking-wider">${t.plate_text}</span>
+                            <span class="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200">
                                 ${t.alert_count} Hits
                             </span>
                         </div>
-                        <p class="text-[11px] text-slate-300 mt-1">${t.reason}</p>
-                        <div class="flex justify-between items-center text-[10px] text-slate-500 font-mono mt-1.5 pt-1.5 border-t border-[#232734]">
+                        <p class="text-[11px] text-slate-600 mt-1">${t.reason}</p>
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono mt-1.5 pt-1.5 border-t border-slate-200">
                             <span>Last: ${t.last_camera_id || 'Network'} (${timeStr})</span>
-                            <span class="text-blue-400 font-semibold group-hover:underline">
+                            <span class="text-orange-600 font-semibold group-hover:underline">
                                 Track ➔
                             </span>
                         </div>
@@ -785,8 +785,8 @@
 
                     const marker = L.circleMarker([cam.lat, cam.lon], {
                         radius: 4,
-                        fillColor: "#475569",
-                        color: "#94a3b8",
+                        fillColor: "#64748b",
+                        color: "#334155",
                         weight: 1,
                         fillOpacity: 0.85
                     }).addTo(map);
@@ -802,7 +802,7 @@
 
                     marker.bindPopup(`
                         <div class="text-slate-900 font-sans p-1 text-xs">
-                            <b class="text-sm font-bold text-blue-700 font-mono">${cam.camera_id}</b><br/>
+                            <b class="text-sm font-bold text-orange-600 font-mono">${cam.camera_id}</b><br/>
                             <span class="text-slate-600 font-medium">Zone: ${cam.zone}</span><br/>
                             <span class="font-mono text-[10px] text-slate-500">${cam.lat.toFixed(4)}, ${cam.lon.toFixed(4)}</span>
                         </div>
@@ -818,8 +818,8 @@
             Object.values(cameraMarkers).forEach(marker => {
                 marker.setStyle({
                     radius: 4,
-                    fillColor: "#475569",
-                    color: "#94a3b8",
+                    fillColor: "#64748b",
+                    color: "#334155",
                     weight: 1,
                     fillOpacity: 0.85
                 });
@@ -831,9 +831,9 @@
             currentInterval = interval;
             document.querySelectorAll(".interval-btn").forEach(b => {
                 if (b.getAttribute("data-val") === interval) {
-                    b.className = "interval-btn px-2 py-0.5 rounded text-[11px] font-medium bg-blue-600 text-white";
+                    b.className = "interval-btn px-2 py-0.5 rounded text-[11px] font-medium bg-orange-600 text-white shadow-xs";
                 } else {
-                    b.className = "interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-slate-200";
+                    b.className = "interval-btn px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-900";
                 }
             });
             loadHeatmapAndDensity();
@@ -863,11 +863,11 @@
                             maxZoom: 15,
                             max: 1.0,
                             gradient: {
-                                0.2: '#2563eb',
-                                0.4: '#16a34a',
-                                0.6: '#ca8a04',
-                                0.8: '#ea580c',
-                                1.0: '#dc2626'
+                                0.2: '#fdba74',
+                                0.4: '#fb923c',
+                                0.6: '#ea580c',
+                                0.8: '#d946ef',
+                                1.0: '#c026d3'
                             }
                         }).addTo(map);
                     }
@@ -875,17 +875,17 @@
                     (data.points || []).forEach(p => {
                         const m = cameraMarkers[p.camera_id];
                         if (m) {
-                            let fillColor = "#16a34a";
-                            if (p.count > 50) fillColor = "#dc2626";
-                            else if (p.count > 25) fillColor = "#ea580c";
-                            else if (p.count > 10) fillColor = "#ca8a04";
+                            let fillColor = "#16a34a"; // flowing
+                            if (p.count > 50) fillColor = "#c026d3"; // critical magenta
+                            else if (p.count > 25) fillColor = "#ea580c"; // high volume orange
+                            else if (p.count > 10) fillColor = "#f97316"; // moderate orange
 
                             m.setStyle({
                                 radius: p.count > 30 ? 5.5 : 4,
                                 fillColor: fillColor,
                                 color: "#ffffff",
-                                weight: 1,
-                                fillOpacity: 0.9
+                                weight: 1.5,
+                                fillOpacity: 0.95
                             });
                         }
                     });
@@ -914,65 +914,71 @@
                 item.className = "text-xs";
                 item.innerHTML = `
                     <div class="flex justify-between items-center mb-1">
-                        <span class="font-medium text-slate-300">${z.zone}</span>
-                        <span class="font-mono text-[10px] text-slate-400">${z.total_sightings.toLocaleString()} (${z.percentage}%)</span>
+                        <span class="font-medium text-slate-700">${z.zone}</span>
+                        <span class="font-mono text-[10px] text-slate-500 font-semibold">${z.total_sightings.toLocaleString()} (${z.percentage}%)</span>
                     </div>
-                    <div class="w-full bg-[#11141a] rounded-sm h-1.5 overflow-hidden">
-                        <div class="bg-blue-600 h-1.5 rounded-sm" style="width: ${Math.min(100, z.percentage * 2)}%"></div>
+                    <div class="w-full bg-slate-200 rounded-sm h-1.5 overflow-hidden">
+                        <div class="bg-gradient-to-r from-orange-500 to-fuchsia-500 h-1.5 rounded-sm" style="width: ${Math.min(100, z.percentage * 2)}%"></div>
                     </div>
                 `;
                 container.appendChild(item);
             });
         }
 
-        // 7. Inspect a Specific Camera Node
+        // 7. Inspect Camera Node
         async function inspectCamera(cameraId) {
-            if (!cameraId) return;
-            const card = document.getElementById("camera-detail-card");
-            card.classList.remove("hidden");
+            const detailCard = document.getElementById("camera-detail-card");
+            if (!cameraId) {
+                detailCard.classList.add("hidden");
+                return;
+            }
 
             try {
                 const res = await fetch(`${API_BASE}/analytics/camera/${cameraId}?interval=${currentInterval}`);
                 if (!res.ok) return;
-                const cam = await res.json();
+                const data = await res.json();
 
-                document.getElementById("cam-card-id").innerText = cam.camera_id;
-                document.getElementById("cam-card-zone").innerText = `Zone: ${cam.zone}`;
-                document.getElementById("cam-card-total").innerText = cam.total_sightings.toLocaleString();
-                document.getElementById("cam-card-unique").innerText = cam.unique_vehicles.toLocaleString();
-
+                detailCard.classList.remove("hidden");
+                document.getElementById("cam-card-id").innerText = data.camera_id;
+                document.getElementById("cam-card-zone").innerText = `Zone: ${data.zone}`;
+                
                 const badge = document.getElementById("cam-card-badge");
-                badge.innerText = cam.congestion_level;
-                if (cam.congestion_level === 'CRITICAL') {
-                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-red-950 text-red-400 border border-red-800";
-                } else if (cam.congestion_level === 'HIGH') {
-                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-amber-950 text-amber-400 border border-amber-800";
-                } else if (cam.congestion_level === 'MODERATE') {
-                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-blue-950 text-blue-400 border border-blue-800";
+                badge.innerText = data.status;
+                if (data.status === 'CRITICAL') {
+                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200";
+                } else if (data.status === 'HIGH') {
+                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-orange-100 text-orange-800 border border-orange-200";
+                } else if (data.status === 'MODERATE') {
+                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-amber-100 text-amber-800 border border-amber-200";
                 } else {
-                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-emerald-950 text-emerald-400 border border-emerald-800";
+                    badge.className = "px-1.5 py-0.2 rounded text-[10px] font-bold font-mono uppercase bg-emerald-50 text-emerald-700 border border-emerald-200";
                 }
 
-                // Recent plates list with auth gating
-                const platesContainer = document.getElementById("cam-recent-plates");
-                platesContainer.innerHTML = "";
-                (cam.recent_sightings || []).slice(0, 8).forEach(s => {
-                    const timeStr = new Date(s.ts).toLocaleTimeString();
-                    const el = document.createElement("div");
-                    el.className = "flex justify-between items-center bg-[#11141a] px-2 py-1 rounded border border-[#232734] text-[11px]";
-                    el.innerHTML = `
-                        <span class="font-mono font-semibold text-slate-200 hover:text-blue-400 cursor-pointer flex items-center gap-1" onclick="attemptTrackPlate('${s.plate_text}')">
-                            ${s.plate_text}
-                            <span class="text-[9px] text-slate-500">➔</span>
-                        </span>
-                        <span class="text-slate-500 font-mono text-[10px]">${timeStr}</span>
-                    `;
-                    platesContainer.appendChild(el);
-                });
+                document.getElementById("cam-card-total").innerText = (data.total_sightings || 0).toLocaleString();
+                document.getElementById("cam-card-unique").innerText = (data.unique_plates || 0).toLocaleString();
 
-                map.setView([cam.lat, cam.lon], 15, { animate: true });
-                if (cameraMarkers[cam.camera_id]) {
-                    cameraMarkers[cam.camera_id].openPopup();
+                const platesList = document.getElementById("cam-recent-plates");
+                platesList.innerHTML = "";
+                if (data.recent_vehicles && data.recent_vehicles.length > 0) {
+                    data.recent_vehicles.forEach(v => {
+                        const el = document.createElement("div");
+                        el.className = "flex justify-between items-center bg-white px-2 py-1 rounded border border-slate-200 text-[11px] shadow-2xs";
+                        const timeStr = new Date(v.ts).toLocaleTimeString();
+                        el.innerHTML = `
+                            <span class="font-bold text-slate-800 cursor-pointer hover:text-orange-600 hover:underline" onclick="attemptTrackPlate('${v.plate_text}')">${v.plate_text}</span>
+                            <span class="text-[10px] text-slate-400">${timeStr}</span>
+                        `;
+                        platesList.appendChild(el);
+                    });
+                } else {
+                    platesList.innerHTML = `<span class="text-[10px] text-slate-400">No vehicles in selected interval</span>`;
+                }
+
+                // Highlight camera on map
+                const m = cameraMarkers[cameraId];
+                if (m) {
+                    map.setView(m.getLatLng(), Math.max(map.getZoom(), 14));
+                    m.openPopup();
                 }
 
             } catch (err) {
@@ -980,7 +986,7 @@
             }
         }
 
-        // 8. Global Analytics Polling
+        // 8. General Analytics Summary
         async function fetchAnalytics() {
             try {
                 const res = await fetch(`${API_BASE}/analytics/summary`);
@@ -1024,7 +1030,7 @@
             const statsCard = document.getElementById("route-stats");
 
             statusEl.innerText = `Reconstructing road route for ${plate}...`;
-            statusEl.className = "text-xs text-blue-400 mt-0.5 font-mono";
+            statusEl.className = "text-xs text-orange-600 mt-0.5 font-mono font-semibold";
             badgeEl.innerText = plate;
             badgeEl.classList.remove("hidden");
 
@@ -1041,19 +1047,19 @@
 
                 if (res.status === 401 || res.status === 403) {
                     statusEl.innerText = "Clearance Required to View Trajectory.";
-                    statusEl.className = "text-xs text-red-400 mt-0.5 font-mono";
+                    statusEl.className = "text-xs text-fuchsia-600 mt-0.5 font-mono font-semibold";
                     openAuthModal(() => trackPlate(plate), plate);
                     return;
                 }
 
                 if (!res.ok) {
                     statusEl.innerText = `No sightings recorded for ${plate}.`;
-                    statusEl.className = "text-xs text-amber-400 mt-0.5 font-mono";
+                    statusEl.className = "text-xs text-amber-600 mt-0.5 font-mono font-semibold";
                     clearTrajectory();
                     statsCard.classList.add("hidden");
                     timelineEl.innerHTML = `
-                        <div class="text-center text-slate-500 text-xs py-10 font-mono">
-                            No telemetry exists for plate <span class="text-slate-300 font-bold">${plate}</span>.
+                        <div class="text-center text-slate-400 text-xs py-10 font-mono">
+                            No telemetry exists for plate <span class="text-slate-800 font-bold">${plate}</span>.
                         </div>
                     `;
                     return;
@@ -1063,7 +1069,7 @@
                 if (thisRequestId !== activeTrackRequestId || currentMode !== 'tracking') return;
 
                 statusEl.innerText = `Found ${data.length} sightings. Snapped to road network.`;
-                statusEl.className = "text-xs text-emerald-400 mt-0.5 font-mono";
+                statusEl.className = "text-xs text-emerald-600 mt-0.5 font-mono font-semibold";
 
                 await plotRoadTrajectory(data, plate, thisRequestId);
                 if (thisRequestId !== activeTrackRequestId || currentMode !== 'tracking') return;
@@ -1073,7 +1079,7 @@
             } catch (err) {
                 if (thisRequestId === activeTrackRequestId && currentMode === 'tracking') {
                     statusEl.innerText = "Error connecting to SentinelGrid API.";
-                    statusEl.className = "text-xs text-red-400 mt-0.5 font-mono";
+                    statusEl.className = "text-xs text-red-500 mt-0.5 font-mono";
                 }
             }
         }
@@ -1126,9 +1132,10 @@
 
             const finalCoords = roadCoords.length > 0 ? roadCoords : waypointCoords;
 
+            // Magenta Road Trajectory Polyline
             currentRoadPolyline = L.polyline(finalCoords, {
-                color: "#2563eb",
-                weight: 4,
+                color: "#c026d3",
+                weight: 4.5,
                 opacity: 0.95,
                 lineJoin: "round",
                 lineCap: "round"
@@ -1151,8 +1158,8 @@
                 marker.bindPopup(`
                     <div class="text-slate-900 font-sans p-1 text-xs">
                         <span class="font-bold text-slate-800 font-mono">Stop #${index + 1} (${isStart ? 'Origin' : isLatest ? 'Latest Sighting' : 'Waypoint'})</span><br/>
-                        <span class="font-bold text-blue-700 font-mono">Camera: ${point.camera_id}</span><br/>
-                        <span class="font-mono font-bold ${isLatest ? 'text-red-600' : 'text-slate-800'}">${plate}</span><br/>
+                        <span class="font-bold text-orange-600 font-mono">Camera: ${point.camera_id}</span><br/>
+                        <span class="font-mono font-bold ${isLatest ? 'text-fuchsia-600' : 'text-slate-900'}">${plate}</span><br/>
                         <span class="text-slate-500 font-mono text-[10px]">${dateObj.toLocaleTimeString()} (${dateObj.toLocaleDateString()})</span>
                     </div>
                 `);
@@ -1187,7 +1194,7 @@
             const statusEl = document.getElementById("search-status");
             if (statusEl) {
                 statusEl.innerText = `Route displayed across ${points.length} sightings for ${plate}.`;
-                statusEl.className = "text-xs text-emerald-400 mt-0.5 font-mono";
+                statusEl.className = "text-xs text-emerald-600 mt-0.5 font-mono font-semibold";
             }
         }
 
@@ -1205,18 +1212,18 @@
                 const dateObj = new Date(point.ts);
 
                 const item = document.createElement("div");
-                item.className = "relative pl-4 border-l " + (isLatest ? "border-red-500" : "border-slate-700");
+                item.className = "relative pl-4 border-l " + (isLatest ? "border-fuchsia-500" : "border-slate-300");
                 item.innerHTML = `
-                    <div class="absolute w-2 h-2 rounded-full -left-[4.5px] top-1.5 ${isLatest ? 'bg-red-500' : 'bg-blue-600'}"></div>
-                    <div class="bg-[#14171e] border border-[#282e3c] p-2 rounded">
+                    <div class="absolute w-2.5 h-2.5 rounded-full -left-[5px] top-1.5 ${isLatest ? 'bg-fuchsia-600 ring-2 ring-fuchsia-100' : 'bg-orange-500'}"></div>
+                    <div class="bg-slate-50 border border-slate-200 p-2 rounded shadow-2xs">
                         <div class="flex justify-between items-start font-mono">
-                            <span class="font-bold text-[11px] ${isLatest ? 'text-red-400' : 'text-blue-400'}">
+                            <span class="font-bold text-[11px] ${isLatest ? 'text-fuchsia-600' : 'text-orange-600'}">
                                 Hop #${chronologicalIndex} · ${point.camera_id}
                             </span>
-                            <span class="text-[10px] text-slate-500">${dateObj.toLocaleDateString()}</span>
+                            <span class="text-[10px] text-slate-400">${dateObj.toLocaleDateString()}</span>
                         </div>
-                        <p class="text-[11px] text-slate-200 font-mono mt-0.5">${dateObj.toLocaleTimeString()}</p>
-                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">Loc: ${point.lat.toFixed(4)}, ${point.lon.toFixed(4)}</p>
+                        <p class="text-[11px] text-slate-800 font-mono mt-0.5 font-semibold">${dateObj.toLocaleTimeString()}</p>
+                        <p class="text-[9px] text-slate-400 font-mono mt-0.5">Loc: ${point.lat.toFixed(4)}, ${point.lon.toFixed(4)}</p>
                     </div>
                 `;
                 container.appendChild(item);
