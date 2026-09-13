@@ -22,4 +22,25 @@ class DataBlock(BaseModel):
     conf: float
     location: Location
     resolution: Resolution
-    quality: strMa
+    quality: str
+
+class Trackpoint(BaseModel):
+    lat: float
+    lon: float
+    ts: datetime
+    camera_id: str
+
+class AlertOut(BaseModel):
+    id: int
+    type: str
+    plate_text: str
+    camera_id: str
+    ts: datetime
+
+class BlacklistTargetOut(BaseModel):
+    plate_text: str
+    reason: str
+    added_ts: datetime
+    alert_count: int
+    last_camera_id: Optional[str] = None
+    last_seen_ts: Optional[datetime] = None

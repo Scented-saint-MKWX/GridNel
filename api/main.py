@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from . import tracking, alerts, analytics
+from . import tracking, alerts, analytics, auth
 from .ingest import ingest_block
 from .schemas import DataBlock
 
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 # Feature Routers
+app.include_router(auth.router, tags=["Authentication"])
 app.include_router(tracking.router, tags=["Tracking"])
 app.include_router(alerts.router, tags=["Alerts"])
 app.include_router(analytics.router, tags=["Analytics"])
