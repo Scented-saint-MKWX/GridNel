@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException,Request
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import your modular routers and scripts
@@ -16,6 +17,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+templates = Jinja2Templates(directory="app/templates")
+
+@app.get("/")
+def dashboard(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request}
+    )
 
 # Mount the separate feature files
 app.include_router(tracking.router, tags=["Tracking"])

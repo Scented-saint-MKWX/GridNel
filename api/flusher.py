@@ -10,7 +10,7 @@ import redis
 import psycopg2
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-DB_DSN = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sentinel")
+DB_DSN = os.getenv("DATABASE_URL", "postgresql://sentinel_user:12345678@localhost:5432/sentinelgrid")
 
 # Connect to Redis
 r = redis.Redis.from_url(REDIS_URL, decode_responses=True)

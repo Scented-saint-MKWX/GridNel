@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SentinelGrid — ANPR Command Center</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #0b1220;
+            color: #e5e7eb;
+        }
+
+        .header {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: #111827;
+            border-bottom: 1px solid #263244;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        #map {
+            height: 650px;
+            border-radius: 10px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .search {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        input {
+            flex: 1;
+            padding: 11px 12px;
+            border-radius: 7px;
+            border: 1px solid #374151;
+            background: #0f172a;
+            color: white;
+            outline: none;
+        }
+
+        button {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .alerts {
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .alert {
+            padding: 12px;
+            border-bottom: 1px solid #263244;
+        }
+
+        .alert:last-child {
+            border-bottom: none;
+        }
+
+        .alert-type {
+            font-size: 11px;
+            color: #f87171;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .plate {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 4px 0;
+        }
+
+        .alert-meta {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .track-info {
+            margin-top: 16px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="brand">SentinelGrid</div>
+
+    <div class="status">
+        <span class="status-dot"></span>
+        System Online
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- ANALYTICS -->
+
+    <section class="stats">
+
+        <div class="card">
+            <div class="stat-label">Total Sightings</div>
+            <div class="stat-value" id="totalSightings">—</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-label">Active Cameras</div>
+            <div class="stat-value" id="activeCameras">—</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-label">Active Alerts</div>
+            <div class="stat-value" id="activeAlerts">—</div>
+        </div>
+
+    </section>
+
+
+    <section class="main-grid">
+
+        <!-- MAP -->
+
+        <div class="card">
+
+            <div class="panel-title">
+                GIS Vehicle Tracking
+            </div>
+
+            <div class="search">
+
+                <input
+                    id="plateInput"
+                    type="text"
+                    placeholder="Enter plate number e.g. MH12AB1284"
+                >
+
+                <button onclick="trackVehicle()">
+                    Track
+                </button>
+
+            </div>
+
+            <div id="map"></div>
+
+            <div class="track-info" id="trackInfo">
+                Enter a plate number to track the vehicle.
+            </div>
+
+        </div>
+
+
+        <!-- ALERTS -->
+
+        <div class="card">
+
+            <div class="panel-title">
+                Recent Alerts
+            </div>
+
+            <div class="alerts" id="alerts">
+                Loading alerts...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    // --------------------------------------------------
+    // MAP
+    // --------------------------------------------------
+
+    const map = L.map("map").setView([17.3850, 78.4867], 11);
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors"
+        }
+    ).addTo(map);
+
+
+    let trackLayer = L.layerGroup().addTo(map);
+
+
+    // --------------------------------------------------
+    // ANALYTICS
+    // --------------------------------------------------
+
+    async function loadAnalytics() {
+
+        try {
+
+            const response =
+                await fetch("/analytics/summary");
+
+            if (!response.ok)
+                throw new Error("Analytics request failed");
+
+            const data = await response.json();
+
+            document.getElementById("totalSightings")
+                .textContent = data.total_sightings;
+
+            document.getElementById("activeCameras")
+                .textContent = data.active_cameras;
+
+            document.getElementById("activeAlerts")
+                .textContent = data.active_alerts;
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+    }
+
+
+    // --------------------------------------------------
+    // ALERTS
+    // --------------------------------------------------
+
+    async function loadAlerts() {
+
+        try {
+
+            const response =
+                await fetch("/alerts?limit=20");
+
+            if (!response.ok)
+                throw new Error("Alerts request failed");
+
+            const alerts = await response.json();
+
+            const container =
+                document.getElementById("alerts");
+
+            container.innerHTML = "";
+
+            if (alerts.length === 0) {
+
+                container.innerHTML =
+                    "<div class='alert-meta'>No alerts.</div>";
+
+                return;
+            }
+
+            alerts.forEach(alert => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "alert";
+
+                div.innerHTML = `
+                    <div class="alert-type">
+                        ${alert.type}
+                    </div>
+
+                    <div class="plate">
+                        ${alert.plate_text}
+                    </div>
+
+                    <div class="alert-meta">
+                        Camera: ${alert.camera_id}
+                    </div>
+
+                    <div class="alert-meta">
+                        ${new Date(alert.ts).toLocaleString()}
+                    </div>
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("alerts").innerHTML =
+                "<div class='alert-meta'>Unable to load alerts.</div>";
+        }
+    }
+
+
+    // --------------------------------------------------
+    // VEHICLE TRACKING
+    // --------------------------------------------------
+
+    async function trackVehicle() {
+
+        const plate =
+            document.getElementById("plateInput")
+                .value
+                .trim();
+
+        if (!plate) {
+            alert("Enter a plate number.");
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    `/track/${encodeURIComponent(plate)}`
+                );
+
+            if (!response.ok) {
+
+                if (response.status === 404) {
+                    alert("Vehicle not found.");
+                } else {
+                    alert("Tracking request failed.");
+                }
+
+                return;
+            }
+
+            const points = await response.json();
+
+            trackLayer.clearLayers();
+
+            if (!points.length)
+                return;
+
+
+            const latLngs = [];
+
+            points.forEach((point, index) => {
+
+                const latLng =
+                    [point.lat, point.lon];
+
+                latLngs.push(latLng);
+
+                L.marker(latLng)
+                    .bindPopup(`
+                        <b>${plate}</b><br>
+                        Camera: ${point.camera_id}<br>
+                        Time: ${new Date(point.ts).toLocaleString()}
+                    `)
+                    .addTo(trackLayer);
+
+            });
+
+
+            // Draw route
+
+            L.polyline(latLngs, {
+                weight: 5
+            }).addTo(trackLayer);
+
+
+            // Fit map
+
+            map.fitBounds(
+                L.latLngBounds(latLngs),
+                {
+                    padding: [30, 30]
+                }
+            );
+
+
+            document.getElementById("trackInfo")
+                .textContent =
+                `${points.length} sightings found for ${plate}.`;
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Could not connect to tracking API.");
+
+        }
+    }
+
+
+    // --------------------------------------------------
+    // INITIAL LOAD
+    // --------------------------------------------------
+
+    loadAnalytics();
+    loadAlerts();
+
+
+    // Refresh dashboard every 5 seconds
+
+    setInterval(() => {
+
+        loadAnalytics();
+        loadAlerts();
+
+    }, 5000);
+
+</script>
+
+</body>
+</html>

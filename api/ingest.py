@@ -3,6 +3,9 @@ import hmac
 import redis
 from fastapi import HTTPException
 from .schemas import DataBlock
+from dotenv import load_dotenv
+
+load_dotenv()
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 FOG_API_KEY = os.getenv("FOG_API_KEY")
