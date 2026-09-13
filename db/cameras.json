@@ -1,45 +1,2102 @@
-
 [
   {
-    "camera_id": "CAM_01",
-    "lat": 28.6139,
-    "lon": 77.2090,
-    "zone": "Z1",
-    "road_node_id": "N1"
+    "camera_id": "CAM_001",
+    "lat": 28.61073,
+    "lon": 77.24636,
+    "zone": "Z1_Central",
+    "road_node_id": "N_1"
   },
   {
-    "camera_id": "CAM_02",
-    "lat": 28.6162,
-    "lon": 77.2167,
-    "zone": "Z1",
-    "road_node_id": "N2"
+    "camera_id": "CAM_002",
+    "lat": 28.62844,
+    "lon": 77.21235,
+    "zone": "Z1_Central",
+    "road_node_id": "N_2"
   },
   {
-    "camera_id": "CAM_03",
-    "lat": 28.6185,
-    "lon": 77.2245,
-    "zone": "Z1",
-    "road_node_id": "N3"
+    "camera_id": "CAM_003",
+    "lat": 28.63481,
+    "lon": 77.24306,
+    "zone": "Z1_Central",
+    "road_node_id": "N_3"
   },
   {
-    "camera_id": "CAM_04",
-    "lat": 28.6220,
-    "lon": 77.2310,
-    "zone": "Z2",
-    "road_node_id": "N4"
+    "camera_id": "CAM_004",
+    "lat": 28.60555,
+    "lon": 77.1711,
+    "zone": "Z1_Central",
+    "road_node_id": "N_4"
   },
   {
-    "camera_id": "CAM_05",
-    "lat": 28.6255,
-    "lon": 77.2380,
-    "zone": "Z2",
-    "road_node_id": "N5"
+    "camera_id": "CAM_005",
+    "lat": 28.61431,
+    "lon": 77.22156,
+    "zone": "Z1_Central",
+    "road_node_id": "N_5"
   },
   {
-    "camera_id": "CAM_06",
-    "lat": 28.6290,
-    "lon": 77.2450,
-    "zone": "Z2",
-    "road_node_id": "N6"
+    "camera_id": "CAM_006",
+    "lat": 28.58998,
+    "lon": 77.22448,
+    "zone": "Z1_Central",
+    "road_node_id": "N_6"
+  },
+  {
+    "camera_id": "CAM_007",
+    "lat": 28.63919,
+    "lon": 77.17733,
+    "zone": "Z1_Central",
+    "road_node_id": "N_7"
+  },
+  {
+    "camera_id": "CAM_008",
+    "lat": 28.62462,
+    "lon": 77.22829,
+    "zone": "Z1_Central",
+    "road_node_id": "N_8"
+  },
+  {
+    "camera_id": "CAM_009",
+    "lat": 28.62605,
+    "lon": 77.21435,
+    "zone": "Z1_Central",
+    "road_node_id": "N_9"
+  },
+  {
+    "camera_id": "CAM_010",
+    "lat": 28.59497,
+    "lon": 77.22174,
+    "zone": "Z1_Central",
+    "road_node_id": "N_10"
+  },
+  {
+    "camera_id": "CAM_011",
+    "lat": 28.62025,
+    "lon": 77.24291,
+    "zone": "Z1_Central",
+    "road_node_id": "N_11"
+  },
+  {
+    "camera_id": "CAM_012",
+    "lat": 28.6106,
+    "lon": 77.16756,
+    "zone": "Z1_Central",
+    "road_node_id": "N_12"
+  },
+  {
+    "camera_id": "CAM_013",
+    "lat": 28.598,
+    "lon": 77.20624,
+    "zone": "Z1_Central",
+    "road_node_id": "N_13"
+  },
+  {
+    "camera_id": "CAM_014",
+    "lat": 28.6331,
+    "lon": 77.23034,
+    "zone": "Z1_Central",
+    "road_node_id": "N_14"
+  },
+  {
+    "camera_id": "CAM_015",
+    "lat": 28.61492,
+    "lon": 77.22507,
+    "zone": "Z1_Central",
+    "road_node_id": "N_15"
+  },
+  {
+    "camera_id": "CAM_016",
+    "lat": 28.59662,
+    "lon": 77.21048,
+    "zone": "Z1_Central",
+    "road_node_id": "N_16"
+  },
+  {
+    "camera_id": "CAM_017",
+    "lat": 28.63824,
+    "lon": 77.22762,
+    "zone": "Z1_Central",
+    "road_node_id": "N_17"
+  },
+  {
+    "camera_id": "CAM_018",
+    "lat": 28.61955,
+    "lon": 77.23,
+    "zone": "Z1_Central",
+    "road_node_id": "N_18"
+  },
+  {
+    "camera_id": "CAM_019",
+    "lat": 28.64255,
+    "lon": 77.21866,
+    "zone": "Z1_Central",
+    "road_node_id": "N_19"
+  },
+  {
+    "camera_id": "CAM_020",
+    "lat": 28.60594,
+    "lon": 77.19365,
+    "zone": "Z1_Central",
+    "road_node_id": "N_20"
+  },
+  {
+    "camera_id": "CAM_021",
+    "lat": 28.617,
+    "lon": 77.21379,
+    "zone": "Z1_Central",
+    "road_node_id": "N_21"
+  },
+  {
+    "camera_id": "CAM_022",
+    "lat": 28.60654,
+    "lon": 77.19448,
+    "zone": "Z1_Central",
+    "road_node_id": "N_22"
+  },
+  {
+    "camera_id": "CAM_023",
+    "lat": 28.61246,
+    "lon": 77.19999,
+    "zone": "Z1_Central",
+    "road_node_id": "N_23"
+  },
+  {
+    "camera_id": "CAM_024",
+    "lat": 28.59829,
+    "lon": 77.22228,
+    "zone": "Z1_Central",
+    "road_node_id": "N_24"
+  },
+  {
+    "camera_id": "CAM_025",
+    "lat": 28.58437,
+    "lon": 77.18892,
+    "zone": "Z1_Central",
+    "road_node_id": "N_25"
+  },
+  {
+    "camera_id": "CAM_026",
+    "lat": 28.59615,
+    "lon": 77.22782,
+    "zone": "Z1_Central",
+    "road_node_id": "N_26"
+  },
+  {
+    "camera_id": "CAM_027",
+    "lat": 28.63664,
+    "lon": 77.20002,
+    "zone": "Z1_Central",
+    "road_node_id": "N_27"
+  },
+  {
+    "camera_id": "CAM_028",
+    "lat": 28.62944,
+    "lon": 77.21258,
+    "zone": "Z1_Central",
+    "road_node_id": "N_28"
+  },
+  {
+    "camera_id": "CAM_029",
+    "lat": 28.56992,
+    "lon": 77.24744,
+    "zone": "Z1_Central",
+    "road_node_id": "N_29"
+  },
+  {
+    "camera_id": "CAM_030",
+    "lat": 28.59856,
+    "lon": 77.19734,
+    "zone": "Z1_Central",
+    "road_node_id": "N_30"
+  },
+  {
+    "camera_id": "CAM_031",
+    "lat": 28.61991,
+    "lon": 77.19379,
+    "zone": "Z1_Central",
+    "road_node_id": "N_31"
+  },
+  {
+    "camera_id": "CAM_032",
+    "lat": 28.58692,
+    "lon": 77.21783,
+    "zone": "Z1_Central",
+    "road_node_id": "N_32"
+  },
+  {
+    "camera_id": "CAM_033",
+    "lat": 28.59712,
+    "lon": 77.20564,
+    "zone": "Z1_Central",
+    "road_node_id": "N_33"
+  },
+  {
+    "camera_id": "CAM_034",
+    "lat": 28.62972,
+    "lon": 77.19223,
+    "zone": "Z1_Central",
+    "road_node_id": "N_34"
+  },
+  {
+    "camera_id": "CAM_035",
+    "lat": 28.60959,
+    "lon": 77.2372,
+    "zone": "Z1_Central",
+    "road_node_id": "N_35"
+  },
+  {
+    "camera_id": "CAM_036",
+    "lat": 28.60641,
+    "lon": 77.17266,
+    "zone": "Z1_Central",
+    "road_node_id": "N_36"
+  },
+  {
+    "camera_id": "CAM_037",
+    "lat": 28.59373,
+    "lon": 77.20648,
+    "zone": "Z1_Central",
+    "road_node_id": "N_37"
+  },
+  {
+    "camera_id": "CAM_038",
+    "lat": 28.60623,
+    "lon": 77.19806,
+    "zone": "Z1_Central",
+    "road_node_id": "N_38"
+  },
+  {
+    "camera_id": "CAM_039",
+    "lat": 28.62215,
+    "lon": 77.2,
+    "zone": "Z1_Central",
+    "road_node_id": "N_39"
+  },
+  {
+    "camera_id": "CAM_040",
+    "lat": 28.57326,
+    "lon": 77.19369,
+    "zone": "Z1_Central",
+    "road_node_id": "N_40"
+  },
+  {
+    "camera_id": "CAM_041",
+    "lat": 28.61298,
+    "lon": 77.2357,
+    "zone": "Z1_Central",
+    "road_node_id": "N_41"
+  },
+  {
+    "camera_id": "CAM_042",
+    "lat": 28.60884,
+    "lon": 77.19646,
+    "zone": "Z1_Central",
+    "road_node_id": "N_42"
+  },
+  {
+    "camera_id": "CAM_043",
+    "lat": 28.59401,
+    "lon": 77.21609,
+    "zone": "Z1_Central",
+    "road_node_id": "N_43"
+  },
+  {
+    "camera_id": "CAM_044",
+    "lat": 28.60178,
+    "lon": 77.16465,
+    "zone": "Z1_Central",
+    "road_node_id": "N_44"
+  },
+  {
+    "camera_id": "CAM_045",
+    "lat": 28.63028,
+    "lon": 77.23043,
+    "zone": "Z1_Central",
+    "road_node_id": "N_45"
+  },
+  {
+    "camera_id": "CAM_046",
+    "lat": 28.60699,
+    "lon": 77.20081,
+    "zone": "Z1_Central",
+    "road_node_id": "N_46"
+  },
+  {
+    "camera_id": "CAM_047",
+    "lat": 28.62149,
+    "lon": 77.22595,
+    "zone": "Z1_Central",
+    "road_node_id": "N_47"
+  },
+  {
+    "camera_id": "CAM_048",
+    "lat": 28.57968,
+    "lon": 77.20739,
+    "zone": "Z1_Central",
+    "road_node_id": "N_48"
+  },
+  {
+    "camera_id": "CAM_049",
+    "lat": 28.61026,
+    "lon": 77.20679,
+    "zone": "Z1_Central",
+    "road_node_id": "N_49"
+  },
+  {
+    "camera_id": "CAM_050",
+    "lat": 28.56857,
+    "lon": 77.19335,
+    "zone": "Z1_Central",
+    "road_node_id": "N_50"
+  },
+  {
+    "camera_id": "CAM_051",
+    "lat": 28.60073,
+    "lon": 77.24484,
+    "zone": "Z1_Central",
+    "road_node_id": "N_51"
+  },
+  {
+    "camera_id": "CAM_052",
+    "lat": 28.61894,
+    "lon": 77.20709,
+    "zone": "Z1_Central",
+    "road_node_id": "N_52"
+  },
+  {
+    "camera_id": "CAM_053",
+    "lat": 28.58348,
+    "lon": 77.20184,
+    "zone": "Z1_Central",
+    "road_node_id": "N_53"
+  },
+  {
+    "camera_id": "CAM_054",
+    "lat": 28.61424,
+    "lon": 77.20946,
+    "zone": "Z1_Central",
+    "road_node_id": "N_54"
+  },
+  {
+    "camera_id": "CAM_055",
+    "lat": 28.60133,
+    "lon": 77.20515,
+    "zone": "Z1_Central",
+    "road_node_id": "N_55"
+  },
+  {
+    "camera_id": "CAM_056",
+    "lat": 28.61,
+    "lon": 77.22497,
+    "zone": "Z1_Central",
+    "road_node_id": "N_56"
+  },
+  {
+    "camera_id": "CAM_057",
+    "lat": 28.62328,
+    "lon": 77.23302,
+    "zone": "Z1_Central",
+    "road_node_id": "N_57"
+  },
+  {
+    "camera_id": "CAM_058",
+    "lat": 28.62048,
+    "lon": 77.18554,
+    "zone": "Z1_Central",
+    "road_node_id": "N_58"
+  },
+  {
+    "camera_id": "CAM_059",
+    "lat": 28.64047,
+    "lon": 77.19282,
+    "zone": "Z1_Central",
+    "road_node_id": "N_59"
+  },
+  {
+    "camera_id": "CAM_060",
+    "lat": 28.62137,
+    "lon": 77.20436,
+    "zone": "Z1_Central",
+    "road_node_id": "N_60"
+  },
+  {
+    "camera_id": "CAM_061",
+    "lat": 28.67078,
+    "lon": 77.21045,
+    "zone": "Z2_North",
+    "road_node_id": "N_61"
+  },
+  {
+    "camera_id": "CAM_062",
+    "lat": 28.65861,
+    "lon": 77.22259,
+    "zone": "Z2_North",
+    "road_node_id": "N_62"
+  },
+  {
+    "camera_id": "CAM_063",
+    "lat": 28.63361,
+    "lon": 77.18081,
+    "zone": "Z2_North",
+    "road_node_id": "N_63"
+  },
+  {
+    "camera_id": "CAM_064",
+    "lat": 28.67015,
+    "lon": 77.20221,
+    "zone": "Z2_North",
+    "road_node_id": "N_64"
+  },
+  {
+    "camera_id": "CAM_065",
+    "lat": 28.69659,
+    "lon": 77.19915,
+    "zone": "Z2_North",
+    "road_node_id": "N_65"
+  },
+  {
+    "camera_id": "CAM_066",
+    "lat": 28.68397,
+    "lon": 77.19843,
+    "zone": "Z2_North",
+    "road_node_id": "N_66"
+  },
+  {
+    "camera_id": "CAM_067",
+    "lat": 28.65265,
+    "lon": 77.21366,
+    "zone": "Z2_North",
+    "road_node_id": "N_67"
+  },
+  {
+    "camera_id": "CAM_068",
+    "lat": 28.69446,
+    "lon": 77.21081,
+    "zone": "Z2_North",
+    "road_node_id": "N_68"
+  },
+  {
+    "camera_id": "CAM_069",
+    "lat": 28.6957,
+    "lon": 77.21134,
+    "zone": "Z2_North",
+    "road_node_id": "N_69"
+  },
+  {
+    "camera_id": "CAM_070",
+    "lat": 28.64947,
+    "lon": 77.22881,
+    "zone": "Z2_North",
+    "road_node_id": "N_70"
+  },
+  {
+    "camera_id": "CAM_071",
+    "lat": 28.69196,
+    "lon": 77.22245,
+    "zone": "Z2_North",
+    "road_node_id": "N_71"
+  },
+  {
+    "camera_id": "CAM_072",
+    "lat": 28.68424,
+    "lon": 77.2105,
+    "zone": "Z2_North",
+    "road_node_id": "N_72"
+  },
+  {
+    "camera_id": "CAM_073",
+    "lat": 28.68075,
+    "lon": 77.23621,
+    "zone": "Z2_North",
+    "road_node_id": "N_73"
+  },
+  {
+    "camera_id": "CAM_074",
+    "lat": 28.69451,
+    "lon": 77.21377,
+    "zone": "Z2_North",
+    "road_node_id": "N_74"
+  },
+  {
+    "camera_id": "CAM_075",
+    "lat": 28.68168,
+    "lon": 77.19475,
+    "zone": "Z2_North",
+    "road_node_id": "N_75"
+  },
+  {
+    "camera_id": "CAM_076",
+    "lat": 28.64576,
+    "lon": 77.22411,
+    "zone": "Z2_North",
+    "road_node_id": "N_76"
+  },
+  {
+    "camera_id": "CAM_077",
+    "lat": 28.66787,
+    "lon": 77.2195,
+    "zone": "Z2_North",
+    "road_node_id": "N_77"
+  },
+  {
+    "camera_id": "CAM_078",
+    "lat": 28.67431,
+    "lon": 77.23135,
+    "zone": "Z2_North",
+    "road_node_id": "N_78"
+  },
+  {
+    "camera_id": "CAM_079",
+    "lat": 28.64701,
+    "lon": 77.20871,
+    "zone": "Z2_North",
+    "road_node_id": "N_79"
+  },
+  {
+    "camera_id": "CAM_080",
+    "lat": 28.69178,
+    "lon": 77.22437,
+    "zone": "Z2_North",
+    "road_node_id": "N_80"
+  },
+  {
+    "camera_id": "CAM_081",
+    "lat": 28.72673,
+    "lon": 77.22091,
+    "zone": "Z2_North",
+    "road_node_id": "N_81"
+  },
+  {
+    "camera_id": "CAM_082",
+    "lat": 28.64663,
+    "lon": 77.20491,
+    "zone": "Z2_North",
+    "road_node_id": "N_82"
+  },
+  {
+    "camera_id": "CAM_083",
+    "lat": 28.68042,
+    "lon": 77.18076,
+    "zone": "Z2_North",
+    "road_node_id": "N_83"
+  },
+  {
+    "camera_id": "CAM_084",
+    "lat": 28.66939,
+    "lon": 77.2105,
+    "zone": "Z2_North",
+    "road_node_id": "N_84"
+  },
+  {
+    "camera_id": "CAM_085",
+    "lat": 28.67181,
+    "lon": 77.21838,
+    "zone": "Z2_North",
+    "road_node_id": "N_85"
+  },
+  {
+    "camera_id": "CAM_086",
+    "lat": 28.66632,
+    "lon": 77.20195,
+    "zone": "Z2_North",
+    "road_node_id": "N_86"
+  },
+  {
+    "camera_id": "CAM_087",
+    "lat": 28.65881,
+    "lon": 77.20147,
+    "zone": "Z2_North",
+    "road_node_id": "N_87"
+  },
+  {
+    "camera_id": "CAM_088",
+    "lat": 28.66985,
+    "lon": 77.2107,
+    "zone": "Z2_North",
+    "road_node_id": "N_88"
+  },
+  {
+    "camera_id": "CAM_089",
+    "lat": 28.66439,
+    "lon": 77.21609,
+    "zone": "Z2_North",
+    "road_node_id": "N_89"
+  },
+  {
+    "camera_id": "CAM_090",
+    "lat": 28.69783,
+    "lon": 77.22759,
+    "zone": "Z2_North",
+    "road_node_id": "N_90"
+  },
+  {
+    "camera_id": "CAM_091",
+    "lat": 28.66403,
+    "lon": 77.22888,
+    "zone": "Z2_North",
+    "road_node_id": "N_91"
+  },
+  {
+    "camera_id": "CAM_092",
+    "lat": 28.66878,
+    "lon": 77.1989,
+    "zone": "Z2_North",
+    "road_node_id": "N_92"
+  },
+  {
+    "camera_id": "CAM_093",
+    "lat": 28.66868,
+    "lon": 77.25208,
+    "zone": "Z2_North",
+    "road_node_id": "N_93"
+  },
+  {
+    "camera_id": "CAM_094",
+    "lat": 28.67412,
+    "lon": 77.20432,
+    "zone": "Z2_North",
+    "road_node_id": "N_94"
+  },
+  {
+    "camera_id": "CAM_095",
+    "lat": 28.68081,
+    "lon": 77.22535,
+    "zone": "Z2_North",
+    "road_node_id": "N_95"
+  },
+  {
+    "camera_id": "CAM_096",
+    "lat": 28.65642,
+    "lon": 77.23861,
+    "zone": "Z2_North",
+    "road_node_id": "N_96"
+  },
+  {
+    "camera_id": "CAM_097",
+    "lat": 28.67679,
+    "lon": 77.18053,
+    "zone": "Z2_North",
+    "road_node_id": "N_97"
+  },
+  {
+    "camera_id": "CAM_098",
+    "lat": 28.67045,
+    "lon": 77.19731,
+    "zone": "Z2_North",
+    "road_node_id": "N_98"
+  },
+  {
+    "camera_id": "CAM_099",
+    "lat": 28.67115,
+    "lon": 77.18384,
+    "zone": "Z2_North",
+    "road_node_id": "N_99"
+  },
+  {
+    "camera_id": "CAM_100",
+    "lat": 28.67119,
+    "lon": 77.20436,
+    "zone": "Z2_North",
+    "road_node_id": "N_100"
+  },
+  {
+    "camera_id": "CAM_101",
+    "lat": 28.6477,
+    "lon": 77.22781,
+    "zone": "Z2_North",
+    "road_node_id": "N_101"
+  },
+  {
+    "camera_id": "CAM_102",
+    "lat": 28.67777,
+    "lon": 77.21589,
+    "zone": "Z2_North",
+    "road_node_id": "N_102"
+  },
+  {
+    "camera_id": "CAM_103",
+    "lat": 28.66774,
+    "lon": 77.20539,
+    "zone": "Z2_North",
+    "road_node_id": "N_103"
+  },
+  {
+    "camera_id": "CAM_104",
+    "lat": 28.68645,
+    "lon": 77.22242,
+    "zone": "Z2_North",
+    "road_node_id": "N_104"
+  },
+  {
+    "camera_id": "CAM_105",
+    "lat": 28.70172,
+    "lon": 77.203,
+    "zone": "Z2_North",
+    "road_node_id": "N_105"
+  },
+  {
+    "camera_id": "CAM_106",
+    "lat": 28.69122,
+    "lon": 77.19752,
+    "zone": "Z2_North",
+    "road_node_id": "N_106"
+  },
+  {
+    "camera_id": "CAM_107",
+    "lat": 28.65661,
+    "lon": 77.20281,
+    "zone": "Z2_North",
+    "road_node_id": "N_107"
+  },
+  {
+    "camera_id": "CAM_108",
+    "lat": 28.66198,
+    "lon": 77.20399,
+    "zone": "Z2_North",
+    "road_node_id": "N_108"
+  },
+  {
+    "camera_id": "CAM_109",
+    "lat": 28.67424,
+    "lon": 77.21978,
+    "zone": "Z2_North",
+    "road_node_id": "N_109"
+  },
+  {
+    "camera_id": "CAM_110",
+    "lat": 28.64715,
+    "lon": 77.21328,
+    "zone": "Z2_North",
+    "road_node_id": "N_110"
+  },
+  {
+    "camera_id": "CAM_111",
+    "lat": 28.53386,
+    "lon": 77.23484,
+    "zone": "Z3_South",
+    "road_node_id": "N_111"
+  },
+  {
+    "camera_id": "CAM_112",
+    "lat": 28.52939,
+    "lon": 77.22281,
+    "zone": "Z3_South",
+    "road_node_id": "N_112"
+  },
+  {
+    "camera_id": "CAM_113",
+    "lat": 28.51887,
+    "lon": 77.17615,
+    "zone": "Z3_South",
+    "road_node_id": "N_113"
+  },
+  {
+    "camera_id": "CAM_114",
+    "lat": 28.52783,
+    "lon": 77.21595,
+    "zone": "Z3_South",
+    "road_node_id": "N_114"
+  },
+  {
+    "camera_id": "CAM_115",
+    "lat": 28.51601,
+    "lon": 77.21017,
+    "zone": "Z3_South",
+    "road_node_id": "N_115"
+  },
+  {
+    "camera_id": "CAM_116",
+    "lat": 28.54725,
+    "lon": 77.22432,
+    "zone": "Z3_South",
+    "road_node_id": "N_116"
+  },
+  {
+    "camera_id": "CAM_117",
+    "lat": 28.51887,
+    "lon": 77.20313,
+    "zone": "Z3_South",
+    "road_node_id": "N_117"
+  },
+  {
+    "camera_id": "CAM_118",
+    "lat": 28.56869,
+    "lon": 77.20347,
+    "zone": "Z3_South",
+    "road_node_id": "N_118"
+  },
+  {
+    "camera_id": "CAM_119",
+    "lat": 28.54381,
+    "lon": 77.20839,
+    "zone": "Z3_South",
+    "road_node_id": "N_119"
+  },
+  {
+    "camera_id": "CAM_120",
+    "lat": 28.55113,
+    "lon": 77.21586,
+    "zone": "Z3_South",
+    "road_node_id": "N_120"
+  },
+  {
+    "camera_id": "CAM_121",
+    "lat": 28.58167,
+    "lon": 77.21923,
+    "zone": "Z3_South",
+    "road_node_id": "N_121"
+  },
+  {
+    "camera_id": "CAM_122",
+    "lat": 28.56271,
+    "lon": 77.2197,
+    "zone": "Z3_South",
+    "road_node_id": "N_122"
+  },
+  {
+    "camera_id": "CAM_123",
+    "lat": 28.54867,
+    "lon": 77.21426,
+    "zone": "Z3_South",
+    "road_node_id": "N_123"
+  },
+  {
+    "camera_id": "CAM_124",
+    "lat": 28.52682,
+    "lon": 77.23093,
+    "zone": "Z3_South",
+    "road_node_id": "N_124"
+  },
+  {
+    "camera_id": "CAM_125",
+    "lat": 28.53059,
+    "lon": 77.24553,
+    "zone": "Z3_South",
+    "road_node_id": "N_125"
+  },
+  {
+    "camera_id": "CAM_126",
+    "lat": 28.52971,
+    "lon": 77.22114,
+    "zone": "Z3_South",
+    "road_node_id": "N_126"
+  },
+  {
+    "camera_id": "CAM_127",
+    "lat": 28.54739,
+    "lon": 77.21663,
+    "zone": "Z3_South",
+    "road_node_id": "N_127"
+  },
+  {
+    "camera_id": "CAM_128",
+    "lat": 28.53525,
+    "lon": 77.21301,
+    "zone": "Z3_South",
+    "road_node_id": "N_128"
+  },
+  {
+    "camera_id": "CAM_129",
+    "lat": 28.54219,
+    "lon": 77.2201,
+    "zone": "Z3_South",
+    "road_node_id": "N_129"
+  },
+  {
+    "camera_id": "CAM_130",
+    "lat": 28.52681,
+    "lon": 77.21485,
+    "zone": "Z3_South",
+    "road_node_id": "N_130"
+  },
+  {
+    "camera_id": "CAM_131",
+    "lat": 28.5426,
+    "lon": 77.23207,
+    "zone": "Z3_South",
+    "road_node_id": "N_131"
+  },
+  {
+    "camera_id": "CAM_132",
+    "lat": 28.5442,
+    "lon": 77.20978,
+    "zone": "Z3_South",
+    "road_node_id": "N_132"
+  },
+  {
+    "camera_id": "CAM_133",
+    "lat": 28.52769,
+    "lon": 77.24347,
+    "zone": "Z3_South",
+    "road_node_id": "N_133"
+  },
+  {
+    "camera_id": "CAM_134",
+    "lat": 28.53659,
+    "lon": 77.21468,
+    "zone": "Z3_South",
+    "road_node_id": "N_134"
+  },
+  {
+    "camera_id": "CAM_135",
+    "lat": 28.56812,
+    "lon": 77.19201,
+    "zone": "Z3_South",
+    "road_node_id": "N_135"
+  },
+  {
+    "camera_id": "CAM_136",
+    "lat": 28.49826,
+    "lon": 77.23419,
+    "zone": "Z3_South",
+    "road_node_id": "N_136"
+  },
+  {
+    "camera_id": "CAM_137",
+    "lat": 28.50982,
+    "lon": 77.2235,
+    "zone": "Z3_South",
+    "road_node_id": "N_137"
+  },
+  {
+    "camera_id": "CAM_138",
+    "lat": 28.50496,
+    "lon": 77.18737,
+    "zone": "Z3_South",
+    "road_node_id": "N_138"
+  },
+  {
+    "camera_id": "CAM_139",
+    "lat": 28.55169,
+    "lon": 77.21292,
+    "zone": "Z3_South",
+    "road_node_id": "N_139"
+  },
+  {
+    "camera_id": "CAM_140",
+    "lat": 28.51715,
+    "lon": 77.22653,
+    "zone": "Z3_South",
+    "road_node_id": "N_140"
+  },
+  {
+    "camera_id": "CAM_141",
+    "lat": 28.55186,
+    "lon": 77.21787,
+    "zone": "Z3_South",
+    "road_node_id": "N_141"
+  },
+  {
+    "camera_id": "CAM_142",
+    "lat": 28.52496,
+    "lon": 77.21879,
+    "zone": "Z3_South",
+    "road_node_id": "N_142"
+  },
+  {
+    "camera_id": "CAM_143",
+    "lat": 28.51291,
+    "lon": 77.20559,
+    "zone": "Z3_South",
+    "road_node_id": "N_143"
+  },
+  {
+    "camera_id": "CAM_144",
+    "lat": 28.56655,
+    "lon": 77.2477,
+    "zone": "Z3_South",
+    "road_node_id": "N_144"
+  },
+  {
+    "camera_id": "CAM_145",
+    "lat": 28.52579,
+    "lon": 77.20268,
+    "zone": "Z3_South",
+    "road_node_id": "N_145"
+  },
+  {
+    "camera_id": "CAM_146",
+    "lat": 28.54681,
+    "lon": 77.21056,
+    "zone": "Z3_South",
+    "road_node_id": "N_146"
+  },
+  {
+    "camera_id": "CAM_147",
+    "lat": 28.54762,
+    "lon": 77.21483,
+    "zone": "Z3_South",
+    "road_node_id": "N_147"
+  },
+  {
+    "camera_id": "CAM_148",
+    "lat": 28.55303,
+    "lon": 77.21125,
+    "zone": "Z3_South",
+    "road_node_id": "N_148"
+  },
+  {
+    "camera_id": "CAM_149",
+    "lat": 28.54077,
+    "lon": 77.22304,
+    "zone": "Z3_South",
+    "road_node_id": "N_149"
+  },
+  {
+    "camera_id": "CAM_150",
+    "lat": 28.54806,
+    "lon": 77.23135,
+    "zone": "Z3_South",
+    "road_node_id": "N_150"
+  },
+  {
+    "camera_id": "CAM_151",
+    "lat": 28.5258,
+    "lon": 77.20365,
+    "zone": "Z3_South",
+    "road_node_id": "N_151"
+  },
+  {
+    "camera_id": "CAM_152",
+    "lat": 28.55604,
+    "lon": 77.21249,
+    "zone": "Z3_South",
+    "road_node_id": "N_152"
+  },
+  {
+    "camera_id": "CAM_153",
+    "lat": 28.5285,
+    "lon": 77.21689,
+    "zone": "Z3_South",
+    "road_node_id": "N_153"
+  },
+  {
+    "camera_id": "CAM_154",
+    "lat": 28.50666,
+    "lon": 77.20619,
+    "zone": "Z3_South",
+    "road_node_id": "N_154"
+  },
+  {
+    "camera_id": "CAM_155",
+    "lat": 28.50485,
+    "lon": 77.20679,
+    "zone": "Z3_South",
+    "road_node_id": "N_155"
+  },
+  {
+    "camera_id": "CAM_156",
+    "lat": 28.54485,
+    "lon": 77.17576,
+    "zone": "Z3_South",
+    "road_node_id": "N_156"
+  },
+  {
+    "camera_id": "CAM_157",
+    "lat": 28.53328,
+    "lon": 77.2453,
+    "zone": "Z3_South",
+    "road_node_id": "N_157"
+  },
+  {
+    "camera_id": "CAM_158",
+    "lat": 28.5032,
+    "lon": 77.23176,
+    "zone": "Z3_South",
+    "road_node_id": "N_158"
+  },
+  {
+    "camera_id": "CAM_159",
+    "lat": 28.5321,
+    "lon": 77.21281,
+    "zone": "Z3_South",
+    "road_node_id": "N_159"
+  },
+  {
+    "camera_id": "CAM_160",
+    "lat": 28.5407,
+    "lon": 77.18634,
+    "zone": "Z3_South",
+    "road_node_id": "N_160"
+  },
+  {
+    "camera_id": "CAM_161",
+    "lat": 28.61226,
+    "lon": 77.30077,
+    "zone": "Z4_East",
+    "road_node_id": "N_161"
+  },
+  {
+    "camera_id": "CAM_162",
+    "lat": 28.61467,
+    "lon": 77.29378,
+    "zone": "Z4_East",
+    "road_node_id": "N_162"
+  },
+  {
+    "camera_id": "CAM_163",
+    "lat": 28.63233,
+    "lon": 77.29546,
+    "zone": "Z4_East",
+    "road_node_id": "N_163"
+  },
+  {
+    "camera_id": "CAM_164",
+    "lat": 28.64348,
+    "lon": 77.2817,
+    "zone": "Z4_East",
+    "road_node_id": "N_164"
+  },
+  {
+    "camera_id": "CAM_165",
+    "lat": 28.64636,
+    "lon": 77.2713,
+    "zone": "Z4_East",
+    "road_node_id": "N_165"
+  },
+  {
+    "camera_id": "CAM_166",
+    "lat": 28.64111,
+    "lon": 77.30204,
+    "zone": "Z4_East",
+    "road_node_id": "N_166"
+  },
+  {
+    "camera_id": "CAM_167",
+    "lat": 28.62955,
+    "lon": 77.29517,
+    "zone": "Z4_East",
+    "road_node_id": "N_167"
+  },
+  {
+    "camera_id": "CAM_168",
+    "lat": 28.643,
+    "lon": 77.28807,
+    "zone": "Z4_East",
+    "road_node_id": "N_168"
+  },
+  {
+    "camera_id": "CAM_169",
+    "lat": 28.62394,
+    "lon": 77.27726,
+    "zone": "Z4_East",
+    "road_node_id": "N_169"
+  },
+  {
+    "camera_id": "CAM_170",
+    "lat": 28.61545,
+    "lon": 77.30212,
+    "zone": "Z4_East",
+    "road_node_id": "N_170"
+  },
+  {
+    "camera_id": "CAM_171",
+    "lat": 28.63842,
+    "lon": 77.29924,
+    "zone": "Z4_East",
+    "road_node_id": "N_171"
+  },
+  {
+    "camera_id": "CAM_172",
+    "lat": 28.64626,
+    "lon": 77.2733,
+    "zone": "Z4_East",
+    "road_node_id": "N_172"
+  },
+  {
+    "camera_id": "CAM_173",
+    "lat": 28.62367,
+    "lon": 77.3129,
+    "zone": "Z4_East",
+    "road_node_id": "N_173"
+  },
+  {
+    "camera_id": "CAM_174",
+    "lat": 28.61832,
+    "lon": 77.27594,
+    "zone": "Z4_East",
+    "road_node_id": "N_174"
+  },
+  {
+    "camera_id": "CAM_175",
+    "lat": 28.64025,
+    "lon": 77.29202,
+    "zone": "Z4_East",
+    "road_node_id": "N_175"
+  },
+  {
+    "camera_id": "CAM_176",
+    "lat": 28.59846,
+    "lon": 77.31704,
+    "zone": "Z4_East",
+    "road_node_id": "N_176"
+  },
+  {
+    "camera_id": "CAM_177",
+    "lat": 28.59205,
+    "lon": 77.28437,
+    "zone": "Z4_East",
+    "road_node_id": "N_177"
+  },
+  {
+    "camera_id": "CAM_178",
+    "lat": 28.63963,
+    "lon": 77.29879,
+    "zone": "Z4_East",
+    "road_node_id": "N_178"
+  },
+  {
+    "camera_id": "CAM_179",
+    "lat": 28.63598,
+    "lon": 77.28485,
+    "zone": "Z4_East",
+    "road_node_id": "N_179"
+  },
+  {
+    "camera_id": "CAM_180",
+    "lat": 28.62168,
+    "lon": 77.27194,
+    "zone": "Z4_East",
+    "road_node_id": "N_180"
+  },
+  {
+    "camera_id": "CAM_181",
+    "lat": 28.61944,
+    "lon": 77.29294,
+    "zone": "Z4_East",
+    "road_node_id": "N_181"
+  },
+  {
+    "camera_id": "CAM_182",
+    "lat": 28.63423,
+    "lon": 77.31879,
+    "zone": "Z4_East",
+    "road_node_id": "N_182"
+  },
+  {
+    "camera_id": "CAM_183",
+    "lat": 28.63259,
+    "lon": 77.27171,
+    "zone": "Z4_East",
+    "road_node_id": "N_183"
+  },
+  {
+    "camera_id": "CAM_184",
+    "lat": 28.61642,
+    "lon": 77.31305,
+    "zone": "Z4_East",
+    "road_node_id": "N_184"
+  },
+  {
+    "camera_id": "CAM_185",
+    "lat": 28.61346,
+    "lon": 77.3089,
+    "zone": "Z4_East",
+    "road_node_id": "N_185"
+  },
+  {
+    "camera_id": "CAM_186",
+    "lat": 28.59827,
+    "lon": 77.27841,
+    "zone": "Z4_East",
+    "road_node_id": "N_186"
+  },
+  {
+    "camera_id": "CAM_187",
+    "lat": 28.62179,
+    "lon": 77.28099,
+    "zone": "Z4_East",
+    "road_node_id": "N_187"
+  },
+  {
+    "camera_id": "CAM_188",
+    "lat": 28.61382,
+    "lon": 77.29686,
+    "zone": "Z4_East",
+    "road_node_id": "N_188"
+  },
+  {
+    "camera_id": "CAM_189",
+    "lat": 28.6045,
+    "lon": 77.30076,
+    "zone": "Z4_East",
+    "road_node_id": "N_189"
+  },
+  {
+    "camera_id": "CAM_190",
+    "lat": 28.62658,
+    "lon": 77.28327,
+    "zone": "Z4_East",
+    "road_node_id": "N_190"
+  },
+  {
+    "camera_id": "CAM_191",
+    "lat": 28.62937,
+    "lon": 77.30794,
+    "zone": "Z4_East",
+    "road_node_id": "N_191"
+  },
+  {
+    "camera_id": "CAM_192",
+    "lat": 28.62919,
+    "lon": 77.32157,
+    "zone": "Z4_East",
+    "road_node_id": "N_192"
+  },
+  {
+    "camera_id": "CAM_193",
+    "lat": 28.63882,
+    "lon": 77.30986,
+    "zone": "Z4_East",
+    "road_node_id": "N_193"
+  },
+  {
+    "camera_id": "CAM_194",
+    "lat": 28.62111,
+    "lon": 77.29508,
+    "zone": "Z4_East",
+    "road_node_id": "N_194"
+  },
+  {
+    "camera_id": "CAM_195",
+    "lat": 28.60737,
+    "lon": 77.305,
+    "zone": "Z4_East",
+    "road_node_id": "N_195"
+  },
+  {
+    "camera_id": "CAM_196",
+    "lat": 28.66555,
+    "lon": 77.30806,
+    "zone": "Z4_East",
+    "road_node_id": "N_196"
+  },
+  {
+    "camera_id": "CAM_197",
+    "lat": 28.62563,
+    "lon": 77.30317,
+    "zone": "Z4_East",
+    "road_node_id": "N_197"
+  },
+  {
+    "camera_id": "CAM_198",
+    "lat": 28.62614,
+    "lon": 77.32203,
+    "zone": "Z4_East",
+    "road_node_id": "N_198"
+  },
+  {
+    "camera_id": "CAM_199",
+    "lat": 28.65311,
+    "lon": 77.28902,
+    "zone": "Z4_East",
+    "road_node_id": "N_199"
+  },
+  {
+    "camera_id": "CAM_200",
+    "lat": 28.6309,
+    "lon": 77.28967,
+    "zone": "Z4_East",
+    "road_node_id": "N_200"
+  },
+  {
+    "camera_id": "CAM_201",
+    "lat": 28.62513,
+    "lon": 77.30207,
+    "zone": "Z4_East",
+    "road_node_id": "N_201"
+  },
+  {
+    "camera_id": "CAM_202",
+    "lat": 28.62253,
+    "lon": 77.31517,
+    "zone": "Z4_East",
+    "road_node_id": "N_202"
+  },
+  {
+    "camera_id": "CAM_203",
+    "lat": 28.64281,
+    "lon": 77.27278,
+    "zone": "Z4_East",
+    "road_node_id": "N_203"
+  },
+  {
+    "camera_id": "CAM_204",
+    "lat": 28.6264,
+    "lon": 77.28425,
+    "zone": "Z4_East",
+    "road_node_id": "N_204"
+  },
+  {
+    "camera_id": "CAM_205",
+    "lat": 28.64554,
+    "lon": 77.29874,
+    "zone": "Z4_East",
+    "road_node_id": "N_205"
+  },
+  {
+    "camera_id": "CAM_206",
+    "lat": 28.63492,
+    "lon": 77.1211,
+    "zone": "Z5_West",
+    "road_node_id": "N_206"
+  },
+  {
+    "camera_id": "CAM_207",
+    "lat": 28.65163,
+    "lon": 77.10164,
+    "zone": "Z5_West",
+    "road_node_id": "N_207"
+  },
+  {
+    "camera_id": "CAM_208",
+    "lat": 28.61625,
+    "lon": 77.10458,
+    "zone": "Z5_West",
+    "road_node_id": "N_208"
+  },
+  {
+    "camera_id": "CAM_209",
+    "lat": 28.62112,
+    "lon": 77.10604,
+    "zone": "Z5_West",
+    "road_node_id": "N_209"
+  },
+  {
+    "camera_id": "CAM_210",
+    "lat": 28.64948,
+    "lon": 77.11683,
+    "zone": "Z5_West",
+    "road_node_id": "N_210"
+  },
+  {
+    "camera_id": "CAM_211",
+    "lat": 28.65045,
+    "lon": 77.13279,
+    "zone": "Z5_West",
+    "road_node_id": "N_211"
+  },
+  {
+    "camera_id": "CAM_212",
+    "lat": 28.6639,
+    "lon": 77.12663,
+    "zone": "Z5_West",
+    "road_node_id": "N_212"
+  },
+  {
+    "camera_id": "CAM_213",
+    "lat": 28.62558,
+    "lon": 77.12248,
+    "zone": "Z5_West",
+    "road_node_id": "N_213"
+  },
+  {
+    "camera_id": "CAM_214",
+    "lat": 28.65787,
+    "lon": 77.113,
+    "zone": "Z5_West",
+    "road_node_id": "N_214"
+  },
+  {
+    "camera_id": "CAM_215",
+    "lat": 28.60054,
+    "lon": 77.10524,
+    "zone": "Z5_West",
+    "road_node_id": "N_215"
+  },
+  {
+    "camera_id": "CAM_216",
+    "lat": 28.6494,
+    "lon": 77.09313,
+    "zone": "Z5_West",
+    "road_node_id": "N_216"
+  },
+  {
+    "camera_id": "CAM_217",
+    "lat": 28.62616,
+    "lon": 77.12754,
+    "zone": "Z5_West",
+    "road_node_id": "N_217"
+  },
+  {
+    "camera_id": "CAM_218",
+    "lat": 28.64759,
+    "lon": 77.10634,
+    "zone": "Z5_West",
+    "road_node_id": "N_218"
+  },
+  {
+    "camera_id": "CAM_219",
+    "lat": 28.65677,
+    "lon": 77.11056,
+    "zone": "Z5_West",
+    "road_node_id": "N_219"
+  },
+  {
+    "camera_id": "CAM_220",
+    "lat": 28.63877,
+    "lon": 77.12374,
+    "zone": "Z5_West",
+    "road_node_id": "N_220"
+  },
+  {
+    "camera_id": "CAM_221",
+    "lat": 28.61661,
+    "lon": 77.13817,
+    "zone": "Z5_West",
+    "road_node_id": "N_221"
+  },
+  {
+    "camera_id": "CAM_222",
+    "lat": 28.61217,
+    "lon": 77.11937,
+    "zone": "Z5_West",
+    "road_node_id": "N_222"
+  },
+  {
+    "camera_id": "CAM_223",
+    "lat": 28.64184,
+    "lon": 77.0997,
+    "zone": "Z5_West",
+    "road_node_id": "N_223"
+  },
+  {
+    "camera_id": "CAM_224",
+    "lat": 28.63817,
+    "lon": 77.12198,
+    "zone": "Z5_West",
+    "road_node_id": "N_224"
+  },
+  {
+    "camera_id": "CAM_225",
+    "lat": 28.62467,
+    "lon": 77.11379,
+    "zone": "Z5_West",
+    "road_node_id": "N_225"
+  },
+  {
+    "camera_id": "CAM_226",
+    "lat": 28.64011,
+    "lon": 77.11803,
+    "zone": "Z5_West",
+    "road_node_id": "N_226"
+  },
+  {
+    "camera_id": "CAM_227",
+    "lat": 28.60452,
+    "lon": 77.12557,
+    "zone": "Z5_West",
+    "road_node_id": "N_227"
+  },
+  {
+    "camera_id": "CAM_228",
+    "lat": 28.62072,
+    "lon": 77.11244,
+    "zone": "Z5_West",
+    "road_node_id": "N_228"
+  },
+  {
+    "camera_id": "CAM_229",
+    "lat": 28.63545,
+    "lon": 77.12102,
+    "zone": "Z5_West",
+    "road_node_id": "N_229"
+  },
+  {
+    "camera_id": "CAM_230",
+    "lat": 28.63807,
+    "lon": 77.16829,
+    "zone": "Z5_West",
+    "road_node_id": "N_230"
+  },
+  {
+    "camera_id": "CAM_231",
+    "lat": 28.62951,
+    "lon": 77.13465,
+    "zone": "Z5_West",
+    "road_node_id": "N_231"
+  },
+  {
+    "camera_id": "CAM_232",
+    "lat": 28.67513,
+    "lon": 77.1255,
+    "zone": "Z5_West",
+    "road_node_id": "N_232"
+  },
+  {
+    "camera_id": "CAM_233",
+    "lat": 28.61704,
+    "lon": 77.10325,
+    "zone": "Z5_West",
+    "road_node_id": "N_233"
+  },
+  {
+    "camera_id": "CAM_234",
+    "lat": 28.63601,
+    "lon": 77.09523,
+    "zone": "Z5_West",
+    "road_node_id": "N_234"
+  },
+  {
+    "camera_id": "CAM_235",
+    "lat": 28.63337,
+    "lon": 77.12781,
+    "zone": "Z5_West",
+    "road_node_id": "N_235"
+  },
+  {
+    "camera_id": "CAM_236",
+    "lat": 28.64375,
+    "lon": 77.1507,
+    "zone": "Z5_West",
+    "road_node_id": "N_236"
+  },
+  {
+    "camera_id": "CAM_237",
+    "lat": 28.63359,
+    "lon": 77.11702,
+    "zone": "Z5_West",
+    "road_node_id": "N_237"
+  },
+  {
+    "camera_id": "CAM_238",
+    "lat": 28.66292,
+    "lon": 77.14212,
+    "zone": "Z5_West",
+    "road_node_id": "N_238"
+  },
+  {
+    "camera_id": "CAM_239",
+    "lat": 28.65201,
+    "lon": 77.12133,
+    "zone": "Z5_West",
+    "road_node_id": "N_239"
+  },
+  {
+    "camera_id": "CAM_240",
+    "lat": 28.6464,
+    "lon": 77.13729,
+    "zone": "Z5_West",
+    "road_node_id": "N_240"
+  },
+  {
+    "camera_id": "CAM_241",
+    "lat": 28.63245,
+    "lon": 77.12051,
+    "zone": "Z5_West",
+    "road_node_id": "N_241"
+  },
+  {
+    "camera_id": "CAM_242",
+    "lat": 28.64151,
+    "lon": 77.08939,
+    "zone": "Z5_West",
+    "road_node_id": "N_242"
+  },
+  {
+    "camera_id": "CAM_243",
+    "lat": 28.65719,
+    "lon": 77.11881,
+    "zone": "Z5_West",
+    "road_node_id": "N_243"
+  },
+  {
+    "camera_id": "CAM_244",
+    "lat": 28.65123,
+    "lon": 77.09061,
+    "zone": "Z5_West",
+    "road_node_id": "N_244"
+  },
+  {
+    "camera_id": "CAM_245",
+    "lat": 28.62965,
+    "lon": 77.13039,
+    "zone": "Z5_West",
+    "road_node_id": "N_245"
+  },
+  {
+    "camera_id": "CAM_246",
+    "lat": 28.6644,
+    "lon": 77.11706,
+    "zone": "Z5_West",
+    "road_node_id": "N_246"
+  },
+  {
+    "camera_id": "CAM_247",
+    "lat": 28.63322,
+    "lon": 77.11722,
+    "zone": "Z5_West",
+    "road_node_id": "N_247"
+  },
+  {
+    "camera_id": "CAM_248",
+    "lat": 28.61946,
+    "lon": 77.10444,
+    "zone": "Z5_West",
+    "road_node_id": "N_248"
+  },
+  {
+    "camera_id": "CAM_249",
+    "lat": 28.63796,
+    "lon": 77.13703,
+    "zone": "Z5_West",
+    "road_node_id": "N_249"
+  },
+  {
+    "camera_id": "CAM_250",
+    "lat": 28.63176,
+    "lon": 77.12234,
+    "zone": "Z5_West",
+    "road_node_id": "N_250"
+  },
+  {
+    "camera_id": "CAM_251",
+    "lat": 28.63178,
+    "lon": 77.14135,
+    "zone": "Z5_West",
+    "road_node_id": "N_251"
+  },
+  {
+    "camera_id": "CAM_252",
+    "lat": 28.66701,
+    "lon": 77.13831,
+    "zone": "Z5_West",
+    "road_node_id": "N_252"
+  },
+  {
+    "camera_id": "CAM_253",
+    "lat": 28.66163,
+    "lon": 77.10865,
+    "zone": "Z5_West",
+    "road_node_id": "N_253"
+  },
+  {
+    "camera_id": "CAM_254",
+    "lat": 28.64389,
+    "lon": 77.13159,
+    "zone": "Z5_West",
+    "road_node_id": "N_254"
+  },
+  {
+    "camera_id": "CAM_255",
+    "lat": 28.63478,
+    "lon": 77.12707,
+    "zone": "Z5_West",
+    "road_node_id": "N_255"
+  },
+  {
+    "camera_id": "CAM_256",
+    "lat": 28.52276,
+    "lon": 77.10058,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_256"
+  },
+  {
+    "camera_id": "CAM_257",
+    "lat": 28.56433,
+    "lon": 77.0978,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_257"
+  },
+  {
+    "camera_id": "CAM_258",
+    "lat": 28.54128,
+    "lon": 77.11385,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_258"
+  },
+  {
+    "camera_id": "CAM_259",
+    "lat": 28.54132,
+    "lon": 77.09376,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_259"
+  },
+  {
+    "camera_id": "CAM_260",
+    "lat": 28.56128,
+    "lon": 77.06595,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_260"
+  },
+  {
+    "camera_id": "CAM_261",
+    "lat": 28.52204,
+    "lon": 77.11541,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_261"
+  },
+  {
+    "camera_id": "CAM_262",
+    "lat": 28.5412,
+    "lon": 77.08447,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_262"
+  },
+  {
+    "camera_id": "CAM_263",
+    "lat": 28.5266,
+    "lon": 77.11022,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_263"
+  },
+  {
+    "camera_id": "CAM_264",
+    "lat": 28.5728,
+    "lon": 77.09298,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_264"
+  },
+  {
+    "camera_id": "CAM_265",
+    "lat": 28.5789,
+    "lon": 77.12515,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_265"
+  },
+  {
+    "camera_id": "CAM_266",
+    "lat": 28.56711,
+    "lon": 77.08817,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_266"
+  },
+  {
+    "camera_id": "CAM_267",
+    "lat": 28.59524,
+    "lon": 77.0662,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_267"
+  },
+  {
+    "camera_id": "CAM_268",
+    "lat": 28.55043,
+    "lon": 77.1109,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_268"
+  },
+  {
+    "camera_id": "CAM_269",
+    "lat": 28.54811,
+    "lon": 77.1098,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_269"
+  },
+  {
+    "camera_id": "CAM_270",
+    "lat": 28.54794,
+    "lon": 77.09495,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_270"
+  },
+  {
+    "camera_id": "CAM_271",
+    "lat": 28.58428,
+    "lon": 77.10406,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_271"
+  },
+  {
+    "camera_id": "CAM_272",
+    "lat": 28.54287,
+    "lon": 77.11431,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_272"
+  },
+  {
+    "camera_id": "CAM_273",
+    "lat": 28.55694,
+    "lon": 77.13493,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_273"
+  },
+  {
+    "camera_id": "CAM_274",
+    "lat": 28.56747,
+    "lon": 77.06936,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_274"
+  },
+  {
+    "camera_id": "CAM_275",
+    "lat": 28.58674,
+    "lon": 77.0649,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_275"
+  },
+  {
+    "camera_id": "CAM_276",
+    "lat": 28.56654,
+    "lon": 77.12377,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_276"
+  },
+  {
+    "camera_id": "CAM_277",
+    "lat": 28.55851,
+    "lon": 77.09016,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_277"
+  },
+  {
+    "camera_id": "CAM_278",
+    "lat": 28.57672,
+    "lon": 77.09819,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_278"
+  },
+  {
+    "camera_id": "CAM_279",
+    "lat": 28.5858,
+    "lon": 77.09336,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_279"
+  },
+  {
+    "camera_id": "CAM_280",
+    "lat": 28.56599,
+    "lon": 77.09591,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_280"
+  },
+  {
+    "camera_id": "CAM_281",
+    "lat": 28.57703,
+    "lon": 77.11954,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_281"
+  },
+  {
+    "camera_id": "CAM_282",
+    "lat": 28.5809,
+    "lon": 77.09427,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_282"
+  },
+  {
+    "camera_id": "CAM_283",
+    "lat": 28.57322,
+    "lon": 77.1093,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_283"
+  },
+  {
+    "camera_id": "CAM_284",
+    "lat": 28.58236,
+    "lon": 77.10379,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_284"
+  },
+  {
+    "camera_id": "CAM_285",
+    "lat": 28.56738,
+    "lon": 77.11232,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_285"
+  },
+  {
+    "camera_id": "CAM_286",
+    "lat": 28.57655,
+    "lon": 77.10495,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_286"
+  },
+  {
+    "camera_id": "CAM_287",
+    "lat": 28.5508,
+    "lon": 77.08794,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_287"
+  },
+  {
+    "camera_id": "CAM_288",
+    "lat": 28.54691,
+    "lon": 77.10562,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_288"
+  },
+  {
+    "camera_id": "CAM_289",
+    "lat": 28.56655,
+    "lon": 77.10997,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_289"
+  },
+  {
+    "camera_id": "CAM_290",
+    "lat": 28.53431,
+    "lon": 77.15279,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_290"
+  },
+  {
+    "camera_id": "CAM_291",
+    "lat": 28.56906,
+    "lon": 77.08623,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_291"
+  },
+  {
+    "camera_id": "CAM_292",
+    "lat": 28.54172,
+    "lon": 77.08275,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_292"
+  },
+  {
+    "camera_id": "CAM_293",
+    "lat": 28.54439,
+    "lon": 77.07876,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_293"
+  },
+  {
+    "camera_id": "CAM_294",
+    "lat": 28.55412,
+    "lon": 77.09687,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_294"
+  },
+  {
+    "camera_id": "CAM_295",
+    "lat": 28.56654,
+    "lon": 77.12305,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_295"
+  },
+  {
+    "camera_id": "CAM_296",
+    "lat": 28.55227,
+    "lon": 77.10507,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_296"
+  },
+  {
+    "camera_id": "CAM_297",
+    "lat": 28.57335,
+    "lon": 77.08613,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_297"
+  },
+  {
+    "camera_id": "CAM_298",
+    "lat": 28.57612,
+    "lon": 77.08233,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_298"
+  },
+  {
+    "camera_id": "CAM_299",
+    "lat": 28.53608,
+    "lon": 77.08482,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_299"
+  },
+  {
+    "camera_id": "CAM_300",
+    "lat": 28.58203,
+    "lon": 77.10637,
+    "zone": "Z6_Airport",
+    "road_node_id": "N_300"
   }
 ]

@@ -103,7 +103,12 @@ Replay historical multi-hop vehicle journeys across the city cameras:
 
 ## 🛣️ Features & Capabilities
 
-- **Turn-by-Turn Road Routing**: Queries OSRM to snap trajectories to physical streets, avenues, and curves instead of straight lines.
+- **Dual-Mode Dashboard**: Seamless toggle between **Vehicle Tracking Mode** and **Traffic Analytics & Heatmap Mode**.
+- **Large-Scale Smart City Network**: 300+ edge camera nodes across 6 urban sectors, monitoring over 2,000 active vehicles and 10,000+ sightings.
+- **Dynamic Traffic Density Heatmap**: GPU-accelerated Leaflet heat layer visualizing city-wide congestion hotspots in real time.
+- **Granular Time-Interval Filtering**: Analyze city traffic patterns across preset intervals (`24h All`, `Last 1h`, `Last 6h`, `Morning Peak [08:00-11:00]`, `Evening Peak [17:00-20:00]`).
+- **Camera-Level Traffic Inspector**: Live congestion rating (`FLOWING`, `MODERATE`, `HIGH`, `CRITICAL`), hourly throughput, and recently spotted vehicles for any selected camera node.
+- **Turn-by-Turn Road Routing**: Queries OSRM to snap trajectories to physical streets, avenues, and highway curves instead of straight lines, calculating accurate travel distances (km) and transit times.
 - **Strict Indian Plate Regex Validation**: Enforces `^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$` to eliminate OCR noise, street signs, and billboard text.
 - **Zero API Key Dependency**: Runs completely self-contained with OpenStreetMap tiles and local Docker services.
 - **Privacy-First Offline Buffer**: Edge nodes retain SQLite cache (`fog-node/data/buffer.db`) if network connectivity is interrupted.
@@ -114,9 +119,24 @@ Replay historical multi-hop vehicle journeys across the city cameras:
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/ingest` | Ingests edge ANPR JSON payload to Redis |
-| `GET` | `/track/{plate}` | Reconstructed chronological sightings |
-| `GET` | `/analytics/summary` | Live global sightings, cameras, and alert counts |
-| `GET` | `/cameras` | Active ANPR camera coordinates and zones |
-| `GET` | `/alerts` | Recent blacklist detection events |
+| `POST` | `/ingest` | Ingests edge ANPR JSON payload to Redis stream |
+| `GET` | `/track/{plate}` | Reconstructed chronological road sightings & OSRM waypoints |
+| `GET` | `/analytics/summary` | Global counts: active cameras (306), sightings (10,000+), vehicles (2,000+), alerts |
+| `GET` | `/analytics/heatmap?interval={val}` | Weighted coordinate heatmap points `[lat, lon, intensity]` |
+| `GET` | `/analytics/density` | Traffic density & vehicle volume breakdown by urban zone |
+| `GET` | `/analytics/camera/{camera_id}` | Detailed camera inspection: congestion score, throughput, recent vehicles |
+| `GET` | `/cameras` | Active ANPR camera list (300+ nodes) with geo-coordinates and zone mappings |
+| `GET` | `/alerts` | Recent blacklist detection events with live timestamps |
 | `GET` | `/` | Serves the interactive GIS Leaflet dashboard |
+
+---
+
+## 📈 Network Scaling Script
+
+To generate or re-seed the full 300-camera / 2,000-vehicle network:
+```bash
+./venv/bin/python scripts/seed_large_network.py --cameras 306 --vehicles 2000 --sightings 10000
+```
+This generates 306 cameras partitioned across 6 city zones (`Central Business District`, `Tech Corridor`, `North Industrial Belt`, `South Residential Zone`, `Airport Expressway`, `West Suburbs`) and populates realistic multi-camera trajectory journeys into PostgreSQL.
+
+
