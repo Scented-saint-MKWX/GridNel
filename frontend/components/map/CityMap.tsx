@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Map, { Marker } from "react-map-gl";
+import Map, { Marker } from "react-map-gl/maplibre";
 import { Camera as CameraIcon, MapPinOff } from "lucide-react";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import type { Camera } from "@/lib/cameras";
 import { RadarSweep } from "@/components/layout/RadarSweep";
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
+// Tokenless vector basemap (CARTO's free "dark-matter" style over OSM data)
+// — swapped from Mapbox GL per team decision, since no Mapbox account token
+// can be provisioned in this environment and CLAUDE.md bans hardcoding any
+// scraped/shared credential. See DECISIONS.md for the full writeup.
+const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
 interface CityMapProps {
   children?: React.ReactNode;
@@ -40,9 +44,8 @@ export function CityMap({ children, onCameraClick, flashingCameraId }: CityMapPr
   return (
     <div className="relative size-full">
       <Map
-        mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={{ longitude: 77.209, latitude: 28.6139, zoom: 11 }}
-        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapStyle={MAP_STYLE}
         style={{ width: "100%", height: "100%" }}
       >
         {(cameras ?? [])

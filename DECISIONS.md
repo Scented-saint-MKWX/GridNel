@@ -286,6 +286,135 @@ session — role/alert colors already referenced `--tracker`/`--analyst`/`--aler
 CSS tokens in `RoleBadge`, `AlertConsole`, `BlacklistPanel` — the actual gap was
 congestion coloring living in the soon-to-be-deleted prototype adapter file.
 
+## 7a. `main`'s backend is completely empty — authorized emergency backend build (2026-09-13, authorized by Wahid)
+
+**Finding:** verifying the NaN-LngLat fix and demo readiness against a real backend
+required actually starting one. `docker-compose.yml` at repo root is 0 bytes. Checked
+every file P1/P3/P4/P5 own — `api/*.py` (all 9 files), `db/*.sql`/`db/cameras.json`,
+`auth/*.py`, `fog-node/{enhance,ocr,fusion,pipeline}.py` — every single one is 0 bytes,
+confirmed via `git show HEAD:<path> | wc -c` (not just an uncommitted local
+working-tree gap): committed empty in the very first commit (`e769f12`, "File
+struture") and never filled in by anyone since. `TEAM.md` documents a fully working,
+locally-tested backend (checkpoints at hour 3/12/16, P3's schema applied, P4's
+ingest/tracking/analytics, P5's auth/JWT) — none of that work was ever actually pushed
+to `main`. The only real, non-empty files in the whole repo outside `frontend/` are
+`fog-node/fog_sim.py` (P2's own file) — everything else P1/P3/P4/P5 were assigned is a
+zero-byte placeholder. This is a materially bigger and more urgent problem than the
+main-vs-testd divergence originally flagged this session: there was, at the time of
+this check, no working backend anywhere on `main` to test the frontend against, mock
+mode notwithstanding.
+
+**Authorization:** Wahid explicitly authorized building a real backend from scratch
+this session, scoped to demo-day necessity, against `TEAM.md`'s frozen contract
+(§4.4/§4.4.1) — **not** a general standing license for this frontend-owning session to
+keep editing `api/`/`db`/`auth/` afterward. This is a one-time, logged exception to
+CLAUDE.md's ownership boundary, made explicitly and in writing, to be replaced by
+P3/P4/P5's actual implementation the moment any of them push real work. Everything
+under §7b below is Claude-Code-authored emergency scaffolding, not P1/P3/P4/P5's work —
+do not attribute it to them, and do not treat its presence as evidence those
+checkpoints were ever actually met on `main`.
+
+## 7. Mapbox GL → MapLibre GL swap, tokenless basemap (resolved 2026-09-13, authorized by Wahid)
+
+**Problem:** local verification of the NaN-LngLat fix (`SegmentsLayer`/`TrajectoryLayer`,
+commit `9ec6b19`) needed a real, loaded map to distinguish a real regression from noise.
+With `NEXT_PUBLIC_MAPBOX_TOKEN` empty (correctly — it's a real credential, never
+committed), Mapbox GL never loads a style/canvas, and its own internal
+`mousemove`/`mouseover` handlers throw `Invalid LngLat object: (NaN, NaN)` from
+`Map.unproject()` on an uninitialized projection — a token-absence artifact that
+surfaces with the exact same error string as the real bug this session was asked to
+verify, with no way to tell them apart without a working map.
+
+**A Mapbox account token cannot be created or fetched by an agent** — it's
+account/billing-bound, not a lookup. Asked Wahid directly rather than guess or embed
+any scraped/shared token (CLAUDE.md bans any credential in `frontend/`, and a public
+demo token found via search is exactly that kind of embedded credential, plus likely
+dead/rate-limited).
+
+**Resolution, authorized live:** swap the map library from Mapbox GL JS to MapLibre GL
+JS (`react-map-gl/maplibre` instead of `react-map-gl`'s default Mapbox export — same
+component API, `Marker`/`Popup`/`Source`/`Layer` usage unchanged across
+`SegmentsLayer`/`ODFlowLayer`/`RoutesLayer`/`HeatmapLayer`/`TrajectoryLayer`), against
+CARTO's free, tokenless `dark-matter-gl-style` vector basemap
+(`basemaps.cartocdn.com`) — no signup, no key, no CLAUDE.md security-rule tension.
+
+**What changed:**
+- `package.json`: `maplibre-gl` added, `mapbox-gl`/`@types/mapbox-gl` removed.
+- `components/map/CityMap.tsx`: `Map` import from `react-map-gl/maplibre`, `mapStyle`
+  points at the CARTO URL, `mapboxAccessToken` prop dropped entirely, CSS import
+  swapped to `maplibre-gl/dist/maplibre-gl.css`.
+- Five layer components: import path changed to `react-map-gl/maplibre` only —
+  `Source`/`Layer`/`Marker`/`Popup` usage untouched.
+- `TrajectoryLayer.tsx`'s popup class selectors: `.mapboxgl-popup-*` →
+  `.maplibregl-popup-*` (MapLibre's own DOM class names).
+- `next.config.ts` CSP: `style-src`/`img-src`/`connect-src` now allow
+  `basemaps.cartocdn.com` instead of `api.mapbox.com`/`*.tiles.mapbox.com`.
+- `.env.local`, `.env.local.example`: `NEXT_PUBLIC_MAPBOX_TOKEN` removed — no map
+  token variable exists in this app anymore.
+- CLAUDE.md's tech-stack line and `NEXT_PUBLIC_*` security rule updated to match —
+  not a silent edit, per this file's own rule.
+
+**Not done:** did not touch `db/`, `api/`, or `auth/`; did not evaluate MapLibre against
+any other basemap provider beyond CARTO's default free style — a reasonable choice for
+demo purposes, revisit if the team wants a different visual treatment.
+
+---
+
+## 7c. Emergency backend build — implementation + real end-to-end verification (2026-09-13)
+
+Following #7a's authorization, wrote a real backend from scratch against TEAM.md's
+frozen contract: `db/schema.sql` (added a `UNIQUE` constraint on `cameras.road_node_id`
+that the original spec didn't call out — needed as an FK target for `road_edges`),
+`db/cameras.json` (matches frontend's existing `MOCK_CAMERAS` exactly, so no camera_id
+drift), `db/seed.py` (Python, not `.sql` — hashing must happen at insert time via
+`auth/hashing.py`), `db/sweeper.py`, `auth/hashing.py` (HMAC-SHA256 + AES-GCM),
+`auth/jwt.py`, and the full `api/` package (`main.py`, `deps.py`, `ingest.py`,
+`tracking.py` with real A* bridging via `graph.py`, `analytics.py`'s six endpoints,
+`alerts.py`, `flusher.py`, `models.py`, `schemas.py`) plus `docker-compose.yml` and
+`api/Dockerfile`. Fresh secrets generated for `.env` (gitignored); `.env.example`
+documents the keys with empty values.
+
+**Real bugs caught and fixed during `docker compose up` verification, not just written
+and assumed correct:**
+- Schema: `road_edges` FK to `cameras.road_node_id` failed at Postgres init — no unique
+  constraint existed on the referenced column. Added `UNIQUE`.
+- `api/models.py`'s `get_db` vs `get_conn` — routes were wired to `Depends(get_conn)`
+  (the raw `@contextmanager`, not a generator dependency), causing
+  `AttributeError: '_GeneratorContextManager' object has no attribute 'cursor'` on
+  every DB-touching route. Fixed by using `get_db` consistently.
+- `/ingest` auth header mismatch: `fog_sim.py` (P2's own existing file) sends
+  `X-Fog-Api-Key`, but the new endpoint checked `Authorization: Bearer`. Fixed to match
+  fog_sim's already-established convention rather than change fog_sim.
+- `/cameras` was accidentally role-gated; frontend's `lib/cameras.ts`/`hooks/useCameras.ts`
+  already assumed (and states in a comment) this endpoint is unauthenticated. Removed the
+  gate to match that pre-existing frontend assumption instead of relitigating it.
+
+**Verified end-to-end for real, not just "should work":** `docker compose up` from a
+clean `-v` volume state boots cleanly; `fog-node/fog_sim.py` (unmodified) ingests real
+blocks that flow through Redis streams into Postgres via the flusher; a real blacklist
+hit on `MH12AB1284` fires a real alert visible in the frontend's 10s-polling banner; real
+`/track/.../bridged` returns real A*-bridged inferred segments between camera pairs on
+different road nodes; role gating produces real 403s (tracker → `/analytics/*`, analyst →
+`/track/.../bridged`) — the frontend's own login/nav/empty-state handling was exercised
+against this, not simulated. `tsc --noEmit`, `eslint`, and `next build` all clean against
+the real backend (`NEXT_PUBLIC_MOCK_MODE=false`).
+
+**Security review (two independent passes) on the new backend found two real, fixed
+issues:** (1) `api/main.py`'s CORS was `allow_origins=["*"]` — narrowed to a
+`FRONTEND_ORIGIN` env var (default `http://localhost:3000`), methods/headers narrowed
+to what's actually used. (2) Both the fog ingest key check (`api/ingest.py`) and the
+demo password check (`auth/jwt.py`) used plain `!=` string comparison instead of
+constant-time — swapped to `hmac.compare_digest` in both places. No SQL injection, JWT
+algorithm-confusion, path traversal, or plaintext-leak-to-analyst issues found in either
+pass — every `cur.execute()` call already used parameterized `%s` placeholders.
+
+**Scope discipline:** this build is a one-time, logged exception (#7a). It has not been
+committed/pushed as of this writing — pending Wahid's go-ahead per the master prompt's
+Phase 8. It should be replaced by P3/P4/P5's real work the moment any of them push it;
+nothing here should be read as evidence those checkpoints were actually met by the team.
+
+---
+
 **Vocabulary divergence from TEAM.md's original "exact PS vocabulary" instruction —
 now a visible, three-sessions-deep line item, not something that quietly happened:**
 `AnalyticsViewSelector` now ships six views — Traffic Density (repurposed as a

@@ -25,13 +25,17 @@ const apiConnectSrc = apiUrl
 // 'self'-only script-src without one of those. 'unsafe-eval' IS fully dropped
 // in production below — Next/React don't need it outside dev's fast-refresh
 // machinery, and that part of the tightening is real.
+// Basemap swapped from Mapbox GL to MapLibre GL against CARTO's free,
+// tokenless vector tiles (basemaps.cartocdn.com) — see CityMap.tsx and
+// DECISIONS.md. CSP origins updated to match; no api.mapbox.com/tiles.mapbox.com
+// left anywhere since nothing loads from Mapbox's infra anymore.
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
-  "img-src 'self' data: blob: https://api.mapbox.com https://*.tiles.mapbox.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://basemaps.cartocdn.com",
   "worker-src 'self' blob:",
-  `connect-src 'self' https://api.mapbox.com https://events.mapbox.com ${apiConnectSrc}`,
+  `connect-src 'self' https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com ${apiConnectSrc}`,
   "font-src 'self' data:",
   "object-src 'none'",
   "base-uri 'self'",

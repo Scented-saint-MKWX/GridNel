@@ -1,6 +1,6 @@
 "use client";
 
-import { Source, Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl/maplibre";
 import type { Segment } from "@/types/analytics";
 import type { ApiCamera } from "@/types/cameras";
 import { CONGESTION_COLORS } from "@/lib/colors";

@@ -1,0 +1,8 @@
+[
+  { "camera_id": "CAM_01", "lat": 28.6139, "lon": 77.2090, "zone": "central", "road_node_id": "N1" },
+  { "camera_id": "CAM_02", "lat": 28.6229, "lon": 77.2185, "zone": "central", "road_node_id": "N2" },
+  { "camera_id": "CAM_03", "lat": 28.6304, "lon": 77.2177, "zone": "north", "road_node_id": "N3" },
+  { "camera_id": "CAM_04", "lat": 28.6089, "lon": 77.2295, "zone": "east", "road_node_id": "N4" },
+  { "camera_id": "CAM_05", "lat": 28.5994, "lon": 77.2081, "zone": "south", "road_node_id": "N5" },
+  { "camera_id": "CAM_06", "lat": 28.6167, "lon": 77.1962, "zone": "west", "road_node_id": "N6" }
+]
