@@ -49,7 +49,7 @@ Roles are `tracker` and `analyst`. Analyst responses never contain `plate_text_e
 
 - Next.js (App Router) + TypeScript, strict mode on
 - Tailwind + shadcn/ui for primitives, Watermelon UI (`registry.watermelon.sh`, a shadcn-compatible registry) for dashboard blocks — install via `npx shadcn@latest add <registry-url>` rather than hand-building from a blank div. Check the registry for an existing block before writing a component from scratch.
-- Mapbox GL JS via `react-map-gl` for the map (token from `NEXT_PUBLIC_MAPBOX_TOKEN`)
+- MapLibre GL JS via `react-map-gl/maplibre` for the map, against CARTO's free tokenless vector tiles — swapped from Mapbox GL 2026-09-13 (no Mapbox account token could be provisioned in the dev environment; see DECISIONS.md #7). No map token env var needed.
 - Recharts (or Tremor) for density/corridor-speed charts
 - TanStack Query for all data fetching and the 10s `/alerts` polling — one shared hook per resource, not a poller per component
 - react-hook-form + zod for the plate-search input
@@ -116,7 +116,7 @@ Never a literally empty rectangle.
 - `middleware.ts` is an intentional, commented passthrough — see "Auth gating implementation" below for why and where the real gating lives. Never fetch or render privileged data based solely on a client-side role check; the API's 403 is the actual security boundary.
 - URL-encode the plate-text search value and validate its format (zod) before it touches `/track/<text>` or `/track/<text>/bridged`.
 - No `dangerouslySetInnerHTML`.
-- No secret or internal API detail in a `NEXT_PUBLIC_*` variable — only the Mapbox token and the API base URL belong there.
+- No secret or internal API detail in a `NEXT_PUBLIC_*` variable — only the API base URL belongs there now (no map token exists to leak; see MapLibre swap above).
 
 ## Auth gating implementation & other resolved decisions
 

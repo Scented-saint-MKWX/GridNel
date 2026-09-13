@@ -1,6 +1,6 @@
 "use client";
 
-import { Source, Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl/maplibre";
 import type { HeatmapPoint } from "@/types/analytics";
 
 interface HeatmapLayerProps {

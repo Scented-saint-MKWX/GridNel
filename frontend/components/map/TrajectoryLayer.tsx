@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Marker, Popup, Source, Layer } from "react-map-gl";
+import { Marker, Popup, Source, Layer } from "react-map-gl/maplibre";
 import { Sparkles } from "lucide-react";
 import type { ObservedSegment, Trajectory } from "@/types/tracking";
+import { PlateThumbnail } from "@/components/map/PlateThumbnail";
+
+const MOCK_MODE = process.env.NEXT_PUBLIC_MOCK_MODE === "true";
 
 interface TrajectoryLayerProps {
   trajectory: Trajectory;
@@ -150,9 +153,14 @@ export function TrajectoryLayer({ trajectory }: TrajectoryLayerProps) {
           onClose={() => setSelected(null)}
           closeButton
           anchor="bottom"
-          className="[&_.mapboxgl-popup-content]:!bg-surface-raised [&_.mapboxgl-popup-content]:!rounded-lg [&_.mapboxgl-popup-content]:!border [&_.mapboxgl-popup-content]:!border-white/10 [&_.mapboxgl-popup-content]:!p-3 [&_.mapboxgl-popup-tip]:!border-t-surface-raised"
+          className="[&_.maplibregl-popup-content]:!bg-surface-raised [&_.maplibregl-popup-content]:!rounded-lg [&_.maplibregl-popup-content]:!border [&_.maplibregl-popup-content]:!border-white/10 [&_.maplibregl-popup-content]:!p-3 [&_.maplibregl-popup-tip]:!border-t-surface-raised"
         >
           <div className="space-y-1 text-xs">
+            {MOCK_MODE && (
+              <div className="mb-1.5">
+                <PlateThumbnail plateText={trajectory.plate} />
+              </div>
+            )}
             <div className="data-mono font-semibold text-foreground">{selected.camera_id}</div>
             <div className="data-mono text-muted-foreground">{selected.ts}</div>
             {selected.outcome && (

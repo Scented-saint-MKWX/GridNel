@@ -1,6 +1,6 @@
 "use client";
 
-import { Source, Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl/maplibre";
 import type { Segment } from "@/types/analytics";
 import type { ApiCamera } from "@/types/cameras";
 import { CONGESTION_COLORS } from "@/lib/colors";
@@ -16,13 +16,21 @@ interface SegmentsLayerProps {
 // resolves coordinates directly off /cameras rather than through
 // lib/roads.ts's road_id averaging (that's only needed for OD/Routes, which
 // are keyed by road_id).
+// Guards against a well-formed camera record with bad numbers (missing/null
+// lat/lon) — same NaN-reaches-Mapbox failure mode as TrajectoryLayer /
+// HeatmapLayer / CityMap, but this call site was checking only that from/to
+// existed, not that their coordinates were finite.
+function isFiniteCamera(c: ApiCamera | undefined): c is ApiCamera {
+  return !!c && Number.isFinite(c.longitude) && Number.isFinite(c.latitude);
+}
+
 export function SegmentsLayer({ segments, cameras }: SegmentsLayerProps) {
   const cameraById = new Map(cameras.map((c) => [c.camera_id, c]));
 
   const features = segments.flatMap((s) => {
     const from = cameraById.get(s.from_camera);
     const to = cameraById.get(s.to_camera);
-    if (!from || !to) return [];
+    if (!isFiniteCamera(from) || !isFiniteCamera(to)) return [];
     return [
       {
         type: "Feature" as const,
