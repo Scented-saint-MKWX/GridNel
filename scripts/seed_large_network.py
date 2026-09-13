@@ -51,7 +51,8 @@ def generate_300_cameras() -> list[dict]:
     return cameras
 
 def generate_2000_plates() -> list[str]:
-    plates = ["MH12AB1284"] # Preserve primary blacklist target
+    # Include all 5 blacklist targets so they all have full camera journeys and alerts
+    plates = ["MH12AB1284", "DL01AB9999", "HR26DQ0007", "UP16BT1111", "TS09EZ0001"]
     used = set(plates)
 
     random.seed(42)

@@ -79,6 +79,13 @@
             </button>
         </div>
 
+        <!-- Blacklist Quick Access Button -->
+        <button onclick="toggleBlacklistDropdown(event)" class="bg-red-950/70 hover:bg-red-900 border border-red-800/80 text-red-300 hover:text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow flex items-center gap-2 cursor-pointer">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span>Blacklist Targets (<span id="header-alert-count">5</span>)</span>
+            <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+
         <!-- Tracking Search Form (Visible in Tracking Mode) -->
         <div id="tracking-search-bar" class="flex items-center gap-2">
             <form id="search-form" class="flex gap-2">
@@ -133,13 +140,41 @@
             </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between shadow-sm">
-            <div>
-                <p class="text-slate-400 text-[11px] uppercase tracking-wider font-medium">Blacklist Alerts</p>
-                <p id="stat-alerts" class="text-xl font-black mt-0.5 text-red-500 font-mono">0</p>
+        <!-- Interactive Blacklist Alerts Card with Dropdown -->
+        <div class="relative">
+            <div id="stat-alerts-card" onclick="toggleBlacklistDropdown(event)" 
+                 class="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-red-500/60 rounded-xl p-2.5 flex items-center justify-between shadow-sm cursor-pointer transition select-none group">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-slate-400 group-hover:text-red-300 text-[11px] uppercase tracking-wider font-medium transition">Blacklist Alerts</p>
+                        <span class="text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-1 py-0.2 rounded font-mono font-bold">CLICK ▼</span>
+                    </div>
+                    <p id="stat-alerts" class="text-xl font-black mt-0.5 text-red-500 font-mono">0</p>
+                </div>
+                <div class="w-8 h-8 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 border border-red-500/20 group-hover:border-red-500/40 flex items-center justify-center text-red-400 transition">
+                    <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
             </div>
-            <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+
+            <!-- Blacklist Targets Dropdown / Popover -->
+            <div id="blacklist-dropdown" class="hidden absolute top-full right-0 md:w-96 mt-2 z-[9999] bg-slate-900/98 backdrop-blur-md border border-red-500/50 rounded-2xl shadow-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider">Blacklist Target Vehicles</h3>
+                    </div>
+                    <span id="target-count-badge" class="text-[10px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full">5 Targets</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Click any flagged target vehicle below to switch to tracking mode and reconstruct its road journey:</p>
+                
+                <div id="blacklist-target-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    <div class="text-center text-slate-500 text-xs py-4">Loading blacklisted targets...</div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-500">
+                    <span>Automated ANPR Cross-Reference</span>
+                    <button onclick="closeBlacklistDropdown()" class="text-slate-400 hover:text-white font-medium cursor-pointer">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -344,6 +379,9 @@
         let trajectoryMarkers = [];
         let heatLayer = null;
         let allCamerasList = [];
+        const trajectoryGroup = L.featureGroup().addTo(map);
+        let activeTrackRequestId = 0;
+        let blacklistTargets = [];
 
         // 1. Toggle Mode (Tracking <-> Analytics)
         function setMode(mode) {
@@ -373,14 +411,13 @@
                 legendAnalytics.classList.add("hidden");
 
                 // Remove heatmap from map
-                if (heatLayer) {
+                if (heatLayer && map.hasLayer(heatLayer)) {
                     map.removeLayer(heatLayer);
                 }
-                // Show trajectory if previously plotted
-                if (currentRoadPolyline) {
-                    currentRoadPolyline.addTo(map);
+                // Ensure trajectory layer group is on map
+                if (!map.hasLayer(trajectoryGroup)) {
+                    trajectoryGroup.addTo(map);
                 }
-                trajectoryMarkers.forEach(m => m.addTo(map));
                 resetCameraPinStyles();
 
             } else {
@@ -396,11 +433,31 @@
                 legendTrack.classList.add("hidden");
                 legendAnalytics.classList.remove("hidden");
 
-                // Hide trajectory line & markers
-                if (currentRoadPolyline) {
-                    map.removeLayer(currentRoadPolyline);
+                // Invalidate any in-flight track requests
+                activeTrackRequestId++;
+
+                // Completely clear and remove trajectory from map
+                clearTrajectory();
+                if (map.hasLayer(trajectoryGroup)) {
+                    map.removeLayer(trajectoryGroup);
                 }
-                trajectoryMarkers.forEach(m => map.removeLayer(m));
+                // Double check: remove any leftover polylines from map
+                map.eachLayer(layer => {
+                    if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                        map.removeLayer(layer);
+                    }
+                });
+
+                // Hide tracking status badges and route stats
+                const statsCard = document.getElementById("route-stats");
+                if (statsCard) statsCard.classList.add("hidden");
+                const badgeEl = document.getElementById("tracking-plate-badge");
+                if (badgeEl) badgeEl.classList.add("hidden");
+                const statusEl = document.getElementById("search-status");
+                if (statusEl) {
+                    statusEl.innerText = "Enter a license plate above...";
+                    statusEl.className = "text-xs text-slate-400 mt-0.5";
+                }
 
                 // Load and render heatmap & density
                 loadHeatmapAndDensity();
@@ -629,7 +686,90 @@
             trackPlate(plate);
         }
 
-        // 6. Global Analytics Polling
+        // 6. Blacklist Targets Dropdown & Management
+        function toggleBlacklistDropdown(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById("blacklist-dropdown");
+            if (!dd) return;
+            const isHidden = dd.classList.contains("hidden");
+            if (isHidden) {
+                dd.classList.remove("hidden");
+                loadBlacklistTargets();
+            } else {
+                dd.classList.add("hidden");
+            }
+        }
+
+        function closeBlacklistDropdown() {
+            const dd = document.getElementById("blacklist-dropdown");
+            if (dd) dd.classList.add("hidden");
+        }
+
+        function selectBlacklistTarget(plate) {
+            closeBlacklistDropdown();
+            setMode('tracking');
+            trackPlate(plate);
+        }
+
+        async function loadBlacklistTargets() {
+            try {
+                const res = await fetch(`${API_BASE}/alerts/targets`);
+                if (!res.ok) return;
+                blacklistTargets = await res.json();
+                
+                const countBadge = document.getElementById("target-count-badge");
+                if (countBadge) countBadge.innerText = `${blacklistTargets.length} Targets`;
+                const headerCount = document.getElementById("header-alert-count");
+                if (headerCount) headerCount.innerText = blacklistTargets.length;
+                
+                const listContainer = document.getElementById("blacklist-target-list");
+                if (!listContainer) return;
+                
+                if (blacklistTargets.length === 0) {
+                    listContainer.innerHTML = `<div class="text-center text-slate-500 text-xs py-4">No active blacklist targets.</div>`;
+                    return;
+                }
+
+                listContainer.innerHTML = "";
+                blacklistTargets.forEach(t => {
+                    const item = document.createElement("div");
+                    item.className = "bg-slate-950/90 hover:bg-slate-800/90 border border-slate-800 hover:border-red-500/50 p-2.5 rounded-xl transition cursor-pointer group shadow-sm";
+                    item.onclick = () => selectBlacklistTarget(t.plate_text);
+
+                    const timeStr = t.last_seen_ts ? new Date(t.last_seen_ts).toLocaleTimeString() : 'Recent';
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono font-black text-sm text-red-400 group-hover:text-red-300 tracking-wider">${t.plate_text}</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                                ${t.alert_count} Alerts
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mt-1 font-medium">${t.reason}</p>
+                        <div class="flex justify-between items-center text-[10px] text-slate-500 font-mono mt-1.5 pt-1.5 border-t border-slate-800/70">
+                            <span>Last Sighted: ${t.last_camera_id || 'Network'} (${timeStr})</span>
+                            <span class="text-blue-400 font-semibold group-hover:underline flex items-center gap-0.5">
+                                Track Route →
+                            </span>
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            } catch (err) {
+                console.log("Error loading blacklist targets:", err);
+            }
+        }
+
+        // Close dropdown when clicking anywhere outside
+        document.addEventListener("click", (e) => {
+            const dd = document.getElementById("blacklist-dropdown");
+            if (dd && !dd.classList.contains("hidden")) {
+                if (!dd.contains(e.target) && !e.target.closest("#stat-alerts-card")) {
+                    closeBlacklistDropdown();
+                }
+            }
+        });
+
+        // 7. Global Analytics Polling
         async function fetchAnalytics() {
             try {
                 const res = await fetch(`${API_BASE}/analytics/summary`);
@@ -644,34 +784,29 @@
                 console.log("Analytics poll error:", e);
             }
 
+            // Sync blacklist target count in header
             try {
-                const res = await fetch(`${API_BASE}/alerts?limit=1`);
+                const res = await fetch(`${API_BASE}/alerts/targets`);
                 if (res.ok) {
-                    const alerts = await res.json();
-                    if (alerts && alerts.length > 0) {
-                        const alert = alerts[0];
-                        if (alert.id !== lastAlertId) {
-                            lastAlertId = alert.id;
-                            const timeStr = new Date(alert.ts).toLocaleTimeString();
-                            document.getElementById("alert-time").innerText = timeStr;
-                            document.getElementById("latest-alert-box").innerHTML = `
-                                <button onclick="trackPlate('${alert.plate_text}')" class="text-red-400 hover:text-red-300 font-bold underline flex items-center gap-1">
-                                    🚨 ${alert.plate_text} at ${alert.camera_id}
-                                </button>
-                            `;
-                        }
-                    }
+                    const targets = await res.json();
+                    const headerCount = document.getElementById("header-alert-count");
+                    if (headerCount) headerCount.innerText = targets.length;
+                    const targetBadge = document.getElementById("target-count-badge");
+                    if (targetBadge) targetBadge.innerText = `${targets.length} Targets`;
                 }
             } catch (e) {
-                console.log("Alerts poll error:", e);
+                console.log("Blacklist targets poll error:", e);
             }
         }
 
-        // 7. Trajectory Tracking with OSRM Road Routing
+        // 8. Trajectory Tracking with OSRM Road Routing
         async function trackPlate(plate) {
             if (!plate) return;
             plate = plate.trim().toUpperCase();
             document.getElementById("plate-input").value = plate;
+
+            // Invalidate any previous tracking requests
+            const thisRequestId = ++activeTrackRequestId;
 
             const statusEl = document.getElementById("search-status");
             const badgeEl = document.getElementById("tracking-plate-badge");
@@ -685,6 +820,10 @@
 
             try {
                 const res = await fetch(`${API_BASE}/track/${plate}`);
+                
+                // Abort if another track was triggered or mode changed
+                if (thisRequestId !== activeTrackRequestId || currentMode !== 'tracking') return;
+
                 if (!res.ok) {
                     statusEl.innerText = `No sightings recorded for ${plate}.`;
                     statusEl.className = "text-xs text-amber-400 mt-0.5";
@@ -699,30 +838,44 @@
                 }
 
                 const data = await res.json();
+                if (thisRequestId !== activeTrackRequestId || currentMode !== 'tracking') return;
+
                 statusEl.innerText = `Found ${data.length} sightings. Snapping to road network...`;
                 statusEl.className = "text-xs text-emerald-400 mt-0.5";
 
-                await plotRoadTrajectory(data, plate);
+                await plotRoadTrajectory(data, plate, thisRequestId);
+                if (thisRequestId !== activeTrackRequestId || currentMode !== 'tracking') return;
+
                 buildTimeline(data);
 
             } catch (err) {
-                statusEl.innerText = "Error connecting to SentinelGrid API.";
-                statusEl.className = "text-xs text-red-400 mt-0.5";
+                if (thisRequestId === activeTrackRequestId && currentMode === 'tracking') {
+                    statusEl.innerText = "Error connecting to SentinelGrid API.";
+                    statusEl.className = "text-xs text-red-400 mt-0.5";
+                }
             }
         }
 
         function clearTrajectory() {
+            trajectoryGroup.clearLayers();
             if (currentRoadPolyline) {
-                map.removeLayer(currentRoadPolyline);
+                if (map.hasLayer(currentRoadPolyline)) {
+                    map.removeLayer(currentRoadPolyline);
+                }
                 currentRoadPolyline = null;
             }
-            trajectoryMarkers.forEach(m => map.removeLayer(m));
+            trajectoryMarkers.forEach(m => {
+                if (map.hasLayer(m)) {
+                    map.removeLayer(m);
+                }
+            });
             trajectoryMarkers = [];
         }
 
-        async function plotRoadTrajectory(points, plate) {
+        async function plotRoadTrajectory(points, plate, requestId) {
             clearTrajectory();
             if (!points || points.length === 0) return;
+            if (requestId && (requestId !== activeTrackRequestId || currentMode !== 'tracking')) return;
 
             const waypointCoords = points.map(p => [p.lat, p.lon]);
             let roadCoords = [];
@@ -746,6 +899,9 @@
                 }
             }
 
+            // Verify again before adding any layers: if user left tracking mode, ABORT!
+            if (requestId && (requestId !== activeTrackRequestId || currentMode !== 'tracking')) return;
+
             const finalCoords = roadCoords.length > 0 ? roadCoords : waypointCoords;
 
             currentRoadPolyline = L.polyline(finalCoords, {
@@ -754,7 +910,8 @@
                 opacity: 0.95,
                 lineJoin: "round",
                 lineCap: "round"
-            }).addTo(map);
+            });
+            trajectoryGroup.addLayer(currentRoadPolyline);
 
             points.forEach((point, index) => {
                 const isLatest = index === points.length - 1;
@@ -768,7 +925,7 @@
                     iconAnchor: [13, 13]
                 });
 
-                const marker = L.marker([point.lat, point.lon], { icon }).addTo(map);
+                const marker = L.marker([point.lat, point.lon], { icon });
                 marker.bindPopup(`
                     <div class="text-slate-900 font-sans p-1 text-xs">
                         <span class="font-bold text-slate-800">Stop #${index + 1} (${isStart ? 'Origin' : isLatest ? 'Latest Sighting' : 'Waypoint'})</span><br/>
@@ -777,26 +934,32 @@
                         <span class="text-slate-500">${dateObj.toLocaleTimeString()} (${dateObj.toLocaleDateString()})</span>
                     </div>
                 `);
+                trajectoryGroup.addLayer(marker);
                 trajectoryMarkers.push(marker);
             });
 
             const statsCard = document.getElementById("route-stats");
-            statsCard.classList.remove("hidden");
-            document.getElementById("stat-hops").innerText = points.length;
-            document.getElementById("stat-distance").innerText = totalDistanceMeters > 0 ? `${(totalDistanceMeters / 1000).toFixed(1)} km` : "Corridor";
+            if (statsCard) statsCard.classList.remove("hidden");
+            const statHops = document.getElementById("stat-hops");
+            if (statHops) statHops.innerText = points.length;
+            const statDist = document.getElementById("stat-distance");
+            if (statDist) statDist.innerText = totalDistanceMeters > 0 ? `${(totalDistanceMeters / 1000).toFixed(1)} km` : "Corridor";
 
             const startTime = new Date(points[0].ts).getTime();
             const endTime = new Date(points[points.length - 1].ts).getTime();
             const diffMinutes = Math.max(1, Math.round((endTime - startTime) / 60000));
-            document.getElementById("stat-duration").innerText = `${diffMinutes} min`;
+            const statDur = document.getElementById("stat-duration");
+            if (statDur) statDur.innerText = `${diffMinutes} min`;
 
             if (finalCoords.length > 0) {
                 map.fitBounds(currentRoadPolyline.getBounds(), { padding: [60, 60], maxZoom: 16 });
             }
 
             const statusEl = document.getElementById("search-status");
-            statusEl.innerText = `Plotted road route across ${points.length} sightings for ${plate}.`;
-            statusEl.className = "text-xs text-emerald-400 mt-0.5";
+            if (statusEl) {
+                statusEl.innerText = `Plotted road route across ${points.length} sightings for ${plate}.`;
+                statusEl.className = "text-xs text-emerald-400 mt-0.5";
+            }
         }
 
         function buildTimeline(data) {
