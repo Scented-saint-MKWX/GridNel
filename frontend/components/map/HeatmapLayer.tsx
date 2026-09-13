@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { HeatmapPoint } from "@/types/analytics";
 
@@ -14,23 +15,22 @@ export function HeatmapLayer({ points }: HeatmapLayerProps) {
   // Guards against a backend returning malformed lat/lon (missing/null) —
   // an invalid coordinate reaching Mapbox as NaN throws and takes the map
   // down. Pure frontend robustness, not an API contract change.
-  const validPoints = points.filter(
-    (p) => Number.isFinite(p.longitude) && Number.isFinite(p.latitude),
-  );
+  const data = useMemo(() => {
+    const validPoints = points.filter(
+      (p) => Number.isFinite(p.longitude) && Number.isFinite(p.latitude),
+    );
+    return {
+      type: "FeatureCollection" as const,
+      features: validPoints.map((p) => ({
+        type: "Feature" as const,
+        properties: { weight: p.vehicle_count },
+        geometry: { type: "Point" as const, coordinates: [p.longitude, p.latitude] },
+      })),
+    };
+  }, [points]);
 
   return (
-    <Source
-      id="density-heatmap"
-      type="geojson"
-      data={{
-        type: "FeatureCollection",
-        features: validPoints.map((p) => ({
-          type: "Feature",
-          properties: { weight: p.vehicle_count },
-          geometry: { type: "Point", coordinates: [p.longitude, p.latitude] },
-        })),
-      }}
-    >
+    <Source id="density-heatmap" type="geojson" data={data}>
       <Layer
         id="density-heatmap-layer"
         type="heatmap"

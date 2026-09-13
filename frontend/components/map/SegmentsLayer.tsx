@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { Segment } from "@/types/analytics";
 import type { ApiCamera } from "@/types/cameras";
@@ -25,29 +26,33 @@ function isFiniteCamera(c: ApiCamera | undefined): c is ApiCamera {
 }
 
 export function SegmentsLayer({ segments, cameras }: SegmentsLayerProps) {
-  const cameraById = new Map(cameras.map((c) => [c.camera_id, c]));
+  const data = useMemo(() => {
+    const cameraById = new Map(cameras.map((c) => [c.camera_id, c]));
 
-  const features = segments.flatMap((s) => {
-    const from = cameraById.get(s.from_camera);
-    const to = cameraById.get(s.to_camera);
-    if (!isFiniteCamera(from) || !isFiniteCamera(to)) return [];
-    return [
-      {
-        type: "Feature" as const,
-        properties: { congestion: s.congestion, vehicle_count: s.vehicle_count },
-        geometry: {
-          type: "LineString" as const,
-          coordinates: [
-            [from.longitude, from.latitude],
-            [to.longitude, to.latitude],
-          ],
+    const features = segments.flatMap((s) => {
+      const from = cameraById.get(s.from_camera);
+      const to = cameraById.get(s.to_camera);
+      if (!isFiniteCamera(from) || !isFiniteCamera(to)) return [];
+      return [
+        {
+          type: "Feature" as const,
+          properties: { congestion: s.congestion, vehicle_count: s.vehicle_count },
+          geometry: {
+            type: "LineString" as const,
+            coordinates: [
+              [from.longitude, from.latitude],
+              [to.longitude, to.latitude],
+            ],
+          },
         },
-      },
-    ];
-  });
+      ];
+    });
+
+    return { type: "FeatureCollection" as const, features };
+  }, [segments, cameras]);
 
   return (
-    <Source id="analytics-segments" type="geojson" data={{ type: "FeatureCollection", features }}>
+    <Source id="analytics-segments" type="geojson" data={data}>
       <Layer
         id="analytics-segments-line"
         type="line"

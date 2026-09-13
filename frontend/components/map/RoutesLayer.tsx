@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import type { Route } from "@/types/analytics";
 import { resolveRoadCoordinate } from "@/lib/roads";
@@ -17,33 +18,50 @@ const RANK_COLORS = ["#d97e2c", "#38bdf8", "#a78bfa", "#94a3b8"];
 // assumption). Ranked by vehicle_count, same rank-color/width treatment as
 // the prior prototype.
 export function RoutesLayer({ routes, roadCoordinateIndex }: RoutesLayerProps) {
-  const ranked = [...routes].sort((a, b) => b.vehicle_count - a.vehicle_count);
-  const maxCount = Math.max(...ranked.map((r) => r.vehicle_count), 1);
+  const { maxCount, linesData, labelsData } = useMemo(() => {
+    const ranked = [...routes].sort((a, b) => b.vehicle_count - a.vehicle_count);
+    const maxCount = Math.max(...ranked.map((r) => r.vehicle_count), 1);
 
-  const withPaths = ranked.map((r, i) => ({
-    ...r,
-    rank: i + 1,
-    path: r.road_sequence
-      .map((roadId) => resolveRoadCoordinate(roadCoordinateIndex, roadId))
-      .filter((p): p is [number, number] => p !== null),
-  }));
+    const withPaths = ranked.map((r, i) => ({
+      ...r,
+      rank: i + 1,
+      path: r.road_sequence
+        .map((roadId) => resolveRoadCoordinate(roadCoordinateIndex, roadId))
+        .filter((p): p is [number, number] => p !== null),
+    }));
+
+    const linesData = {
+      type: "FeatureCollection" as const,
+      features: withPaths
+        .filter((r) => r.path.length >= 2)
+        .map((r) => ({
+          type: "Feature" as const,
+          properties: { route_id: r.route_id, rank: r.rank, vehicle_count: r.vehicle_count },
+          geometry: { type: "LineString" as const, coordinates: r.path },
+        })),
+    };
+
+    const labelsData = {
+      type: "FeatureCollection" as const,
+      features: withPaths.flatMap((r) => {
+        const mid = r.path[Math.floor(r.path.length / 2)];
+        if (!mid) return [];
+        return [
+          {
+            type: "Feature" as const,
+            properties: { label: `#${r.rank}`, rank: r.rank },
+            geometry: { type: "Point" as const, coordinates: mid },
+          },
+        ];
+      }),
+    };
+
+    return { withPaths, maxCount, linesData, labelsData };
+  }, [routes, roadCoordinateIndex]);
 
   return (
     <>
-      <Source
-        id="analytics-routes"
-        type="geojson"
-        data={{
-          type: "FeatureCollection",
-          features: withPaths
-            .filter((r) => r.path.length >= 2)
-            .map((r) => ({
-              type: "Feature" as const,
-              properties: { route_id: r.route_id, rank: r.rank, vehicle_count: r.vehicle_count },
-              geometry: { type: "LineString" as const, coordinates: r.path },
-            })),
-        }}
-      >
+      <Source id="analytics-routes" type="geojson" data={linesData}>
         <Layer
           id="analytics-routes-line"
           type="line"
@@ -66,24 +84,7 @@ export function RoutesLayer({ routes, roadCoordinateIndex }: RoutesLayerProps) {
         />
       </Source>
 
-      <Source
-        id="analytics-routes-labels"
-        type="geojson"
-        data={{
-          type: "FeatureCollection",
-          features: withPaths.flatMap((r) => {
-            const mid = r.path[Math.floor(r.path.length / 2)];
-            if (!mid) return [];
-            return [
-              {
-                type: "Feature" as const,
-                properties: { label: `#${r.rank}`, rank: r.rank },
-                geometry: { type: "Point" as const, coordinates: mid },
-              },
-            ];
-          }),
-        }}
-      >
+      <Source id="analytics-routes-labels" type="geojson" data={labelsData}>
         <Layer
           id="analytics-routes-label-layer"
           type="symbol"

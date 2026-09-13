@@ -90,13 +90,29 @@ try:
 except Exception:  # noqa: BLE001 - pipeline.py may not exist yet, or is a stub
     pass
 
-SAMPLE_PLATES = [
-    "MH12AB1284",  # seeded blacklisted plate per TEAM.md §8 (P3 spec)
-    "DL3CAX9981",
-    "KA05MN2210",
-    "RJ14GT5567",
-    "UP16BZ3321",
-]
+def _generate_sample_plates(count: int) -> list[str]:
+    """Proportionally larger simulated plate pool for the scaled ~300-camera
+    seed (Master Prompt v10 Phase 3) — more distinct vehicles in circulation
+    so sightings/transitions volume looks like real city traffic rather than
+    5 plates looping through 300 cameras. Deterministic (fixed seed) so
+    demo/replay runs stay reproducible across invocations."""
+    state_codes = ["MH", "DL", "KA", "RJ", "UP", "TN", "GJ", "WB", "AP", "PB"]
+    rng = random.Random(7)
+    plates = ["MH12AB1284"]  # seeded blacklisted plate per TEAM.md §8 (P3 spec) — always first
+    seen = {plates[0]}
+    while len(plates) < count:
+        state = rng.choice(state_codes)
+        district = rng.randint(1, 20)
+        letters = "".join(rng.choice("ABCDEFGHJKLMNPQRSTUVWXYZ") for _ in range(2))
+        digits = rng.randint(1000, 9999)
+        plate = f"{state}{district:02d}{letters}{digits}"
+        if plate not in seen:
+            seen.add(plate)
+            plates.append(plate)
+    return plates
+
+
+SAMPLE_PLATES = _generate_sample_plates(60)
 
 OUTCOMES = ["agreement", "engine_preferred", "vendor_preferred", "single_channel"]
 
