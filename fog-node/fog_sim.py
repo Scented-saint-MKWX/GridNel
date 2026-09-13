@@ -32,6 +32,7 @@ import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CAMERAS_PATH = REPO_ROOT / "db" / "cameras.json"
+ROAD_EDGES_PATH = REPO_ROOT / "db" / "road_edges.json"
 sys.path.insert(0, str(REPO_ROOT))
 
 # auth/hashing.py is P5's file (auth/ is not our lane). Import the real thing
@@ -112,9 +113,27 @@ def _generate_sample_plates(count: int) -> list[str]:
     return plates
 
 
-SAMPLE_PLATES = _generate_sample_plates(60)
+SAMPLE_PLATES = _generate_sample_plates(400)
 
 OUTCOMES = ["agreement", "engine_preferred", "vendor_preferred", "single_channel"]
+
+
+def load_road_adjacency() -> dict[str, list[str]]:
+    """road_node_id -> reachable neighbor road_node_ids, from db/road_edges.json
+    (DECISIONS.md #8's real-road seed). Used so simulated vehicles move
+    along actual connected roads instead of teleporting between arbitrary
+    cameras — otherwise /analytics/routes and /analytics/od's road_sequence
+    hops are never adjacent in road_edges, and their new `geometry` field
+    (api/analytics.py's _path_geometry) always comes back empty. Returns {}
+    if road_edges.json doesn't exist yet, in which case run_mode_a falls
+    back to its original fully-random camera choice."""
+    if not ROAD_EDGES_PATH.exists():
+        return {}
+    edges = json.loads(ROAD_EDGES_PATH.read_text(encoding="utf-8"))
+    adjacency: dict[str, list[str]] = {}
+    for e in edges:
+        adjacency.setdefault(e["from_node"], []).append(e["to_node"])
+    return adjacency
 
 
 def load_cameras() -> list[dict]:
@@ -190,22 +209,108 @@ def emit_block(block: dict, camera_id: str, headers: dict, *, record_mode: bool)
         print(f"POST /ingest failed: {exc}", file=sys.stderr)
 
 
+class _Vehicle:
+    """One simulated vehicle mid-journey along real, road_edges-adjacent
+    camera hops — see load_road_adjacency(). Each vehicle sticks to one
+    plate and advances one adjacent camera per emitted event until it runs
+    out of reachable neighbors or hits max_hops, then a fresh vehicle spawns
+    in its place. This is what makes a same-plate sighting sequence a real,
+    connected path (so /analytics/routes and /analytics/od's precomputed
+    geometry actually has adjacent road_edges hops to draw), instead of a
+    same-plate sequence that jumps between unrelated cameras."""
+
+    def __init__(self, plate: str, camera_by_road: dict[str, dict], adjacency: dict[str, list[str]], max_hops: int):
+        start_road = random.choice(list(camera_by_road.keys()))
+        self.plate = plate
+        self.camera_by_road = camera_by_road
+        self.adjacency = adjacency
+        self.current_road = start_road
+        self.hops_left = random.randint(2, max_hops)
+
+    def current_camera(self) -> dict:
+        return self.camera_by_road[self.current_road]
+
+    def advance(self) -> bool:
+        """Moves to a random real-adjacent road node. Returns False (and
+        leaves position unchanged) when the journey is over — caller should
+        replace this vehicle with a fresh one."""
+        neighbors = [n for n in self.adjacency.get(self.current_road, []) if n in self.camera_by_road]
+        if not neighbors or self.hops_left <= 0:
+            return False
+        self.current_road = random.choice(neighbors)
+        self.hops_left -= 1
+        return True
+
+
 def run_mode_a(
     interval: float, blacklist_p: float, misread_p: float, drop_p: float, *, record_mode: bool = False
 ) -> None:
     cameras = load_cameras()
+    adjacency = load_road_adjacency()
     headers = {"Content-Type": "application/json"}
     if FOG_API_KEY:
         headers["X-Fog-Api-Key"] = FOG_API_KEY
 
-    print(f"fog_sim mode A: {len(cameras)} cameras, posting to {API_URL}/ingest", file=sys.stderr)
+    # A pool of in-transit vehicles that move along real adjacent roads
+    # (DECISIONS.md #8) mixed with fully-random single sightings — keeps
+    # overall camera/plate coverage broad while still producing enough
+    # real, connected multi-camera journeys for routes/OD geometry to
+    # actually populate. Falls back to pure-random (pre-v11 behavior) if
+    # road_edges.json isn't available.
+    camera_by_road = {c["road_node_id"]: c for c in cameras if c.get("road_node_id")}
+    vehicle_pool: list[_Vehicle] = []
+    if adjacency:
+        pool_size = min(15, max(3, len(cameras) // 20))
+        vehicle_pool = [
+            _Vehicle(plate, camera_by_road, adjacency, max_hops=8)
+            for plate in random.sample(SAMPLE_PLATES[1:], min(pool_size, len(SAMPLE_PLATES) - 1))
+        ]
+
+    # A fresh plate per new journey on respawn (not the same plate as the
+    # journey that just ended) — otherwise analytics_routes/analytics_od
+    # (api/analytics.py) treat a plate's ENTIRE sighting history as one
+    # continuous route/OD pair, so reusing a plate across two unrelated
+    # random-restart journeys silently stitches them into one fake "route"
+    # that jumps between non-adjacent roads (DECISIONS.md #8 — found this
+    # by tracing a real corrupted route during verification). Cycles
+    # through SAMPLE_PLATES so a plate only gets reassigned to a new
+    # vehicle once every other plate has had a turn.
+    _plate_cycle = [p for p in SAMPLE_PLATES[1:]]
+    random.shuffle(_plate_cycle)
+    _plate_cycle_pos = [0]
+
+    def _next_plate() -> str:
+        p = _plate_cycle[_plate_cycle_pos[0] % len(_plate_cycle)]
+        _plate_cycle_pos[0] += 1
+        return p
+
+    print(
+        f"fog_sim mode A: {len(cameras)} cameras, {len(vehicle_pool)} in-transit vehicles "
+        f"(real-road adjacency {'loaded' if adjacency else 'unavailable, falling back to random'}), "
+        f"posting to {API_URL}/ingest",
+        file=sys.stderr,
+    )
     while True:
-        camera = random.choice(cameras)
-        block = make_block(camera, blacklist_p=blacklist_p, misread_p=misread_p, drop_p=drop_p)
-        if block is None:
-            time.sleep(interval)
-            continue
-        emit_block(block, camera["camera_id"], headers, record_mode=record_mode)
+        if vehicle_pool and random.random() < 0.6:
+            idx = random.randrange(len(vehicle_pool))
+            vehicle = vehicle_pool[idx]
+            camera = vehicle.current_camera()
+            block = make_block(camera, blacklist_p=0.0, misread_p=misread_p, drop_p=drop_p)
+            if block is not None:
+                block["plate_hash"] = hmac_plate(vehicle.plate)
+                block["plate_text_enc"] = encrypt_plate(vehicle.plate)
+                block["resolution"]["fused_as"] = vehicle.plate
+                block["resolution"]["vendor_guess"] = vehicle.plate
+                emit_block(block, camera["camera_id"], headers, record_mode=record_mode)
+            if not vehicle.advance():
+                vehicle_pool[idx] = _Vehicle(
+                    _next_plate(), camera_by_road, adjacency, max_hops=8
+                )
+        else:
+            camera = random.choice(cameras)
+            block = make_block(camera, blacklist_p=blacklist_p, misread_p=misread_p, drop_p=drop_p)
+            if block is not None:
+                emit_block(block, camera["camera_id"], headers, record_mode=record_mode)
         time.sleep(interval)
 
 

@@ -97,7 +97,8 @@ def _camera_pairs(conn) -> list[dict]:
     cur.execute(
         """
         SELECT cf.camera_id AS from_camera, ct.camera_id AS to_camera,
-               re.from_node AS from_road, re.to_node AS to_road, re.speed_limit_kmh
+               re.from_node AS from_road, re.to_node AS to_road, re.speed_limit_kmh,
+               re.geometry
         FROM road_edges re
         JOIN cameras cf ON cf.road_node_id = re.from_node
         JOIN cameras ct ON ct.road_node_id = re.to_node
@@ -166,6 +167,10 @@ def analytics_segments(hours: int = Query(1), user=Depends(require_role("analyst
                 "average_speed_kmh": round(avg_speed, 1),
                 "average_travel_time_sec": round(avg_time),
                 "congestion": _congestion(avg_speed, pair["speed_limit_kmh"]),
+                # Real OSM edge vertices [[lon,lat],...], DECISIONS.md #8 —
+                # added so the frontend can draw the actual street path
+                # instead of a straight camera-to-camera line.
+                "geometry": pair["geometry"] or [],
             }
         )
     return {"segments": segments}
@@ -212,6 +217,30 @@ def analytics_heatmap(hours: int = Query(1), user=Depends(require_role("analyst"
     return {"points": points}
 
 
+def _road_edge_geometry_map(conn) -> dict[tuple[str, str], list]:
+    cur = conn.cursor()
+    cur.execute("SELECT from_node, to_node, geometry FROM road_edges")
+    return {(r["from_node"], r["to_node"]): (r["geometry"] or []) for r in cur.fetchall()}
+
+
+def _path_geometry(road_sequence: list[str], edge_geom: dict[tuple[str, str], list]) -> list[list[float]]:
+    """Concatenates each hop's real edge geometry into one continuous path
+    for a road_id sequence, DECISIONS.md #8 — real vertices end-to-end,
+    not a straight line between the sequence's endpoints. Falls back to []
+    (frontend keeps its existing straight-line rendering) for any hop with
+    no direct road_edges row, e.g. non-adjacent road_ids in the sequence."""
+    geometry: list[list[float]] = []
+    for a, b in zip(road_sequence[:-1], road_sequence[1:]):
+        seg = edge_geom.get((a, b))
+        if not seg:
+            return []
+        if geometry and seg[0] == geometry[-1]:
+            geometry.extend(seg[1:])
+        else:
+            geometry.extend(seg)
+    return geometry
+
+
 @router.get("/analytics/od")
 def analytics_od(hours: int = Query(1), user=Depends(require_role("analyst")), conn=Depends(get_db)):
     cur = conn.cursor()
@@ -246,8 +275,18 @@ def analytics_od(hours: int = Query(1), user=Depends(require_role("analyst")), c
         key = (origin_road, dest_road)
         flow_counts[key] = flow_counts.get(key, 0) + 1
 
+    edge_geom = _road_edge_geometry_map(conn)
     flows = [
-        {"origin": origin, "destination": dest, "vehicle_count": count}
+        {
+            "origin": origin,
+            "destination": dest,
+            "vehicle_count": count,
+            # Real shortest-path geometry between origin/destination road_ids
+            # where a direct road_edges hop exists, DECISIONS.md #8. Empty
+            # when origin/destination aren't directly adjacent in road_edges
+            # — frontend falls back to its existing straight-line draw.
+            "geometry": _path_geometry([origin, dest], edge_geom),
+        }
         for (origin, dest), count in flow_counts.items()
     ]
     return {"flows": flows}
@@ -281,6 +320,7 @@ def analytics_routes(hours: int = Query(1), user=Depends(require_role("analyst")
         if len(collapsed) > 1:
             route_counts[collapsed] = route_counts.get(collapsed, 0) + 1
 
+    edge_geom = _road_edge_geometry_map(conn)
     routes = []
     for i, (road_sequence, count) in enumerate(
         sorted(route_counts.items(), key=lambda kv: -kv[1])
@@ -292,6 +332,10 @@ def analytics_routes(hours: int = Query(1), user=Depends(require_role("analyst")
                 "vehicle_count": count,
                 "average_speed_kmh": 0.0,
                 "average_travel_time_sec": 0,
+                # Full concatenated real path vertices across every hop,
+                # DECISIONS.md #8. Empty if any hop lacks a direct
+                # road_edges row (frontend falls back to straight lines).
+                "geometry": _path_geometry(list(road_sequence), edge_geom),
             }
         )
     return {"routes": routes}

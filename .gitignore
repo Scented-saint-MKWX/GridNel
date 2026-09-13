@@ -4,3 +4,7 @@ __pycache__/
 *.diff
 *.patch
 .playwright-mcp/
+
+# Raw Overpass/OSM fetch cache for scripts/generate_seed.py (DECISIONS.md
+# #8) — large (100MB+), regenerable via --force-refetch, not source.
+db/.osm_raw_cache.json

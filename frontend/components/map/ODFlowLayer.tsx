@@ -28,7 +28,12 @@ export function ODFlowLayer({ flows, roadCoordinateIndex }: ODFlowLayerProps) {
       features: resolved.map((f) => ({
         type: "Feature" as const,
         properties: { vehicle_count: f.vehicle_count },
-        geometry: { type: "LineString" as const, coordinates: [f.origin, f.destination] },
+        geometry: {
+          type: "LineString" as const,
+          // Real shortest-path vertices when available (DECISIONS.md #8) —
+          // falls back to the straight origin/destination line otherwise.
+          coordinates: f.geometry && f.geometry.length >= 2 ? f.geometry : [f.origin, f.destination],
+        },
       })),
     };
     return { data, maxVolume };

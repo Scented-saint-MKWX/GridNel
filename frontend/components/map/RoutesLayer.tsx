@@ -25,9 +25,16 @@ export function RoutesLayer({ routes, roadCoordinateIndex }: RoutesLayerProps) {
     const withPaths = ranked.map((r, i) => ({
       ...r,
       rank: i + 1,
-      path: r.road_sequence
-        .map((roadId) => resolveRoadCoordinate(roadCoordinateIndex, roadId))
-        .filter((p): p is [number, number] => p !== null),
+      // Real concatenated path vertices when available (DECISIONS.md #8) —
+      // falls back to per-road-id centroid resolution for routes predating
+      // the geometry field or missing a direct road_edges hop somewhere
+      // along the sequence.
+      path:
+        r.geometry && r.geometry.length >= 2
+          ? r.geometry
+          : r.road_sequence
+              .map((roadId) => resolveRoadCoordinate(roadCoordinateIndex, roadId))
+              .filter((p): p is [number, number] => p !== null),
     }));
 
     const linesData = {

@@ -166,6 +166,9 @@ export function mockSegments(): Segment[] {
       average_speed_kmh,
       average_travel_time_sec,
       congestion,
+      // No real OSM geometry in mock mode — SegmentsLayer falls back to a
+      // straight from/to line, same as it always did before DECISIONS.md #8.
+      geometry: [],
     }),
   );
 }
@@ -182,6 +185,9 @@ export function mockOdFlows(): OdFlow[] {
     origin,
     destination,
     vehicle_count,
+    // No real OSM path in mock mode — ODFlowLayer falls back to a straight
+    // origin/destination line, same as before DECISIONS.md #8.
+    geometry: [],
   }));
 }
 
@@ -199,5 +205,9 @@ export function mockRoutes(): Route[] {
       vehicle_count: r.vehicle_count,
       average_speed_kmh: 32 + i * 5,
       average_travel_time_sec: 260 - i * 30,
+      // No real OSM path in mock mode — RoutesLayer falls back to
+      // resolveRoadCoordinate()-based straight segments, same as before
+      // DECISIONS.md #8.
+      geometry: [],
     }));
 }

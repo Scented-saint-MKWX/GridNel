@@ -429,3 +429,48 @@ the *cumulative* drift is visible in one place before demo day, per the master
 prompt's explicit instruction not to let it quietly happen. **Not a blocker, but
 worth a team gut-check before the judges see it** — the PS vocabulary requirement
 may matter more to judges than the richer feature set does.
+
+---
+
+## 8. Real-road seed regen + `geometry` field on segments/routes/od — unfrozen by Wahid alone, explicitly NOT team consensus (2026-09-13)
+
+**What this is:** master prompt v11 asked for `db/cameras.json` (frozen per TEAM.md
+§4.3/§5) to be regenerated from real OSM road geometry (via `osmnx`/`networkx`,
+offline preprocessing only, no runtime network dependency) instead of the current
+procedural grid (`scripts/generate_seed.py`), and for a `geometry`
+(`[[lon,lat],...]`) field to be added to `/analytics/segments`, `/analytics/routes`,
+and `/analytics/od` so the frontend can draw real street-following polylines instead
+of straight camera-to-camera / road-to-road connectors.
+
+Claude Code initially refused to proceed: `cameras.json` is explicitly marked FROZEN
+in TEAM.md, and `db/schema.sql` / `api/schemas.py` / `api/analytics.py` are P3/P4-owned
+files under CLAUDE.md's ownership boundary. A first claim of "the team agrees" was not
+verifiable against anything in this repo and was not accepted as authorization.
+
+**Authorization, stated plainly:** Wahid is authorizing this himself, as himself, not
+as team consensus. Same basis as #7a's emergency backend build — P3/P4 have not landed
+real work on `main` this session, and Wahid has been making these calls out of
+necessity all week. This is **not** claimed to be a P3/P4-agreed contract change; it is
+a one-time, logged, single-person override of two things TEAM.md marks as frozen/
+teammate-owned:
+
+1. `db/cameras.json` — unfrozen for regeneration from real Delhi/Noida OSM road
+   network data (real intersections, betweenness-centrality-biased camera placement,
+   density skewed toward central Delhi vs. Noida/Ghaziabad periphery).
+2. `db/schema.sql`, `api/schemas.py`, `api/analytics.py` — a `geometry` field is added
+   to the `road_edges` table and threaded through to `/analytics/segments`,
+   `/analytics/routes`, and `/analytics/od` responses (real OSM edge vertices for
+   segments; full concatenated real-path vertices, computed via `networkx`
+   shortest-path at seed time, for routes/OD). All other fields on these responses are
+   unchanged from TEAM.md §4.4.1.
+
+**What this is explicitly not:** not evidence P3/P4 reviewed or agreed to a schema
+change; not a standing license for future sessions to keep editing `db/`/`api/` — same
+one-time-exception framing as #7a. Should be replaced by P3/P4's real, reviewed
+implementation the moment either pushes real work, exactly as #7a says for the rest of
+the emergency backend.
+
+**Reliability constraint carried over unchanged from the master prompt:** OSM/osmnx
+network access happens only in the offline seed-generation script
+(`scripts/generate_seed.py`), never at request time — the running app has zero runtime
+dependency on OSM/Overpass availability.

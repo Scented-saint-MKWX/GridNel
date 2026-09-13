@@ -25,6 +25,11 @@ export interface Segment {
   average_speed_kmh: number;
   average_travel_time_sec: number;
   congestion: CongestionLevel;
+  // Real OSM edge vertices [[lon,lat],...], added 2026-09-13 — DECISIONS.md
+  // #8 (Wahid's one-time, logged, non-team-consensus schema exception, not
+  // a P3/P4-reviewed contract change). Empty array if unavailable — layers
+  // fall back to a straight from/to line.
+  geometry: [number, number][];
 }
 
 export interface HeatmapPoint {
@@ -42,6 +47,10 @@ export interface OdFlow {
   origin: string;
   destination: string;
   vehicle_count: number;
+  // Real shortest-path vertices between origin/destination, DECISIONS.md
+  // #8. Empty when no direct road_edges hop exists — layer falls back to
+  // resolveRoadCoordinate()'s straight line.
+  geometry: [number, number][];
 }
 
 export interface Route {
@@ -50,4 +59,8 @@ export interface Route {
   vehicle_count: number;
   average_speed_kmh: number;
   average_travel_time_sec: number;
+  // Full concatenated real path vertices across every hop, DECISIONS.md #8.
+  // Empty when any hop lacks a direct road_edges row — layer falls back to
+  // resolveRoadCoordinate()-based straight segments.
+  geometry: [number, number][];
 }

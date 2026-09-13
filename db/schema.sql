@@ -16,6 +16,11 @@ CREATE TABLE IF NOT EXISTS road_edges (
     length_m         DOUBLE PRECISION NOT NULL,
     speed_limit_kmh  DOUBLE PRECISION NOT NULL,
     typical_speeds   JSONB NOT NULL DEFAULT '{}',
+    -- Real OSM edge vertices [[lon,lat],...], endpoints included. Added
+    -- 2026-09-13, DECISIONS.md #8 (Wahid, one-time exception, not a
+    -- P3-reviewed schema change) so segments/routes/od can render the
+    -- actual street path instead of a straight camera-to-camera line.
+    geometry         JSONB NOT NULL DEFAULT '[]',
     PRIMARY KEY (from_node, to_node)
 );
 

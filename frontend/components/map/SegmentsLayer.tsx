@@ -33,16 +33,23 @@ export function SegmentsLayer({ segments, cameras }: SegmentsLayerProps) {
       const from = cameraById.get(s.from_camera);
       const to = cameraById.get(s.to_camera);
       if (!isFiniteCamera(from) || !isFiniteCamera(to)) return [];
+      // Real OSM edge vertices when available (DECISIONS.md #8) — falls
+      // back to the straight from/to line for any segment predating the
+      // geometry field or missing a direct road_edges row.
+      const coordinates =
+        s.geometry && s.geometry.length >= 2
+          ? s.geometry
+          : [
+              [from.longitude, from.latitude],
+              [to.longitude, to.latitude],
+            ];
       return [
         {
           type: "Feature" as const,
           properties: { congestion: s.congestion, vehicle_count: s.vehicle_count },
           geometry: {
             type: "LineString" as const,
-            coordinates: [
-              [from.longitude, from.latitude],
-              [to.longitude, to.latitude],
-            ],
+            coordinates,
           },
         },
       ];

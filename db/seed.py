@@ -53,17 +53,24 @@ _FALLBACK_ROAD_EDGES = [
 TYPICAL_SPEEDS = {str(h): (25 if 7 <= h <= 10 or 17 <= h <= 20 else 40) for h in range(24)}
 
 
-def load_road_edges() -> list[tuple[str, str, float, float, dict]]:
+def load_road_edges() -> list[tuple[str, str, float, float, dict, list]]:
     road_edges_path = os.path.join(os.path.dirname(__file__), "road_edges.json")
     if not os.path.exists(road_edges_path):
         return [
-            (from_node, to_node, length_m, speed_limit, TYPICAL_SPEEDS)
+            (from_node, to_node, length_m, speed_limit, TYPICAL_SPEEDS, [])
             for from_node, to_node, length_m, speed_limit in _FALLBACK_ROAD_EDGES
         ]
     with open(road_edges_path) as f:
         edges = json.load(f)
     return [
-        (e["from_node"], e["to_node"], e["length_m"], e["speed_limit_kmh"], e["typical_speeds"])
+        (
+            e["from_node"],
+            e["to_node"],
+            e["length_m"],
+            e["speed_limit_kmh"],
+            e["typical_speeds"],
+            e.get("geometry", []),
+        )
         for e in edges
     ]
 
@@ -97,14 +104,14 @@ def main():
         )
 
     road_edges = load_road_edges()
-    for from_node, to_node, length_m, speed_limit, typical_speeds in road_edges:
+    for from_node, to_node, length_m, speed_limit, typical_speeds, geometry in road_edges:
         cur.execute(
             """
-            INSERT INTO road_edges (from_node, to_node, length_m, speed_limit_kmh, typical_speeds)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO road_edges (from_node, to_node, length_m, speed_limit_kmh, typical_speeds, geometry)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON CONFLICT (from_node, to_node) DO NOTHING
             """,
-            (from_node, to_node, length_m, speed_limit, json.dumps(typical_speeds)),
+            (from_node, to_node, length_m, speed_limit, json.dumps(typical_speeds), json.dumps(geometry)),
         )
 
     plate_hash = hmac_plate(BLACKLISTED_PLATE)
