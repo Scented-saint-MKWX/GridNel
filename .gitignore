@@ -1,2 +1,10 @@
 .env
-.env
+*.env
+__pycache__/
+*.pyc
+node_modules/
+*.pt
+*.png
+output/
+venv/
+data/sample_images/

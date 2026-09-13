@@ -1,0 +1,108 @@
+[
+  {
+    "plate_text": "MH12AB1284",
+    "is_blacklist": true,
+    "description": "Suspect vehicle moving north-east across corridor",
+    "route": [
+      {
+        "camera_id": "CAM_01",
+        "lat": 28.6139,
+        "lon": 77.2090,
+        "delta_seconds": 0,
+        "conf": 0.98
+      },
+      {
+        "camera_id": "CAM_02",
+        "lat": 28.6162,
+        "lon": 77.2167,
+        "delta_seconds": 45,
+        "conf": 0.96
+      },
+      {
+        "camera_id": "CAM_03",
+        "lat": 28.6185,
+        "lon": 77.2245,
+        "delta_seconds": 50,
+        "conf": 0.97
+      },
+      {
+        "camera_id": "CAM_04",
+        "lat": 28.6220,
+        "lon": 77.2310,
+        "delta_seconds": 60,
+        "conf": 0.94
+      },
+      {
+        "camera_id": "CAM_05",
+        "lat": 28.6255,
+        "lon": 77.2380,
+        "delta_seconds": 55,
+        "conf": 0.95
+      },
+      {
+        "camera_id": "CAM_06",
+        "lat": 28.6290,
+        "lon": 77.2450,
+        "delta_seconds": 50,
+        "conf": 0.99
+      }
+    ]
+  },
+  {
+    "plate_text": "DL8CAF5023",
+    "is_blacklist": false,
+    "description": "Commuter vehicle in Sector 1",
+    "route": [
+      {
+        "camera_id": "CAM_01",
+        "lat": 28.6139,
+        "lon": 77.2090,
+        "delta_seconds": 0,
+        "conf": 0.92
+      },
+      {
+        "camera_id": "CAM_02",
+        "lat": 28.6162,
+        "lon": 77.2167,
+        "delta_seconds": 40,
+        "conf": 0.95
+      },
+      {
+        "camera_id": "CAM_03",
+        "lat": 28.6185,
+        "lon": 77.2245,
+        "delta_seconds": 45,
+        "conf": 0.91
+      }
+    ]
+  },
+  {
+    "plate_text": "KA05MN1234",
+    "is_blacklist": false,
+    "description": "Delivery van traveling inbound",
+    "route": [
+      {
+        "camera_id": "CAM_06",
+        "lat": 28.6290,
+        "lon": 77.2450,
+        "delta_seconds": 0,
+        "conf": 0.96
+      },
+      {
+        "camera_id": "CAM_05",
+        "lat": 28.6255,
+        "lon": 77.2380,
+        "delta_seconds": 55,
+        "conf": 0.94
+      },
+      {
+        "camera_id": "CAM_04",
+        "lat": 28.6220,
+        "lon": 77.2310,
+        "delta_seconds": 50,
+        "conf": 0.97
+      }
+    ]
+  }
+]
+

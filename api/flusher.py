@@ -6,67 +6,92 @@ Generates alerts automatically if a license plate matches the blacklist.
 
 import os
 import time
+import logging
 import redis
 import psycopg2
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [flusher] %(levelname)s: %(message)s")
+log = logging.getLogger("flusher")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 DB_DSN = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sentinel")
 
-# Connect to Redis
-r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
-
-def run_flusher():
+def get_db_conn():
     conn = psycopg2.connect(DB_DSN)
     conn.autocommit = True
-    cur = conn.cursor()
+    return conn
+
+def run_flusher():
+    r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+    conn = None
     last_id = "0-0"
     
-    print("Flusher active. Monitoring sightings:stream...")
+    log.info("Flusher active. Monitoring sightings:stream on Redis...")
     
     while True:
         try:
-            # Poll the Redis stream; blocks for up to 5000ms if empty
-            messages = r.xread({"sightings:stream": last_id}, count=50, block=5000)
+            if conn is None or conn.closed:
+                conn = get_db_conn()
+                cur = conn.cursor()
+
+            # Poll Redis stream; blocks up to 2000ms if empty
+            messages = r.xread({"sightings:stream": last_id}, count=50, block=2000)
             if not messages:
                 continue
-                
+
             for _, stream_msgs in messages:
                 for msg_id, msg_data in stream_msgs:
-                    # 1. Insert sighting directly using the UUID block_id
+                    cam_id = msg_data.get("camera_id", "CAM_01")
+                    lat = float(msg_data.get("lat", 28.6139))
+                    lon = float(msg_data.get("lon", 77.2090))
+                    plate_text = msg_data.get("plate_text", "")
+                    block_id = msg_data.get("block_id")
+                    ts = msg_data.get("ts")
+                    conf = float(msg_data.get("conf", 0.90))
+                    outcome = msg_data.get("outcome", "agreement")
+                    quality = msg_data.get("quality", "verified")
+
+                    # 1. Ensure camera exists to satisfy foreign key
+                    cur.execute("""
+                        INSERT INTO cameras (camera_id, lat, lon, zone, road_node_id, status)
+                        VALUES (%s, %s, %s, 'Z1', 'N1', 'active')
+                        ON CONFLICT (camera_id) DO NOTHING
+                    """, (cam_id, lat, lon))
+
+                    # 2. Insert sighting
                     cur.execute("""
                         INSERT INTO sightings (block_id, plate_text, camera_id, ts, conf, outcome, quality)
                         VALUES (%s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (block_id) DO NOTHING
-                    """, (
-                        msg_data['block_id'], 
-                        msg_data['plate_text'], 
-                        msg_data['camera_id'], 
-                        msg_data['ts'], 
-                        float(msg_data['conf']), 
-                        msg_data['outcome'], 
-                        msg_data['quality']
-                    ))
-                    
-                    # 2. Check blacklist and trigger alert for the dashboard
-                    cur.execute("SELECT reason FROM blacklist WHERE plate_text = %s", (msg_data['plate_text'],))
+                    """, (block_id, plate_text, cam_id, ts, conf, outcome, quality))
+
+                    # 3. Check blacklist
+                    cur.execute("SELECT reason FROM blacklist WHERE plate_text = %s", (plate_text,))
                     match = cur.fetchone()
                     if match:
+                        reason = match[0]
                         cur.execute("""
                             INSERT INTO alert_events (type, plate_text, camera_id, ts, detail)
                             VALUES ('blacklist_match', %s, %s, %s, %s)
                         """, (
-                            msg_data['plate_text'], 
-                            msg_data['camera_id'], 
-                            msg_data['ts'],
-                            f'{{"reason": "{match[0]}"}}'
+                            plate_text,
+                            cam_id,
+                            ts,
+                            f'{{"reason": "{reason}"}}'
                         ))
-                        print(f"ALERT TRIGGERED: Blacklist hit on {msg_data['plate_text']}")
+                        log.warning(f"🚨 BLACKLIST HIT: Plate {plate_text} at {cam_id}! Reason: {reason}")
 
                     last_id = msg_id
-                    print(f"Flushed: {msg_data['plate_text']} from {msg_data['camera_id']}")
-                    
+                    log.info(f"Flushed sighting: {plate_text} at {cam_id}")
+
         except Exception as e:
-            print(f"Flusher DB Error: {e}")
+            log.error(f"Flusher exception: {e}")
+            if conn:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                conn = None
             time.sleep(2)
 
 if __name__ == "__main__":

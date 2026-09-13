@@ -1,35 +1,46 @@
+import os
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
-# Import your modular routers and scripts
 from . import tracking, alerts, analytics
 from .ingest import ingest_block
 from .schemas import DataBlock
 
-app = FastAPI(title="SentinelGrid API", description="Hackathon MVP Backend")
+app = FastAPI(title="SentinelGrid API", description="Smart City Traffic Analytics Platform")
 
-# Essential for the Next.js frontend to bypass browser CORS blocks
+# CORS configured for browser dashboard access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For demo purposes, allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount the separate feature files
+# Feature Routers
 app.include_router(tracking.router, tags=["Tracking"])
 app.include_router(alerts.router, tags=["Alerts"])
 app.include_router(analytics.router, tags=["Analytics"])
 
-# The high-speed edge ingestion endpoint
+# Edge Ingestion Endpoint
 @app.post("/ingest", tags=["Ingestion"])
-def ingest_data(block: DataBlock, authorization: str = Header(None)):
+def ingest_data(block: DataBlock, authorization: str | None = Header(default=None)):
     if not authorization:
         raise HTTPException(status_code=401, detail="Missing API Key")
-    
-    # Strip "Bearer " if the fog node sends it in standard format
-    api_key = authorization.replace("Bearer ", "")
-    
-    # Pass to the Redis ingestion logic we finalized earlier
+    api_key = authorization.replace("Bearer ", "").strip()
     return ingest_block(block, api_key)
+
+# Frontend UI Mounting
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+FRONTEND_HTML = os.path.join(FRONTEND_DIR, "index.html")
+
+@app.get("/", include_in_schema=False)
+def serve_dashboard():
+    if os.path.exists(FRONTEND_HTML):
+        return FileResponse(FRONTEND_HTML)
+    return {"message": "SentinelGrid API Active. Visit /docs for Swagger UI."}
+
+if os.path.exists(FRONTEND_DIR):
+    app.mount("/dashboard", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

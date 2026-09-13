@@ -1,7 +1,17 @@
 from fastapi import APIRouter, Depends
+from typing import List
+from pydantic import BaseModel
 from .models import get_db
 
 router = APIRouter()
+
+class CameraOut(BaseModel):
+    camera_id: str
+    lat: float
+    lon: float
+    zone: str
+    road_node_id: str
+    status: str
 
 @router.get("/analytics/summary")
 def get_summary(db = Depends(get_db)):
@@ -21,3 +31,9 @@ def get_summary(db = Depends(get_db)):
         "active_cameras": cameras,
         "active_alerts": alerts
     }
+
+@router.get("/cameras", response_model=List[CameraOut])
+def get_cameras(db = Depends(get_db)):
+    cur = db.cursor()
+    cur.execute("SELECT camera_id, lat, lon, zone, road_node_id, status FROM cameras ORDER BY camera_id ASC")
+    return cur.fetchall()

@@ -1,0 +1,45 @@
+
+[
+  {
+    "camera_id": "CAM_01",
+    "lat": 28.6139,
+    "lon": 77.2090,
+    "zone": "Z1",
+    "road_node_id": "N1"
+  },
+  {
+    "camera_id": "CAM_02",
+    "lat": 28.6162,
+    "lon": 77.2167,
+    "zone": "Z1",
+    "road_node_id": "N2"
+  },
+  {
+    "camera_id": "CAM_03",
+    "lat": 28.6185,
+    "lon": 77.2245,
+    "zone": "Z1",
+    "road_node_id": "N3"
+  },
+  {
+    "camera_id": "CAM_04",
+    "lat": 28.6220,
+    "lon": 77.2310,
+    "zone": "Z2",
+    "road_node_id": "N4"
+  },
+  {
+    "camera_id": "CAM_05",
+    "lat": 28.6255,
+    "lon": 77.2380,
+    "zone": "Z2",
+    "road_node_id": "N5"
+  },
+  {
+    "camera_id": "CAM_06",
+    "lat": 28.6290,
+    "lon": 77.2450,
+    "zone": "Z2",
+    "road_node_id": "N6"
+  }
+]
